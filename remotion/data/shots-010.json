@@ -1,0 +1,562 @@
+[
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-0",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 0,
+    "timelineEnd": 135,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-135",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 135,
+    "timelineEnd": 270,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-270",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 270,
+    "timelineEnd": 405,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-405",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 405,
+    "timelineEnd": 540,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-540",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 540,
+    "timelineEnd": 675,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-675",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 675,
+    "timelineEnd": 810,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-810",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 810,
+    "timelineEnd": 945,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-945",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 945,
+    "timelineEnd": 1080,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-1080",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 1080,
+    "timelineEnd": 1215,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-1215",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 1215,
+    "timelineEnd": 1350,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-1350",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 1350,
+    "timelineEnd": 1485,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-1485",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 1485,
+    "timelineEnd": 1620,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-1620",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 1620,
+    "timelineEnd": 1755,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-1755",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 1755,
+    "timelineEnd": 1890,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-1890",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 1890,
+    "timelineEnd": 2025,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-2025",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 2025,
+    "timelineEnd": 2160,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-2160",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 2160,
+    "timelineEnd": 2295,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-2295",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 2295,
+    "timelineEnd": 2430,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-2430",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 2430,
+    "timelineEnd": 2565,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-2565",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 2565,
+    "timelineEnd": 2700,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-2700",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 2700,
+    "timelineEnd": 2835,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-2835",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 2835,
+    "timelineEnd": 2970,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-2970",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 2970,
+    "timelineEnd": 3105,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-3105",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 3105,
+    "timelineEnd": 3240,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-3240",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 3240,
+    "timelineEnd": 3375,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-3375",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 3375,
+    "timelineEnd": 3510,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-3510",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 3510,
+    "timelineEnd": 3645,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-3645",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 3645,
+    "timelineEnd": 3780,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-3780",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 3780,
+    "timelineEnd": 3915,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-3915",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 3915,
+    "timelineEnd": 4050,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-4050",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 4050,
+    "timelineEnd": 4185,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-4185",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 4185,
+    "timelineEnd": 4320,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-4320",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 4320,
+    "timelineEnd": 4455,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-4455",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 4455,
+    "timelineEnd": 4590,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-4590",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 4590,
+    "timelineEnd": 4725,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-4725",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 4725,
+    "timelineEnd": 4860,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-4860",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 4860,
+    "timelineEnd": 4995,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-4995",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 4995,
+    "timelineEnd": 5130,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-5130",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 5130,
+    "timelineEnd": 5265,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-5265",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 5265,
+    "timelineEnd": 5400,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-5400",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 5400,
+    "timelineEnd": 5535,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-5535",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 5535,
+    "timelineEnd": 5670,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-5670",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 5670,
+    "timelineEnd": 5805,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-5805",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 5805,
+    "timelineEnd": 5940,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-5940",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 5940,
+    "timelineEnd": 6075,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-6075",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 6075,
+    "timelineEnd": 6210,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-6210",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 6210,
+    "timelineEnd": 6345,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-6345",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 6345,
+    "timelineEnd": 6480,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-6480",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 6480,
+    "timelineEnd": 6615,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-6615",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 6615,
+    "timelineEnd": 6750,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-6750",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 6750,
+    "timelineEnd": 6885,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-6885",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 6885,
+    "timelineEnd": 7020,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-7020",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 7020,
+    "timelineEnd": 7155,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-7155",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 7155,
+    "timelineEnd": 7290,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-7290",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 7290,
+    "timelineEnd": 7425,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-7425",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 7425,
+    "timelineEnd": 7560,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-7560",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 7560,
+    "timelineEnd": 7695,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-7695",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 7695,
+    "timelineEnd": 7830,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-7830",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 7830,
+    "timelineEnd": 7965,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-7965",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 7965,
+    "timelineEnd": 8100,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-8100",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 8100,
+    "timelineEnd": 8235,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-8235",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 8235,
+    "timelineEnd": 8370,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-8370",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 8370,
+    "timelineEnd": 8505,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-8505",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 8505,
+    "timelineEnd": 8640,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-8640",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 8640,
+    "timelineEnd": 8775,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-8775",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 8775,
+    "timelineEnd": 8910,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/03_diagrama_astronomico_rosetta.jpg-8910",
+    "file": "010/03_diagrama_astronomico_rosetta.jpg",
+    "timelineStart": 8910,
+    "timelineEnd": 9045,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/04_pagina_planta_drosera_folio56r.jpg-9045",
+    "file": "010/04_pagina_planta_drosera_folio56r.jpg",
+    "timelineStart": 9045,
+    "timelineEnd": 9180,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/01_pagina_figuras_bano_folio68r.jpg-9180",
+    "file": "010/01_pagina_figuras_bano_folio68r.jpg",
+    "timelineStart": 9180,
+    "timelineEnd": 9315,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "010/02_pagina_planta_desconocida_folio34r.jpg-9315",
+    "file": "010/02_pagina_planta_desconocida_folio34r.jpg",
+    "timelineStart": 9315,
+    "timelineEnd": 9400,
+    "kenBurnsVariant": 0
+  }
+]

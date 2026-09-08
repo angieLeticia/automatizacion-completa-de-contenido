@@ -1,0 +1,29 @@
+[
+  {
+    "number": 1,
+    "title": "Los fareros de Eilean Mor",
+    "year": "1900",
+    "audioFile": "capitulo-1.mp3",
+    "audioDurationSeconds": 7.105,
+    "titleRevealSeconds": 1.984,
+    "yearRevealSeconds": 5.646
+  },
+  {
+    "number": 2,
+    "title": "El Mary Celeste",
+    "year": "1872",
+    "audioFile": "capitulo-2.mp3",
+    "audioDurationSeconds": 7.184,
+    "titleRevealSeconds": 1.942,
+    "yearRevealSeconds": 4.548
+  },
+  {
+    "number": 3,
+    "title": "El Vuelo 19",
+    "year": "1945",
+    "audioFile": "capitulo-3.mp3",
+    "audioDurationSeconds": 8.313,
+    "titleRevealSeconds": 2.1,
+    "yearRevealSeconds": 5.16
+  }
+]

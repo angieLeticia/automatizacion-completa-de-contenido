@@ -1,0 +1,28 @@
+name: Publicar redes sociales programadas
+
+on:
+  schedule:
+    # Cada 10 minutos. GitHub puede retrasar la ejecución unos minutos en horas de carga.
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Publicar publicaciones vencidas
+        run: npx tsx scripts/publish-due-social-posts.mts
+        env:
+          # Las credenciales de cada canal/plataforma viven en la tabla social_accounts
+          # (se gestionan desde /admin/social/canales), no como secrets aquí.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

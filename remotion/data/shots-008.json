@@ -1,0 +1,890 @@
+[
+  {
+    "kind": "video",
+    "key": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4-0",
+    "file": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 0,
+    "timelineEnd": 180,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-180",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 180,
+    "timelineEnd": 315,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4-315",
+    "file": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4",
+    "timelineStart": 315,
+    "timelineEnd": 495,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-495",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 495,
+    "timelineEnd": 630,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4-630",
+    "file": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 630,
+    "timelineEnd": 810,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-810",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 810,
+    "timelineEnd": 945,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-945",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 945,
+    "timelineEnd": 1125,
+    "kenBurnsVariant": 1
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-1125",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 1125,
+    "timelineEnd": 1260,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4-1260",
+    "file": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4",
+    "timelineStart": 1260,
+    "timelineEnd": 1440,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-1440",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 1440,
+    "timelineEnd": 1575,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4-1575",
+    "file": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4",
+    "timelineStart": 1575,
+    "timelineEnd": 1755,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-1755",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 1755,
+    "timelineEnd": 1890,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-1890",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 1890,
+    "timelineEnd": 2070,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-2070",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 2070,
+    "timelineEnd": 2205,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4-2205",
+    "file": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4",
+    "timelineStart": 2205,
+    "timelineEnd": 2385,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-2385",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 2385,
+    "timelineEnd": 2520,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/09_bosque_pantano_aereo_mixkit_720p.mp4-2520",
+    "file": "008/09_bosque_pantano_aereo_mixkit_720p.mp4",
+    "timelineStart": 2520,
+    "timelineEnd": 2700,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-2700",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 2700,
+    "timelineEnd": 2835,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/10_libros_antiguos_pila_mixkit_1080p.mp4-2835",
+    "file": "008/10_libros_antiguos_pila_mixkit_1080p.mp4",
+    "timelineStart": 2835,
+    "timelineEnd": 3015,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-3015",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 3015,
+    "timelineEnd": 3150,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/11_bosque_niebla_otonal_mixkit_720p.mp4-3150",
+    "file": "008/11_bosque_niebla_otonal_mixkit_720p.mp4",
+    "timelineStart": 3150,
+    "timelineEnd": 3330,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-3330",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 3330,
+    "timelineEnd": 3465,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4-3465",
+    "file": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4",
+    "timelineStart": 3465,
+    "timelineEnd": 3645,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-3645",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 3645,
+    "timelineEnd": 3780,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4-3780",
+    "file": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4",
+    "timelineStart": 3780,
+    "timelineEnd": 3960,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-3960",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 3960,
+    "timelineEnd": 4095,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4-4095",
+    "file": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 4095,
+    "timelineEnd": 4275,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-4275",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 4275,
+    "timelineEnd": 4410,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/04_peninsula_boscosa_costa_aerea_mixkit_1080p.mp4-4410",
+    "file": "008/04_peninsula_boscosa_costa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 4410,
+    "timelineEnd": 4590,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-4590",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 4590,
+    "timelineEnd": 4725,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-4725",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 4725,
+    "timelineEnd": 4905,
+    "kenBurnsVariant": 1
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-4905",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 4905,
+    "timelineEnd": 5040,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4-5040",
+    "file": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4",
+    "timelineStart": 5040,
+    "timelineEnd": 5220,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-5220",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 5220,
+    "timelineEnd": 5355,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4-5355",
+    "file": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4",
+    "timelineStart": 5355,
+    "timelineEnd": 5535,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-5535",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 5535,
+    "timelineEnd": 5670,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4-5670",
+    "file": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4",
+    "timelineStart": 5670,
+    "timelineEnd": 5850,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-5850",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 5850,
+    "timelineEnd": 5985,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-5985",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 5985,
+    "timelineEnd": 6165,
+    "kenBurnsVariant": 2
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-6165",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 6165,
+    "timelineEnd": 6300,
+    "kenBurnsVariant": 3
+  },
+  {
+    "kind": "video",
+    "key": "008/10_libros_antiguos_pila_mixkit_1080p.mp4-6300",
+    "file": "008/10_libros_antiguos_pila_mixkit_1080p.mp4",
+    "timelineStart": 6300,
+    "timelineEnd": 6480,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-6480",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 6480,
+    "timelineEnd": 6615,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/11_bosque_niebla_otonal_mixkit_720p.mp4-6615",
+    "file": "008/11_bosque_niebla_otonal_mixkit_720p.mp4",
+    "timelineStart": 6615,
+    "timelineEnd": 6795,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-6795",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 6795,
+    "timelineEnd": 6930,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-6930",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 6930,
+    "timelineEnd": 7110,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-7110",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 7110,
+    "timelineEnd": 7245,
+    "kenBurnsVariant": 1
+  },
+  {
+    "kind": "video",
+    "key": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4-7245",
+    "file": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4",
+    "timelineStart": 7245,
+    "timelineEnd": 7425,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-7425",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 7425,
+    "timelineEnd": 7560,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4-7560",
+    "file": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 7560,
+    "timelineEnd": 7740,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-7740",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 7740,
+    "timelineEnd": 7875,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4-7875",
+    "file": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4",
+    "timelineStart": 7875,
+    "timelineEnd": 8055,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-8055",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 8055,
+    "timelineEnd": 8190,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4-8190",
+    "file": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4",
+    "timelineStart": 8190,
+    "timelineEnd": 8370,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-8370",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 8370,
+    "timelineEnd": 8505,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4-8505",
+    "file": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4",
+    "timelineStart": 8505,
+    "timelineEnd": 8685,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-8685",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 8685,
+    "timelineEnd": 8820,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4-8820",
+    "file": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4",
+    "timelineStart": 8820,
+    "timelineEnd": 9000,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-9000",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 9000,
+    "timelineEnd": 9135,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4-9135",
+    "file": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4",
+    "timelineStart": 9135,
+    "timelineEnd": 9315,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-9315",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 9315,
+    "timelineEnd": 9450,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/09_bosque_pantano_aereo_mixkit_720p.mp4-9450",
+    "file": "008/09_bosque_pantano_aereo_mixkit_720p.mp4",
+    "timelineStart": 9450,
+    "timelineEnd": 9630,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-9630",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 9630,
+    "timelineEnd": 9765,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/10_libros_antiguos_pila_mixkit_1080p.mp4-9765",
+    "file": "008/10_libros_antiguos_pila_mixkit_1080p.mp4",
+    "timelineStart": 9765,
+    "timelineEnd": 9945,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-9945",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 9945,
+    "timelineEnd": 10080,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/11_bosque_niebla_otonal_mixkit_720p.mp4-10080",
+    "file": "008/11_bosque_niebla_otonal_mixkit_720p.mp4",
+    "timelineStart": 10080,
+    "timelineEnd": 10260,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-10260",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 10260,
+    "timelineEnd": 10395,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4-10395",
+    "file": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4",
+    "timelineStart": 10395,
+    "timelineEnd": 10575,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-10575",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 10575,
+    "timelineEnd": 10710,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4-10710",
+    "file": "008/02_olas_rompiendo_costa_aerea_mixkit_720p.mp4",
+    "timelineStart": 10710,
+    "timelineEnd": 10890,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-10890",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 10890,
+    "timelineEnd": 11025,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4-11025",
+    "file": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 11025,
+    "timelineEnd": 11205,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-11205",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 11205,
+    "timelineEnd": 11340,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/04_peninsula_boscosa_costa_aerea_mixkit_1080p.mp4-11340",
+    "file": "008/04_peninsula_boscosa_costa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 11340,
+    "timelineEnd": 11520,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-11520",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 11520,
+    "timelineEnd": 11655,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4-11655",
+    "file": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4",
+    "timelineStart": 11655,
+    "timelineEnd": 11835,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-11835",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 11835,
+    "timelineEnd": 11970,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4-11970",
+    "file": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4",
+    "timelineStart": 11970,
+    "timelineEnd": 12150,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-12150",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 12150,
+    "timelineEnd": 12285,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4-12285",
+    "file": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4",
+    "timelineStart": 12285,
+    "timelineEnd": 12465,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-12465",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 12465,
+    "timelineEnd": 12600,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4-12600",
+    "file": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4",
+    "timelineStart": 12600,
+    "timelineEnd": 12780,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-12780",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 12780,
+    "timelineEnd": 12915,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/09_bosque_pantano_aereo_mixkit_720p.mp4-12915",
+    "file": "008/09_bosque_pantano_aereo_mixkit_720p.mp4",
+    "timelineStart": 12915,
+    "timelineEnd": 13095,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-13095",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 13095,
+    "timelineEnd": 13230,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/10_libros_antiguos_pila_mixkit_1080p.mp4-13230",
+    "file": "008/10_libros_antiguos_pila_mixkit_1080p.mp4",
+    "timelineStart": 13230,
+    "timelineEnd": 13410,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-13410",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 13410,
+    "timelineEnd": 13545,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/11_bosque_niebla_otonal_mixkit_720p.mp4-13545",
+    "file": "008/11_bosque_niebla_otonal_mixkit_720p.mp4",
+    "timelineStart": 13545,
+    "timelineEnd": 13725,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-13725",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 13725,
+    "timelineEnd": 13860,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4-13860",
+    "file": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4",
+    "timelineStart": 13860,
+    "timelineEnd": 14040,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-14040",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 14040,
+    "timelineEnd": 14175,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-14175",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 14175,
+    "timelineEnd": 14355,
+    "kenBurnsVariant": 2
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-14355",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 14355,
+    "timelineEnd": 14490,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4-14490",
+    "file": "008/03_isla_rocosa_boscosa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 14490,
+    "timelineEnd": 14670,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-14670",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 14670,
+    "timelineEnd": 14805,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/04_peninsula_boscosa_costa_aerea_mixkit_1080p.mp4-14805",
+    "file": "008/04_peninsula_boscosa_costa_aerea_mixkit_1080p.mp4",
+    "timelineStart": 14805,
+    "timelineEnd": 14985,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-14985",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 14985,
+    "timelineEnd": 15120,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4-15120",
+    "file": "008/05_mapa_antiguo_vela_lupa_mixkit_1080p.mp4",
+    "timelineStart": 15120,
+    "timelineEnd": 15300,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-15300",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 15300,
+    "timelineEnd": 15435,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4-15435",
+    "file": "008/06_nubes_tormenta_oscuras_mixkit_720p.mp4",
+    "timelineStart": 15435,
+    "timelineEnd": 15615,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-15615",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 15615,
+    "timelineEnd": 15750,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4-15750",
+    "file": "008/07_tormenta_electrica_oceano_noche_mixkit_1080p.mp4",
+    "timelineStart": 15750,
+    "timelineEnd": 15930,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Croatoan.jpg-15930",
+    "file": "008/Croatoan.jpg",
+    "timelineStart": 15930,
+    "timelineEnd": 16065,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4-16065",
+    "file": "008/08_bosque_pinos_soleado_mixkit_1080p.mp4",
+    "timelineStart": 16065,
+    "timelineEnd": 16245,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Roanoke_map_1584.jpg-16245",
+    "file": "008/Roanoke_map_1584.jpg",
+    "timelineStart": 16245,
+    "timelineEnd": 16380,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/09_bosque_pantano_aereo_mixkit_720p.mp4-16380",
+    "file": "008/09_bosque_pantano_aereo_mixkit_720p.mp4",
+    "timelineStart": 16380,
+    "timelineEnd": 16560,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg-16560",
+    "file": "008/Ruins_of_the_English_Settlement_at_Roanoke.jpg",
+    "timelineStart": 16560,
+    "timelineEnd": 16695,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/10_libros_antiguos_pila_mixkit_1080p.mp4-16695",
+    "file": "008/10_libros_antiguos_pila_mixkit_1080p.mp4",
+    "timelineStart": 16695,
+    "timelineEnd": 16875,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/The_Lost_Colony_JohnWhite_1590.jpg-16875",
+    "file": "008/The_Lost_Colony_JohnWhite_1590.jpg",
+    "timelineStart": 16875,
+    "timelineEnd": 17010,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/11_bosque_niebla_otonal_mixkit_720p.mp4-17010",
+    "file": "008/11_bosque_niebla_otonal_mixkit_720p.mp4",
+    "timelineStart": 17010,
+    "timelineEnd": 17190,
+    "sourceStartFrom": 0
+  },
+  {
+    "kind": "image",
+    "key": "008/Village_of_Secoton_1590.jpg-17190",
+    "file": "008/Village_of_Secoton_1590.jpg",
+    "timelineStart": 17190,
+    "timelineEnd": 17325,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "video",
+    "key": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4-17325",
+    "file": "008/01_tormenta_olas_faro_costa_mixkit_720p.mp4",
+    "timelineStart": 17325,
+    "timelineEnd": 17468,
+    "sourceStartFrom": 0
+  }
+]

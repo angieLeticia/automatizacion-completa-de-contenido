@@ -1,0 +1,890 @@
+[
+  {
+    "start": 0,
+    "end": 2.8,
+    "text": "117 personas.",
+    "type": "hook"
+  },
+  {
+    "start": 2.8,
+    "end": 5.56,
+    "text": "Hombres, mujeres, niños.",
+    "type": "hook"
+  },
+  {
+    "start": 5.56,
+    "end": 8.12,
+    "text": "Una colonia completa, establecida en una isla de lo",
+    "type": "normal"
+  },
+  {
+    "start": 8.12,
+    "end": 11.16,
+    "text": "que hoy es Carolina del Norte.",
+    "type": "normal"
+  },
+  {
+    "start": 11.16,
+    "end": 14.64,
+    "text": "Un barco de suministros regresa tres años después y no",
+    "type": "normal"
+  },
+  {
+    "start": 14.64,
+    "end": 20.6,
+    "text": "encuentra a nadie, ni cuerpos, ni señales de una batalla,",
+    "type": "hook"
+  },
+  {
+    "start": 20.6,
+    "end": 23.04,
+    "text": "ni restos de un incendio.",
+    "type": "hook"
+  },
+  {
+    "start": 23.04,
+    "end": 26.52,
+    "text": "Solo tallada cuidadosamente en un poste de madera.",
+    "type": "normal"
+  },
+  {
+    "start": 26.52,
+    "end": 28.88,
+    "text": "Una palabra.",
+    "type": "hook"
+  },
+  {
+    "start": 28.88,
+    "end": 31.56,
+    "text": "Croatoan.",
+    "type": "reveal"
+  },
+  {
+    "start": 31.56,
+    "end": 35.44,
+    "text": "Han pasado más de 400 años y todavía no sabemos con certeza",
+    "type": "hook"
+  },
+  {
+    "start": 35.44,
+    "end": 38.52,
+    "text": "qué le pasó a esa colonia.",
+    "type": "normal"
+  },
+  {
+    "start": 38.52,
+    "end": 43.08,
+    "text": "Esto es sin explicación y este es nuestro cuarto expediente",
+    "type": "reveal"
+  },
+  {
+    "start": 43.08,
+    "end": 43.58,
+    "text": "prohibido.",
+    "type": "reveal"
+  },
+  {
+    "start": 46.96,
+    "end": 51.64,
+    "text": "En 1587, más de 100 colonos ingleses zarparon hacia el",
+    "type": "normal"
+  },
+  {
+    "start": 51.64,
+    "end": 57.6,
+    "text": "nuevo mundo bajo el patrocinio de Sir Walter Raleigh con la",
+    "type": "normal"
+  },
+  {
+    "start": 57.6,
+    "end": 60.6,
+    "text": "intención de establecer un asentamiento permanente inglés en",
+    "type": "normal"
+  },
+  {
+    "start": 60.6,
+    "end": 63.12,
+    "text": "América.",
+    "type": "normal"
+  },
+  {
+    "start": 63.12,
+    "end": 66.72,
+    "text": "Llegaron a la isla de Roanoke, en lo que hoy es Carolina del",
+    "type": "normal"
+  },
+  {
+    "start": 66.72,
+    "end": 68.52,
+    "text": "Norte.",
+    "type": "normal"
+  },
+  {
+    "start": 68.52,
+    "end": 71.76,
+    "text": "Entre ellos viajaba John White, designado como gobernador de la",
+    "type": "normal"
+  },
+  {
+    "start": 71.76,
+    "end": 74.04,
+    "text": "colonia.",
+    "type": "normal"
+  },
+  {
+    "start": 74.04,
+    "end": 78.56,
+    "text": "Y también su hija, embarazada, junto a su esposo.",
+    "type": "normal"
+  },
+  {
+    "start": 78.56,
+    "end": 82.48,
+    "text": "Poco después de llegar, nació Virginia Dader.",
+    "type": "normal"
+  },
+  {
+    "start": 82.48,
+    "end": 85.28,
+    "text": "La primera persona de padres ingleses nacida en tierra",
+    "type": "normal"
+  },
+  {
+    "start": 85.28,
+    "end": 85.96,
+    "text": "americana.",
+    "type": "normal"
+  },
+  {
+    "start": 88.64,
+    "end": 92.2,
+    "text": "Todo parecía, al menos al principio, un comienzo",
+    "type": "normal"
+  },
+  {
+    "start": 92.2,
+    "end": 92.96,
+    "text": "prometedor.",
+    "type": "normal"
+  },
+  {
+    "start": 96.24,
+    "end": 101.2,
+    "text": "Poco después del nacimiento de su nieta, John White se vio",
+    "type": "normal"
+  },
+  {
+    "start": 101.2,
+    "end": 103.96,
+    "text": "obligado a regresar a Inglaterra.",
+    "type": "normal"
+  },
+  {
+    "start": 103.96,
+    "end": 108.88,
+    "text": "La colonia necesitaba suministros y refuerzos urgentes.",
+    "type": "normal"
+  },
+  {
+    "start": 108.88,
+    "end": 112.84,
+    "text": "White dejó a su hija, a su nieta recién nacida y a los demás",
+    "type": "normal"
+  },
+  {
+    "start": 112.84,
+    "end": 114.4,
+    "text": "colonos.",
+    "type": "normal"
+  },
+  {
+    "start": 114.4,
+    "end": 116.36,
+    "text": "Prometiendo regresar lo antes posible.",
+    "type": "normal"
+  },
+  {
+    "start": 119.24,
+    "end": 122.52,
+    "text": "Pero cuando llegó a Inglaterra, se encontró con algo que no",
+    "type": "normal"
+  },
+  {
+    "start": 122.52,
+    "end": 124.8,
+    "text": "esperaba.",
+    "type": "normal"
+  },
+  {
+    "start": 124.8,
+    "end": 128.32,
+    "text": "Inglaterra estaba en guerra con España.",
+    "type": "normal"
+  },
+  {
+    "start": 128.32,
+    "end": 131.68,
+    "text": "Y la corona ordenó que todos los barcos disponibles se usaran",
+    "type": "normal"
+  },
+  {
+    "start": 131.68,
+    "end": 134.8,
+    "text": "para la defensa naval del país.",
+    "type": "normal"
+  },
+  {
+    "start": 134.8,
+    "end": 139.52,
+    "text": "Prohibiendo cualquier viaje comercial o de reabastecimiento",
+    "type": "normal"
+  },
+  {
+    "start": 139.52,
+    "end": 140.12,
+    "text": "hacia América.",
+    "type": "normal"
+  },
+  {
+    "start": 143.08,
+    "end": 148.08,
+    "text": "John White quedó varado, sin poder regresar.",
+    "type": "normal"
+  },
+  {
+    "start": 148.08,
+    "end": 149.92,
+    "text": "Durante tres largos años.",
+    "type": "normal"
+  },
+  {
+    "start": 153.48,
+    "end": 157.92,
+    "text": "Finalmente, en 1590, White logró conseguir pasaje de regreso a",
+    "type": "normal"
+  },
+  {
+    "start": 157.92,
+    "end": 159.72,
+    "text": "Roanoke.",
+    "type": "normal"
+  },
+  {
+    "start": 159.72,
+    "end": 161.44,
+    "text": "Llegó el día de su cumpleaños.",
+    "type": "normal"
+  },
+  {
+    "start": 161.44,
+    "end": 164.36,
+    "text": "Coincidentemente, el mismo día en que había nacido su nieta,",
+    "type": "normal"
+  },
+  {
+    "start": 164.36,
+    "end": 167.12,
+    "text": "tres años antes.",
+    "type": "normal"
+  },
+  {
+    "start": 167.12,
+    "end": 172.36,
+    "text": "Pero cuando desembarcó, no encontró a nadie.",
+    "type": "normal"
+  },
+  {
+    "start": 172.36,
+    "end": 176.72,
+    "text": "Ni a su hija, ni a su nieta, ni a ninguno de los más de 100",
+    "type": "normal"
+  },
+  {
+    "start": 176.72,
+    "end": 180.88,
+    "text": "colonos que había dejado tres años atrás.",
+    "type": "normal"
+  },
+  {
+    "start": 180.88,
+    "end": 183.8,
+    "text": "Las casas de la colonia habían sido desmanteladas,",
+    "type": "normal"
+  },
+  {
+    "start": 183.8,
+    "end": 187.12,
+    "text": "de forma ordenada, no destruidas.",
+    "type": "normal"
+  },
+  {
+    "start": 187.12,
+    "end": 193.28,
+    "text": "No había señales de pelea, de sangre, ni de un ataque violento.",
+    "type": "normal"
+  },
+  {
+    "start": 193.32,
+    "end": 198,
+    "text": "Y en un poste de la empalizada que rodeaba el asentamiento,",
+    "type": "normal"
+  },
+  {
+    "start": 198,
+    "end": 201.16,
+    "text": "encontró una sola palabra, tallada con cuidado.",
+    "type": "normal"
+  },
+  {
+    "start": 204.52,
+    "end": 207.24,
+    "text": "Croatoan.",
+    "type": "reveal"
+  },
+  {
+    "start": 207.24,
+    "end": 210.4,
+    "text": "Sin cruz tallada al lado.",
+    "type": "normal"
+  },
+  {
+    "start": 210.4,
+    "end": 215.04,
+    "text": "Sin ninguna otra marca de socorro o de peligro.",
+    "type": "normal"
+  },
+  {
+    "start": 215.04,
+    "end": 218.28,
+    "text": "Antes de partir la primera vez, White había acordado con los",
+    "type": "normal"
+  },
+  {
+    "start": 218.28,
+    "end": 221.08,
+    "text": "colonos una señal específica.",
+    "type": "normal"
+  },
+  {
+    "start": 221.08,
+    "end": 223.4,
+    "text": "Si tenían que abandonar el asentamiento,",
+    "type": "normal"
+  },
+  {
+    "start": 223.4,
+    "end": 226.96,
+    "text": "debían tallar su destino en algún lugar visible.",
+    "type": "normal"
+  },
+  {
+    "start": 226.96,
+    "end": 229.76,
+    "text": "Y si lo hacían por una emergencia o bajo peligro,",
+    "type": "normal"
+  },
+  {
+    "start": 229.76,
+    "end": 233.64,
+    "text": "debían tallar además una cruz.",
+    "type": "normal"
+  },
+  {
+    "start": 233.64,
+    "end": 235.96,
+    "text": "No había cruz.",
+    "type": "normal"
+  },
+  {
+    "start": 235.96,
+    "end": 239,
+    "text": "Croatoan era el nombre de una isla cercana,",
+    "type": "normal"
+  },
+  {
+    "start": 239,
+    "end": 243.28,
+    "text": "y también el nombre de una tribu indígena aliada de los colonos",
+    "type": "normal"
+  },
+  {
+    "start": 243.28,
+    "end": 246.88,
+    "text": "que vivía en esa isla.",
+    "type": "normal"
+  },
+  {
+    "start": 246.88,
+    "end": 250.64,
+    "text": "Todo indicaba, en principio, que los colonos se habían mudado",
+    "type": "normal"
+  },
+  {
+    "start": 250.64,
+    "end": 252.96,
+    "text": "allí de forma pacífica y planificada.",
+    "type": "normal"
+  },
+  {
+    "start": 256.36,
+    "end": 259.76,
+    "text": "White quiso viajar de inmediato hacia la isla de Croatoan para",
+    "type": "normal"
+  },
+  {
+    "start": 259.76,
+    "end": 264.36,
+    "text": "buscar a su familia y a los demás colonos.",
+    "type": "normal"
+  },
+  {
+    "start": 264.36,
+    "end": 268.48,
+    "text": "Pero una tormenta severa y el mal estado de las embarcaciones",
+    "type": "normal"
+  },
+  {
+    "start": 268.48,
+    "end": 272.6,
+    "text": "disponibles obligaron a la tripulación a abandonar la",
+    "type": "normal"
+  },
+  {
+    "start": 272.6,
+    "end": 276.84,
+    "text": "búsqueda y regresar a Inglaterra.",
+    "type": "normal"
+  },
+  {
+    "start": 276.84,
+    "end": 280.36,
+    "text": "John White nunca volvió a América.",
+    "type": "normal"
+  },
+  {
+    "start": 280.44,
+    "end": 283.68,
+    "text": "Murió años después, sin saber jamás qué había sido de su hija",
+    "type": "normal"
+  },
+  {
+    "start": 283.68,
+    "end": 286.32,
+    "text": "y su nieta.",
+    "type": "normal"
+  },
+  {
+    "start": 286.32,
+    "end": 289.68,
+    "text": "Y con el paso de los años y sin nuevas expediciones formales",
+    "type": "normal"
+  },
+  {
+    "start": 289.68,
+    "end": 293.12,
+    "text": "de investigación, el rastro de la colonia se enfrió por",
+    "type": "normal"
+  },
+  {
+    "start": 293.12,
+    "end": 293.62,
+    "text": "completo.",
+    "type": "normal"
+  },
+  {
+    "start": 296.32,
+    "end": 301.68,
+    "text": "Con el paso de los siglos surgieron numerosas teorías.",
+    "type": "normal"
+  },
+  {
+    "start": 301.68,
+    "end": 305.8,
+    "text": "La más aceptada por muchos historiadores es también la más",
+    "type": "normal"
+  },
+  {
+    "start": 305.8,
+    "end": 307.48,
+    "text": "simple.",
+    "type": "normal"
+  },
+  {
+    "start": 307.48,
+    "end": 311.44,
+    "text": "Que los colonos, ante la falta de suministros, decidieron",
+    "type": "normal"
+  },
+  {
+    "start": 311.44,
+    "end": 316.72,
+    "text": "mudarse a Croatoan, integrándose de forma pacífica con la tribu",
+    "type": "normal"
+  },
+  {
+    "start": 316.72,
+    "end": 319.84,
+    "text": "indígena local, tal como sugería la palabra tallada.",
+    "type": "normal"
+  },
+  {
+    "start": 322.56,
+    "end": 325.88,
+    "text": "Otras teorías hablan de un ataque de tribus rivales no",
+    "type": "normal"
+  },
+  {
+    "start": 325.88,
+    "end": 330.2,
+    "text": "aliadas o de que los colonos intentaron regresar por su",
+    "type": "normal"
+  },
+  {
+    "start": 330.2,
+    "end": 333.8,
+    "text": "cuenta hacia otra zona y murieron en el intento por",
+    "type": "normal"
+  },
+  {
+    "start": 333.8,
+    "end": 337.04,
+    "text": "hambre o enfermedad.",
+    "type": "normal"
+  },
+  {
+    "start": 337.04,
+    "end": 340.52,
+    "text": "Y hay teorías más especulativas, sin respaldo",
+    "type": "normal"
+  },
+  {
+    "start": 340.52,
+    "end": 345.32,
+    "text": "histórico serio, que hablan de fenómenos sobrenaturales o",
+    "type": "normal"
+  },
+  {
+    "start": 345.32,
+    "end": 349.6,
+    "text": "desapariciones inexplicables.",
+    "type": "normal"
+  },
+  {
+    "start": 349.6,
+    "end": 352.88,
+    "text": "Ninguna de estas teorías, hasta el día de hoy,",
+    "type": "normal"
+  },
+  {
+    "start": 352.88,
+    "end": 356.28,
+    "text": "ha sido confirmada con evidencia arqueológica definitiva.",
+    "type": "normal"
+  },
+  {
+    "start": 359.64,
+    "end": 363.2,
+    "text": "En años recientes, investigaciones arqueológicas en",
+    "type": "normal"
+  },
+  {
+    "start": 363.2,
+    "end": 367.28,
+    "text": "la zona de Háteras, la actual ubicación de la antigua isla",
+    "type": "normal"
+  },
+  {
+    "start": 367.28,
+    "end": 372.56,
+    "text": "de Croatoan, encontraron objetos de origen europeo del siglo",
+    "type": "normal"
+  },
+  {
+    "start": 372.56,
+    "end": 379.04,
+    "text": "XVI mezclados con artefactos de la cultura indígena local,",
+    "type": "normal"
+  },
+  {
+    "start": 379.04,
+    "end": 382.92,
+    "text": "fragmentos de cerámica inglesa, errajes y otros objetos",
+    "type": "normal"
+  },
+  {
+    "start": 382.92,
+    "end": 385.52,
+    "text": "cotidianos.",
+    "type": "normal"
+  },
+  {
+    "start": 385.52,
+    "end": 388.64,
+    "text": "Este hallazgo apoya con evidencia física real la",
+    "type": "normal"
+  },
+  {
+    "start": 388.64,
+    "end": 392.84,
+    "text": "teoría de que al menos parte de los colonos efectivamente se",
+    "type": "normal"
+  },
+  {
+    "start": 392.84,
+    "end": 397.44,
+    "text": "integraron con la comunidad indígena de la zona.",
+    "type": "normal"
+  },
+  {
+    "start": 397.44,
+    "end": 401.72,
+    "text": "Sin embargo, esta evidencia no explica todo.",
+    "type": "normal"
+  },
+  {
+    "start": 401.72,
+    "end": 406.28,
+    "text": "No confirma qué pasó con cada uno de los más de 100 colonos.",
+    "type": "normal"
+  },
+  {
+    "start": 406.28,
+    "end": 410,
+    "text": "Y no existe, hasta ahora, un registro genealógico o genético",
+    "type": "normal"
+  },
+  {
+    "start": 410,
+    "end": 413.36,
+    "text": "definitivo que rastrea con certeza total el destino final",
+    "type": "normal"
+  },
+  {
+    "start": 413.36,
+    "end": 414.28,
+    "text": "de cada familia.",
+    "type": "normal"
+  },
+  {
+    "start": 417.32,
+    "end": 422.44,
+    "text": "En 1937, apareció una piedra que, según quien la encontró,",
+    "type": "normal"
+  },
+  {
+    "start": 422.44,
+    "end": 425.88,
+    "text": "había sido tallada por la propia Eleanor Dare, hija de",
+    "type": "normal"
+  },
+  {
+    "start": 425.88,
+    "end": 430.6,
+    "text": "John White, con un mensaje dirigido a su padre relatando",
+    "type": "normal"
+  },
+  {
+    "start": 430.6,
+    "end": 434.2,
+    "text": "la muerte de varios colonos.",
+    "type": "normal"
+  },
+  {
+    "start": 434.2,
+    "end": 439.2,
+    "text": "La piedra generó enorme interés mediático en su momento.",
+    "type": "normal"
+  },
+  {
+    "start": 439.2,
+    "end": 443.16,
+    "text": "Pero con el tiempo, aparecieron más de 40 piedras similares en",
+    "type": "normal"
+  },
+  {
+    "start": 443.16,
+    "end": 447.52,
+    "text": "distintos estados y varios investigadores concluyeron que",
+    "type": "normal"
+  },
+  {
+    "start": 447.52,
+    "end": 451.92,
+    "text": "se trataba, casi con certeza, de un fraude o una serie de",
+    "type": "normal"
+  },
+  {
+    "start": 451.92,
+    "end": 455.84,
+    "text": "fraudes relacionados.",
+    "type": "normal"
+  },
+  {
+    "start": 455.84,
+    "end": 460.64,
+    "text": "Es un buen recordatorio de cómo un misterio sin resolver atrae",
+    "type": "normal"
+  },
+  {
+    "start": 460.64,
+    "end": 463.48,
+    "text": "tanto evidencia real como intentos de fabricar una",
+    "type": "normal"
+  },
+  {
+    "start": 463.48,
+    "end": 464.6,
+    "text": "respuesta fácil.",
+    "type": "normal"
+  },
+  {
+    "start": 467.8,
+    "end": 473.36,
+    "text": "Más de cuatro siglos después, no existe un consenso definitivo",
+    "type": "normal"
+  },
+  {
+    "start": 473.36,
+    "end": 478.88,
+    "text": "sobre qué pasó exactamente con la colonia perdida de Roanoke.",
+    "type": "normal"
+  },
+  {
+    "start": 478.92,
+    "end": 483,
+    "text": "La teoría de la integración pacífica con croatoan es, hoy,",
+    "type": "normal"
+  },
+  {
+    "start": 483,
+    "end": 486.52,
+    "text": "la más respaldada por evidencia.",
+    "type": "normal"
+  },
+  {
+    "start": 486.52,
+    "end": 490.56,
+    "text": "Pero más respaldada no significa confirmada al 100%.",
+    "type": "normal"
+  },
+  {
+    "start": 493.44,
+    "end": 497.36,
+    "text": "Y mientras tanto, el nombre Roanoke se convirtió en",
+    "type": "normal"
+  },
+  {
+    "start": 497.36,
+    "end": 501.28,
+    "text": "sinónimo en el idioma inglés de cualquier desaparición",
+    "type": "normal"
+  },
+  {
+    "start": 501.28,
+    "end": 503.44,
+    "text": "misteriosa sin explicación clara.",
+    "type": "normal"
+  },
+  {
+    "start": 504,
+    "end": 508.12,
+    "text": "Y así llegamos al final de este expediente.",
+    "type": "normal"
+  },
+  {
+    "start": 508.12,
+    "end": 511.6,
+    "text": "¿Con una colonia entera que desapareció sin dejar cuerpos,",
+    "type": "normal"
+  },
+  {
+    "start": 511.6,
+    "end": 516.28,
+    "text": "sin señales de violencia, y con una sola palabra tallada con",
+    "type": "normal"
+  },
+  {
+    "start": 516.28,
+    "end": 522.36,
+    "text": "calma como última pista, se integraron pacíficamente con una",
+    "type": "normal"
+  },
+  {
+    "start": 522.36,
+    "end": 527.32,
+    "text": "tribu aliada, como sugiere la evidencia más reciente?",
+    "type": "normal"
+  },
+  {
+    "start": 527.32,
+    "end": 530.52,
+    "text": "¿O hubo algo más en esos tres años de silencio que el",
+    "type": "normal"
+  },
+  {
+    "start": 530.56,
+    "end": 534.68,
+    "text": "arqueología todavía no ha logrado desenterrar por completo?",
+    "type": "normal"
+  },
+  {
+    "start": 534.68,
+    "end": 537.96,
+    "text": "John White murió sin saberlo.",
+    "type": "normal"
+  },
+  {
+    "start": 537.96,
+    "end": 541.56,
+    "text": "Y en cierto sentido, todos nosotros seguimos,",
+    "type": "normal"
+  },
+  {
+    "start": 541.56,
+    "end": 545.76,
+    "text": "cuatro siglos después, en la misma posición que él.",
+    "type": "normal"
+  },
+  {
+    "start": 545.76,
+    "end": 550.76,
+    "text": "Si este caso te dejó pensando, síguenos.",
+    "type": "normal"
+  },
+  {
+    "start": 550.76,
+    "end": 553.76,
+    "text": "Comparte este expediente con alguien que también ame los",
+    "type": "normal"
+  },
+  {
+    "start": 553.76,
+    "end": 556.76,
+    "text": "misterios sin resolver.",
+    "type": "normal"
+  },
+  {
+    "start": 557,
+    "end": 560,
+    "text": "Porque el próximo caso podría ser todavía más difícil de",
+    "type": "normal"
+  },
+  {
+    "start": 560,
+    "end": 563,
+    "text": "explicar.",
+    "type": "normal"
+  },
+  {
+    "start": 563,
+    "end": 565,
+    "text": "Esto fue Sin Explicación, donde no todo lo que desaparece",
+    "type": "reveal"
+  },
+  {
+    "start": 565,
+    "end": 567,
+    "text": "deja de existir.",
+    "type": "normal"
+  }
+]

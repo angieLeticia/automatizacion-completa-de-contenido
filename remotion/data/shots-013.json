@@ -1,0 +1,858 @@
+[
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-0",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 0,
+    "timelineEnd": 135,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-135",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 135,
+    "timelineEnd": 270,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-270",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 270,
+    "timelineEnd": 405,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-405",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 405,
+    "timelineEnd": 540,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-540",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 540,
+    "timelineEnd": 675,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-675",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 675,
+    "timelineEnd": 810,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-810",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 810,
+    "timelineEnd": 945,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-945",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 945,
+    "timelineEnd": 1080,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-1080",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 1080,
+    "timelineEnd": 1215,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-1215",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 1215,
+    "timelineEnd": 1350,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-1350",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 1350,
+    "timelineEnd": 1485,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-1485",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 1485,
+    "timelineEnd": 1620,
+    "kenBurnsVariant": 1
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-1620",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 1620,
+    "timelineEnd": 1755,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-1755",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 1755,
+    "timelineEnd": 1890,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-1890",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 1890,
+    "timelineEnd": 2025,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-2025",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 2025,
+    "timelineEnd": 2160,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-2160",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 2160,
+    "timelineEnd": 2295,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-2295",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 2295,
+    "timelineEnd": 2430,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-2430",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 2430,
+    "timelineEnd": 2565,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-2565",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 2565,
+    "timelineEnd": 2700,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-2700",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 2700,
+    "timelineEnd": 2835,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-2835",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 2835,
+    "timelineEnd": 2970,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-2970",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 2970,
+    "timelineEnd": 3105,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-3105",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 3105,
+    "timelineEnd": 3240,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-3240",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 3240,
+    "timelineEnd": 3375,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-3375",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 3375,
+    "timelineEnd": 3510,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-3510",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 3510,
+    "timelineEnd": 3645,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-3645",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 3645,
+    "timelineEnd": 3780,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-3780",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 3780,
+    "timelineEnd": 3915,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-3915",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 3915,
+    "timelineEnd": 4050,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-4050",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 4050,
+    "timelineEnd": 4185,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-4185",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 4185,
+    "timelineEnd": 4320,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-4320",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 4320,
+    "timelineEnd": 4455,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-4455",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 4455,
+    "timelineEnd": 4590,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-4590",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 4590,
+    "timelineEnd": 4725,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-4725",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 4725,
+    "timelineEnd": 4860,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-4860",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 4860,
+    "timelineEnd": 4995,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-4995",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 4995,
+    "timelineEnd": 5130,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-5130",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 5130,
+    "timelineEnd": 5265,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-5265",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 5265,
+    "timelineEnd": 5400,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-5400",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 5400,
+    "timelineEnd": 5535,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-5535",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 5535,
+    "timelineEnd": 5670,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-5670",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 5670,
+    "timelineEnd": 5805,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-5805",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 5805,
+    "timelineEnd": 5940,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-5940",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 5940,
+    "timelineEnd": 6075,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-6075",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 6075,
+    "timelineEnd": 6210,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-6210",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 6210,
+    "timelineEnd": 6345,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-6345",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 6345,
+    "timelineEnd": 6480,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-6480",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 6480,
+    "timelineEnd": 6615,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-6615",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 6615,
+    "timelineEnd": 6750,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-6750",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 6750,
+    "timelineEnd": 6885,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-6885",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 6885,
+    "timelineEnd": 7020,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-7020",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 7020,
+    "timelineEnd": 7155,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-7155",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 7155,
+    "timelineEnd": 7290,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-7290",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 7290,
+    "timelineEnd": 7425,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-7425",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 7425,
+    "timelineEnd": 7560,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-7560",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 7560,
+    "timelineEnd": 7695,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-7695",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 7695,
+    "timelineEnd": 7830,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-7830",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 7830,
+    "timelineEnd": 7965,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-7965",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 7965,
+    "timelineEnd": 8100,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-8100",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 8100,
+    "timelineEnd": 8235,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-8235",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 8235,
+    "timelineEnd": 8370,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-8370",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 8370,
+    "timelineEnd": 8505,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-8505",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 8505,
+    "timelineEnd": 8640,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-8640",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 8640,
+    "timelineEnd": 8775,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-8775",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 8775,
+    "timelineEnd": 8910,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-8910",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 8910,
+    "timelineEnd": 9045,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-9045",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 9045,
+    "timelineEnd": 9180,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-9180",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 9180,
+    "timelineEnd": 9315,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-9315",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 9315,
+    "timelineEnd": 9450,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-9450",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 9450,
+    "timelineEnd": 9585,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-9585",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 9585,
+    "timelineEnd": 9720,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-9720",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 9720,
+    "timelineEnd": 9855,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-9855",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 9855,
+    "timelineEnd": 9990,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-9990",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 9990,
+    "timelineEnd": 10125,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-10125",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 10125,
+    "timelineEnd": 10260,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-10260",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 10260,
+    "timelineEnd": 10395,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-10395",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 10395,
+    "timelineEnd": 10530,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-10530",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 10530,
+    "timelineEnd": 10665,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-10665",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 10665,
+    "timelineEnd": 10800,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-10800",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 10800,
+    "timelineEnd": 10935,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-10935",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 10935,
+    "timelineEnd": 11070,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-11070",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 11070,
+    "timelineEnd": 11205,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-11205",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 11205,
+    "timelineEnd": 11340,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-11340",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 11340,
+    "timelineEnd": 11475,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-11475",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 11475,
+    "timelineEnd": 11610,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-11610",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 11610,
+    "timelineEnd": 11745,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-11745",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 11745,
+    "timelineEnd": 11880,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-11880",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 11880,
+    "timelineEnd": 12015,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-12015",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 12015,
+    "timelineEnd": 12150,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-12150",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 12150,
+    "timelineEnd": 12285,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-12285",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 12285,
+    "timelineEnd": 12420,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-12420",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 12420,
+    "timelineEnd": 12555,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-12555",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 12555,
+    "timelineEnd": 12690,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-12690",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 12690,
+    "timelineEnd": 12825,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-12825",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 12825,
+    "timelineEnd": 12960,
+    "kenBurnsVariant": 2
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-12960",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 12960,
+    "timelineEnd": 13095,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-13095",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 13095,
+    "timelineEnd": 13230,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-13230",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 13230,
+    "timelineEnd": 13365,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-13365",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 13365,
+    "timelineEnd": 13500,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-13500",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 13500,
+    "timelineEnd": 13635,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-13635",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 13635,
+    "timelineEnd": 13770,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-13770",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 13770,
+    "timelineEnd": 13905,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-13905",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 13905,
+    "timelineEnd": 14040,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/03_georgia_guidestones_detalle.jpg-14040",
+    "file": "013/03_georgia_guidestones_detalle.jpg",
+    "timelineStart": 14040,
+    "timelineEnd": 14175,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/01_georgia_guidestones_monumento.jpg-14175",
+    "file": "013/01_georgia_guidestones_monumento.jpg",
+    "timelineStart": 14175,
+    "timelineEnd": 14310,
+    "kenBurnsVariant": 0
+  },
+  {
+    "kind": "image",
+    "key": "013/02_georgia_guidestones_vista.jpg-14310",
+    "file": "013/02_georgia_guidestones_vista.jpg",
+    "timelineStart": 14310,
+    "timelineEnd": 14328,
+    "kenBurnsVariant": 0
+  }
+]

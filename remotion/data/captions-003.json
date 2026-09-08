@@ -1,0 +1,314 @@
+[
+  {
+    "start": 0,
+    "end": 8,
+    "text": "Diciembre de 1872. Un barco navega solo, en perfecto estado, en medio del Atlántico.",
+    "type": "normal"
+  },
+  {
+    "start": 8,
+    "end": 16,
+    "text": "Las velas están parcialmente desplegadas. El timón, libre. No hay nadie a bordo.",
+    "type": "normal"
+  },
+  {
+    "start": 16,
+    "end": 21,
+    "text": "No hay señales de tormenta que lo justifique. No hay señales de ataque.",
+    "type": "normal"
+  },
+  {
+    "start": 21,
+    "end": 29,
+    "text": "La carga sigue completa en la bodega. El dinero y las joyas de la tripulación siguen en sus camarotes, intactos.",
+    "type": "normal"
+  },
+  {
+    "start": 29,
+    "end": 34,
+    "text": "Diez personas habían zarpado en ese barco, incluyendo a una niña de dos años.",
+    "type": "normal"
+  },
+  {
+    "start": 34,
+    "end": 41,
+    "text": "Ninguna estaba a bordo cuando lo encontraron. Y ninguna volvió a aparecer jamás.",
+    "type": "normal"
+  },
+  {
+    "start": 44,
+    "end": 50,
+    "text": "El barco se llamaba Mary Celeste, un bergantín goleta de poco más de treinta metros de eslora.",
+    "type": "normal"
+  },
+  {
+    "start": 50,
+    "end": 60,
+    "text": "Zarpó de Nueva York el 7 de noviembre de 1872, con destino a Génova, Italia, cargado con 1701 barriles de alcohol industrial desnaturalizado,",
+    "type": "normal"
+  },
+  {
+    "start": 60,
+    "end": 65,
+    "text": "no para beber, sino para uso en fortificación de vinos.",
+    "type": "normal"
+  },
+  {
+    "start": 65,
+    "end": 76,
+    "text": "Al mando iba Benjamin Briggs, un capitán de 37 años con una reputación intachable, experimentado, sobrio, religioso, de los que no tomaban riesgos innecesarios.",
+    "type": "normal"
+  },
+  {
+    "start": 76,
+    "end": 83,
+    "text": "Lo acompañaban su esposa, Sarah, y su hija de dos años, Sofia, algo poco común, pero no extraño para la época.",
+    "type": "normal"
+  },
+  {
+    "start": 83,
+    "end": 96,
+    "text": "Un hijo mayor se había quedado en tierra, con su abuela. La tripulación la completaban siete hombres, la mayoría con buena experiencia marítima y sin ningún antecedente de conflicto conocido.",
+    "type": "normal"
+  },
+  {
+    "start": 96,
+    "end": 107,
+    "text": "Antes de zarpar, Briggs cenó con un amigo, el capitán David Morehouse, del barco Dei Gratia, que también tenía previsto cruzar el Atlántico en fechas cercanas.",
+    "type": "normal"
+  },
+  {
+    "start": 107,
+    "end": 114,
+    "text": "Ninguno de los dos podía saber que ese barco, semanas después, sería el que encontraría al Mary Celeste a la deriva.",
+    "type": "normal"
+  },
+  {
+    "start": 115,
+    "end": 129,
+    "text": "El 4 de diciembre de 1872, casi un mes después de zarpar de Nueva York, la tripulación del Dei Gratia avistó un barco navegando de forma errática cerca de las Islas Azores.",
+    "type": "normal"
+  },
+  {
+    "start": 129,
+    "end": 137,
+    "text": "Las velas estaban puestas de manera desordenada, algunas rotas, y el barco zigzaggeaba sin control aparente.",
+    "type": "normal"
+  },
+  {
+    "start": 138,
+    "end": 145,
+    "text": "Morehouse mandó una lancha a investigar. Al acercarse, no hubo respuesta a los gritos.",
+    "type": "normal"
+  },
+  {
+    "start": 145,
+    "end": 151,
+    "text": "Subieron a bordo y confirmaron lo que ya sospechaban, no había un alma en todo el barco.",
+    "type": "normal"
+  },
+  {
+    "start": 151,
+    "end": 158,
+    "text": "Reconocieron de inmediato al Mary Celeste, y con él, a un amigo que probablemente ya no volverían a ver.",
+    "type": "normal"
+  },
+  {
+    "start": 159,
+    "end": 170,
+    "text": "El barco estaba, en términos generales, en condición navegable. Eso es lo que hace este caso tan desconcertante. No era un naufragio.",
+    "type": "normal"
+  },
+  {
+    "start": 171,
+    "end": 179,
+    "text": "Faltaba el único bote salvavidas pequeño, el yawl, que normalmente iba asegurado sobre la cubierta con un sistema de sogas.",
+    "type": "normal"
+  },
+  {
+    "start": 179,
+    "end": 187,
+    "text": "Las sogas estaban cortadas, no rotas por la fuerza, cortadas de forma deliberada, como para soltar el bote rápido.",
+    "type": "normal"
+  },
+  {
+    "start": 189,
+    "end": 199,
+    "text": "Había algo de agua en la bodega, poco más de un metro, no suficiente para hundir el barco, pero sí suficiente para preocupar a una tripulación nerviosa.",
+    "type": "normal"
+  },
+  {
+    "start": 199,
+    "end": 210,
+    "text": "Una de las bombas de chique estaba desarmada, con la vara de sondeo tirada sobre la cubierta, como si alguien la hubiera estado usando para medir el agua y la hubiera dejado a medio camino.",
+    "type": "normal"
+  },
+  {
+    "start": 211,
+    "end": 221,
+    "text": "El instrumental de navegación, el cronómetro, el sextante y el libro de navegación no estaba. Eso es clave.",
+    "type": "normal"
+  },
+  {
+    "start": 221,
+    "end": 230,
+    "text": "Quien haya abandonado el barco se llevó las herramientas necesarias para orientarse en alta mar, lo cual sugiere una salida pensada, no un pánico ciego.",
+    "type": "normal"
+  },
+  {
+    "start": 231,
+    "end": 240,
+    "text": "El diario de bitácora oficial, en cambio, sí seguía a bordo, con la última entrada fechada el 25 de noviembre, cerca de las Azores.",
+    "type": "normal"
+  },
+  {
+    "start": 242,
+    "end": 254,
+    "text": "Eso significaba algo perturbador. El barco había navegado solo, sin nadie al mando, durante al menos nueve días y unas 400 millas náuticas, antes de que el Dei Gratia lo encontrara.",
+    "type": "normal"
+  },
+  {
+    "start": 255,
+    "end": 269,
+    "text": "Nueve de los 1701 barriles de alcohol estaban vacíos, el resto, intacto. En el camarote del capitán se encontró su espada, con una mancha que en su momento se interpretó como sangre.",
+    "type": "normal"
+  },
+  {
+    "start": 269,
+    "end": 277,
+    "text": "Un análisis posterior no logró confirmarlo con certeza, y hoy se considera un dato no verificado, no un hecho probado.",
+    "type": "normal"
+  },
+  {
+    "start": 278,
+    "end": 290,
+    "text": "Las pertenencias personales de la tripulación, incluyendo dinero y objetos de valor de la familia Briggs, seguían en su lugar. Nada indicaba pelea, robo, ni violencia.",
+    "type": "normal"
+  },
+  {
+    "start": 292,
+    "end": 305,
+    "text": "La teoría que más respaldo tiene entre los investigadores modernos es la del vapor de alcohol, con nueve barriles vacíos o con fugas, y el movimiento del barco en alta mar era posible que se acumularan vapores inflamables en la bodega.",
+    "type": "normal"
+  },
+  {
+    "start": 307,
+    "end": 319,
+    "text": "Si Briggs, un capitán cuidadoso, temió una explosión inminente, pudo haber ordenado abandonar el barco de emergencia en el yawl, atado con una cuerda mientras esperaban a que el peligro pasara.",
+    "type": "normal"
+  },
+  {
+    "start": 321,
+    "end": 331,
+    "text": "Si esa cuerda se rompió, o si el barco aceleró de pronto con una ráfaga de viento, la tripulación habría quedado varada en alta mar, sin forma de alcanzar de nuevo su propio barco.",
+    "type": "normal"
+  },
+  {
+    "start": 332,
+    "end": 341,
+    "text": "Otra teoría menos aceptada habla de un maremoto submarino, o una tromba marina que pudo haber generado pánico momentáneo.",
+    "type": "normal"
+  },
+  {
+    "start": 342,
+    "end": 353,
+    "text": "Las teorías de motín o piratería, populares en su momento, no tienen respaldo real. No había señales de lucha, y ningún pirata deja atrás dinero, joyas y una carga completa de mercancía vendible.",
+    "type": "normal"
+  },
+  {
+    "start": 354,
+    "end": 377,
+    "text": "Hubo, además, una sombra de sospecha oficial. El fiscal encargado del caso en Gibraltar, Frederick Solly-Flood, se convenció de que había fraude o conspiración detrás del hallazgo, y llegó a acusar veladamente a la propia tripulación del Dei Gratia de haber tenido algo que ver con la desaparición, para quedarse con la recompensa por salvamento del barco.",
+    "type": "normal"
+  },
+  {
+    "start": 378,
+    "end": 389,
+    "text": "La investigación se extendió por meses. Nunca se encontró ninguna prueba contra ellos, y el caso terminó cerrado sin una conclusión oficial satisfactoria.",
+    "type": "normal"
+  },
+  {
+    "start": 390,
+    "end": 407,
+    "text": "En 1884, un joven médico y escritor llamado Arthur Conan Doyle, todavía no famoso por Sherlock Holmes, publicó de forma anónima un relato corto titulado J. Habakuk Jepson's Statement, inspirado libremente en el caso.",
+    "type": "normal"
+  },
+  {
+    "start": 408,
+    "end": 426,
+    "text": "En ese relato, Conan Doyle cambió el nombre del barco a Marie Celeste con una E extra que no tenía el original, e inventó una historia completamente ficticia, un motín liderado por un pasajero vengativo, un desayuno a medio comer, manchas de sangre por todas partes.",
+    "type": "normal"
+  },
+  {
+    "start": 426,
+    "end": 432,
+    "text": "Nada de eso ocurrió, era ficción, presentada como si fuera un testimonio real.",
+    "type": "normal"
+  },
+  {
+    "start": 433,
+    "end": 440,
+    "text": "El problema es que muchos lectores de la época, y generaciones después, tomaron ese relato como un reporte verídico.",
+    "type": "normal"
+  },
+  {
+    "start": 441,
+    "end": 449,
+    "text": "El nombre equivocado, Marie Celeste, se popularizó tanto que hasta hoy mucha gente lo usa, sin saber que el barco real nunca se llamó así.",
+    "type": "normal"
+  },
+  {
+    "start": 450,
+    "end": 462,
+    "text": "El Marie Celeste Real, mientras tanto, siguió navegando bajo distintos dueños después de ser rescatado, cargando una reputación de barco maldito que ningún capitán quería tener.",
+    "type": "normal"
+  },
+  {
+    "start": 463,
+    "end": 468,
+    "text": "Su historia terminó trece años después, de la forma más humana posible.",
+    "type": "normal"
+  },
+  {
+    "start": 469,
+    "end": 478,
+    "text": "En 1885, su último capitán, Gilman Parker, lo encalló deliberadamente en un arrecife de Haití como parte de un fraude de seguros.",
+    "type": "normal"
+  },
+  {
+    "start": 479,
+    "end": 494,
+    "text": "Lo descubrieron, fue juzgado, y aunque salió absuelto por un tecnicismo legal, su reputación y su carrera quedaron destruidas, y varios de sus socios en el fraude murieron en circunstancias poco claras en los meses siguientes.",
+    "type": "normal"
+  },
+  {
+    "start": 496,
+    "end": 500,
+    "text": "Del Marie Celeste original no queda nada, se hundió lentamente, olvidado.",
+    "type": "normal"
+  },
+  {
+    "start": 501,
+    "end": 508,
+    "text": "De Benjamin Briggs, su esposa Sarah, su hija Sofía y los siete tripulantes, no se encontró jamás ningún rastro.",
+    "type": "normal"
+  },
+  {
+    "start": 510,
+    "end": 517,
+    "text": "Ciento cincuenta años después, la explicación más razonable sigue siendo la del vapor de alcohol y una decisión desesperada tomada en alta mar.",
+    "type": "normal"
+  },
+  {
+    "start": 518,
+    "end": 522,
+    "text": "Pero sigue siendo eso. La más razonable, no la comprobada.",
+    "type": "normal"
+  },
+  {
+    "start": 522,
+    "end": 532,
+    "text": "Si este caso te pareció aún más intrigante que el anterior, déjamelo en los comentarios y suscríbete. La próxima semana, otro expediente.",
+    "type": "normal"
+  }
+]

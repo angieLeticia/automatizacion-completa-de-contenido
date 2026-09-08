@@ -1,0 +1,59 @@
+import type { PublishResult, SocialPost } from "./types";
+
+const GRAPH_VERSION = "v19.0";
+const POLL_INTERVAL_MS = 5000;
+const POLL_TIMEOUT_MS = 5 * 60 * 1000; // Instagram puede tardar varios minutos en procesar el vídeo
+
+export interface InstagramCredentials {
+  ig_user_id: string;
+  access_token: string;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function publishToInstagram(post: SocialPost, creds: InstagramCredentials): Promise<PublishResult> {
+  const createRes = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${creds.ig_user_id}/media`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      media_type: "REELS",
+      video_url: post.video_url,
+      caption: post.caption || post.title || "",
+      access_token: creds.access_token,
+    }),
+  });
+  if (!createRes.ok) {
+    throw new Error(`No se pudo crear el contenedor de Instagram: ${createRes.status} ${await createRes.text()}`);
+  }
+  const { id: creationId } = (await createRes.json()) as { id: string };
+
+  const deadline = Date.now() + POLL_TIMEOUT_MS;
+  let statusCode = "IN_PROGRESS";
+  while (statusCode === "IN_PROGRESS" && Date.now() < deadline) {
+    await sleep(POLL_INTERVAL_MS);
+    const statusRes = await fetch(
+      `https://graph.facebook.com/${GRAPH_VERSION}/${creationId}?fields=status_code&access_token=${creds.access_token}`
+    );
+    if (!statusRes.ok) {
+      throw new Error(`No se pudo consultar el estado del contenedor de Instagram: ${statusRes.status} ${await statusRes.text()}`);
+    }
+    const statusData = (await statusRes.json()) as { status_code: string };
+    statusCode = statusData.status_code;
+  }
+  if (statusCode !== "FINISHED") {
+    throw new Error(`El contenedor de Instagram no terminó de procesar a tiempo (estado: ${statusCode}).`);
+  }
+
+  const publishRes = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${creds.ig_user_id}/media_publish`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ creation_id: creationId, access_token: creds.access_token }),
+  });
+  if (!publishRes.ok) {
+    throw new Error(`Falló la publicación en Instagram: ${publishRes.status} ${await publishRes.text()}`);
+  }
+  const published = (await publishRes.json()) as { id: string };
+  return { externalPostId: published.id };
+}

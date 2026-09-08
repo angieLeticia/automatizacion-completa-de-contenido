@@ -1,0 +1,686 @@
+[
+  {
+    "start": 0,
+    "end": 5,
+    "text": "Islas Flannan, Escocia, 15 de diciembre de 1900.",
+    "type": "normal"
+  },
+  {
+    "start": 5,
+    "end": 9.26,
+    "text": "Un barco de vapor pasa cerca del faro y nota algo extraño.",
+    "type": "normal"
+  },
+  {
+    "start": 9.26,
+    "end": 12.16,
+    "text": "La luz está apagada.",
+    "type": "hook"
+  },
+  {
+    "start": 12.16,
+    "end": 16.16,
+    "text": "Días después, un barco de suministros llega a la isla y",
+    "type": "normal"
+  },
+  {
+    "start": 16.16,
+    "end": 19.68,
+    "text": "no encuentra a ninguno de los tres fareros.",
+    "type": "normal"
+  },
+  {
+    "start": 19.68,
+    "end": 22.76,
+    "text": "Nunca se encontró ningún cuerpo.",
+    "type": "hook"
+  },
+  {
+    "start": 22.76,
+    "end": 25.84,
+    "text": "Y la escena que dejaron atrás sigue sin una explicación que",
+    "type": "normal"
+  },
+  {
+    "start": 25.84,
+    "end": 31.48,
+    "text": "convenza a todos, 125 años después.",
+    "type": "normal"
+  },
+  {
+    "start": 31.48,
+    "end": 33.52,
+    "text": "Bienvenido a Sin Explicación.",
+    "type": "normal"
+  },
+  {
+    "start": 33.52,
+    "end": 35.6,
+    "text": "Este es el expediente del faro de Flannan.",
+    "type": "normal"
+  },
+  {
+    "start": 38.6,
+    "end": 42.4,
+    "text": "Los tres hombres eran James Ducat, Thomas Marshall y",
+    "type": "normal"
+  },
+  {
+    "start": 42.4,
+    "end": 44.88,
+    "text": "Donald MacArthur.",
+    "type": "normal"
+  },
+  {
+    "start": 44.88,
+    "end": 48.52,
+    "text": "Cuando el barco de suministros finalmente logró desembarcar,",
+    "type": "normal"
+  },
+  {
+    "start": 48.52,
+    "end": 51.5,
+    "text": "días después de que se reportara la luz apagada,",
+    "type": "normal"
+  },
+  {
+    "start": 51.5,
+    "end": 55.2,
+    "text": "encontraron algo perturbador.",
+    "type": "normal"
+  },
+  {
+    "start": 55.2,
+    "end": 58.8,
+    "text": "La mesa tenía una comida a medio terminar.",
+    "type": "normal"
+  },
+  {
+    "start": 58.8,
+    "end": 62.28,
+    "text": "Una silla estaba volcada en el suelo.",
+    "type": "normal"
+  },
+  {
+    "start": 62.28,
+    "end": 65.88,
+    "text": "Y los impermeables de trabajo de dos de los tres hombres seguían",
+    "type": "normal"
+  },
+  {
+    "start": 65.88,
+    "end": 68.88,
+    "text": "colgados en su lugar.",
+    "type": "normal"
+  },
+  {
+    "start": 68.88,
+    "end": 70.68,
+    "text": "Eso último es clave.",
+    "type": "normal"
+  },
+  {
+    "start": 70.68,
+    "end": 74.04,
+    "text": "En una isla constantemente azotada por el clima,",
+    "type": "normal"
+  },
+  {
+    "start": 74.04,
+    "end": 77.6,
+    "text": "ningún farero experimentado salía sin su impermeable,",
+    "type": "normal"
+  },
+  {
+    "start": 77.6,
+    "end": 79.72,
+    "text": "salvo en una emergencia repentina.",
+    "type": "normal"
+  },
+  {
+    "start": 79.72,
+    "end": 82.48,
+    "text": "James Ducat era el farero principal,",
+    "type": "normal"
+  },
+  {
+    "start": 82.48,
+    "end": 85.72,
+    "text": "un hombre casado con varios años de experiencia en faros",
+    "type": "normal"
+  },
+  {
+    "start": 85.72,
+    "end": 88.48,
+    "text": "remotos de Escocia.",
+    "type": "normal"
+  },
+  {
+    "start": 88.48,
+    "end": 90.96,
+    "text": "Thomas Marshall era el segundo al mando,",
+    "type": "normal"
+  },
+  {
+    "start": 90.96,
+    "end": 93.96,
+    "text": "más joven, conocido en la región por ser meticuloso con",
+    "type": "normal"
+  },
+  {
+    "start": 93.96,
+    "end": 96.96,
+    "text": "sus registros.",
+    "type": "normal"
+  },
+  {
+    "start": 96.96,
+    "end": 101.32,
+    "text": "Donald MacArthur, el tercero, era en realidad un reemplazo de",
+    "type": "normal"
+  },
+  {
+    "start": 101.32,
+    "end": 104.88,
+    "text": "último momento, cubría la ausencia de otro farero que",
+    "type": "normal"
+  },
+  {
+    "start": 104.88,
+    "end": 106.88,
+    "text": "estaba de licencia por enfermedad.",
+    "type": "normal"
+  },
+  {
+    "start": 107.04,
+    "end": 110.52,
+    "text": "Y llevaba relativamente poco tiempo en esa isla específica.",
+    "type": "normal"
+  },
+  {
+    "start": 110.52,
+    "end": 114.52,
+    "text": "Los tres llevaban semanas prácticamente aislados,",
+    "type": "normal"
+  },
+  {
+    "start": 114.52,
+    "end": 117.52,
+    "text": "ya que el mal tiempo había impedido que los barcos de",
+    "type": "normal"
+  },
+  {
+    "start": 117.52,
+    "end": 121.52,
+    "text": "suministro llegaran con la frecuencia habitual.",
+    "type": "normal"
+  },
+  {
+    "start": 121.52,
+    "end": 125.52,
+    "text": "Ese aislamiento prolongado, sumado al clima severo,",
+    "type": "normal"
+  },
+  {
+    "start": 125.52,
+    "end": 129.52,
+    "text": "es parte del contexto real que cualquier explicación seria del",
+    "type": "normal"
+  },
+  {
+    "start": 129.52,
+    "end": 133.52,
+    "text": "caso tiene que ver con el clima severo.",
+    "type": "normal"
+  },
+  {
+    "start": 134.16,
+    "end": 139.16,
+    "text": "Antes de continuar, hay que separar algo con cuidado.",
+    "type": "normal"
+  },
+  {
+    "start": 139.16,
+    "end": 142.16,
+    "text": "Durante más de un siglo, circuló la idea de que el registro",
+    "type": "normal"
+  },
+  {
+    "start": 142.16,
+    "end": 146.16,
+    "text": "oficial del faro contenía anotaciones dramáticas.",
+    "type": "normal"
+  },
+  {
+    "start": 146.16,
+    "end": 150.16,
+    "text": "Que Marshall escribió que nunca había visto una tormenta así en",
+    "type": "normal"
+  },
+  {
+    "start": 150.16,
+    "end": 154.16,
+    "text": "20 años, que MacArthur lloraba, que los tres hombres rezaban",
+    "type": "normal"
+  },
+  {
+    "start": 154.16,
+    "end": 157.16,
+    "text": "juntos.",
+    "type": "normal"
+  },
+  {
+    "start": 157.16,
+    "end": 161.16,
+    "text": "Y que MacArthur no había visto una tormenta así en 20 años.",
+    "type": "normal"
+  },
+  {
+    "start": 161.8,
+    "end": 167.8,
+    "text": "Esas líneas, tan citadas, no vienen del documento oficial.",
+    "type": "normal"
+  },
+  {
+    "start": 167.8,
+    "end": 171.8,
+    "text": "Vienen de un poema escrito en 1912 por Wilfrid Gibson,",
+    "type": "normal"
+  },
+  {
+    "start": 171.8,
+    "end": 175.8,
+    "text": "12 años después de los hechos, que muchos medios y videos han",
+    "type": "normal"
+  },
+  {
+    "start": 175.8,
+    "end": 179.8,
+    "text": "repetido durante décadas como si fuera el registro real.",
+    "type": "normal"
+  },
+  {
+    "start": 181.8,
+    "end": 185.8,
+    "text": "El registro oficial que sí existe es mucho más simple.",
+    "type": "normal"
+  },
+  {
+    "start": 185.8,
+    "end": 187.8,
+    "text": "Anotaciones rutinarias de mal tiempo,",
+    "type": "normal"
+  },
+  {
+    "start": 188.44,
+    "end": 192.44,
+    "text": "sin ningún indicio dramático de lo que estaba por pasar.",
+    "type": "normal"
+  },
+  {
+    "start": 192.44,
+    "end": 196.44,
+    "text": "Es importante decirlo con claridad, porque es uno de los",
+    "type": "normal"
+  },
+  {
+    "start": 196.44,
+    "end": 200.44,
+    "text": "puntos donde más se ha exagerado este caso con el tiempo.",
+    "type": "normal"
+  },
+  {
+    "start": 204.44,
+    "end": 208.44,
+    "text": "El superintendente Robert Muirhead investigó personalmente",
+    "type": "normal"
+  },
+  {
+    "start": 208.44,
+    "end": 212.44,
+    "text": "el caso para la Junta de Faros del Norte.",
+    "type": "normal"
+  },
+  {
+    "start": 212.44,
+    "end": 216.44,
+    "text": "Su conclusión oficial, dos de los hombres bajaron de la",
+    "type": "normal"
+  },
+  {
+    "start": 217.08,
+    "end": 221.08,
+    "text": "embarcadera oeste para asegurar equipo y una caja de suministros",
+    "type": "normal"
+  },
+  {
+    "start": 221.08,
+    "end": 223.08,
+    "text": "durante mal tiempo.",
+    "type": "normal"
+  },
+  {
+    "start": 225.08,
+    "end": 229.08,
+    "text": "Una ola excepcionalmente grande, más alta de lo normal,",
+    "type": "normal"
+  },
+  {
+    "start": 229.08,
+    "end": 233.08,
+    "text": "habría subido por la roca, arrastrándolos hacia el mar.",
+    "type": "normal"
+  },
+  {
+    "start": 233.08,
+    "end": 237.08,
+    "text": "El tercer hombre, al verlo ocurrido o al intentar ayudar,",
+    "type": "normal"
+  },
+  {
+    "start": 237.08,
+    "end": 241.08,
+    "text": "habría corrido sin su impermeable y habría corrido la",
+    "type": "normal"
+  },
+  {
+    "start": 241.08,
+    "end": 243.08,
+    "text": "misma suerte.",
+    "type": "normal"
+  },
+  {
+    "start": 243.72,
+    "end": 247.72,
+    "text": "Es una explicación posible y respaldada por el clima",
+    "type": "normal"
+  },
+  {
+    "start": 247.72,
+    "end": 249.72,
+    "text": "documentado esos días.",
+    "type": "normal"
+  },
+  {
+    "start": 249.72,
+    "end": 253.72,
+    "text": "Pero no explica del todo por qué la mesa quedó con comida a",
+    "type": "normal"
+  },
+  {
+    "start": 253.72,
+    "end": 257.72,
+    "text": "medio terminar, como si la emergencia hubiera empezado",
+    "type": "normal"
+  },
+  {
+    "start": 257.72,
+    "end": 259.72,
+    "text": "adentro, no afuera.",
+    "type": "normal"
+  },
+  {
+    "start": 263.72,
+    "end": 267.72,
+    "text": "Con el paso de los años, otras teorías intentaron llenar ese",
+    "type": "normal"
+  },
+  {
+    "start": 267.72,
+    "end": 269.72,
+    "text": "vacío.",
+    "type": "normal"
+  },
+  {
+    "start": 270.36,
+    "end": 274.36,
+    "text": "Una plantea una pelea entre los tres hombres que habría",
+    "type": "normal"
+  },
+  {
+    "start": 274.36,
+    "end": 276.36,
+    "text": "terminado con los tres cayendo al mar durante el",
+    "type": "normal"
+  },
+  {
+    "start": 276.36,
+    "end": 278.36,
+    "text": "enfrentamiento.",
+    "type": "normal"
+  },
+  {
+    "start": 278.36,
+    "end": 282.36,
+    "text": "Otra, más oscura, sugiere que MacArthur pudo haber atacado a",
+    "type": "normal"
+  },
+  {
+    "start": 282.36,
+    "end": 286.36,
+    "text": "los otros dos antes de quitarse la vida.",
+    "type": "normal"
+  },
+  {
+    "start": 286.36,
+    "end": 290.36,
+    "text": "Ninguna de estas dos teorías tiene evidencia física que las",
+    "type": "normal"
+  },
+  {
+    "start": 290.36,
+    "end": 292.36,
+    "text": "respalde.",
+    "type": "normal"
+  },
+  {
+    "start": 292.36,
+    "end": 294.36,
+    "text": "Son reconstrucciones especulativas,",
+    "type": "normal"
+  },
+  {
+    "start": 294.36,
+    "end": 298.36,
+    "text": "no conclusiones de la investigación oficial.",
+    "type": "normal"
+  },
+  {
+    "start": 299,
+    "end": 303,
+    "text": "Y en el folclore local de las Hebridas durante generaciones,",
+    "type": "normal"
+  },
+  {
+    "start": 303,
+    "end": 306,
+    "text": "algunos prefirieron una explicación todavía menos",
+    "type": "normal"
+  },
+  {
+    "start": 306,
+    "end": 310,
+    "text": "terrenal, que algo en esas rocas simplemente se los llevó.",
+    "type": "normal"
+  },
+  {
+    "start": 312,
+    "end": 315,
+    "text": "Eso hay que decirlo con toda claridad.",
+    "type": "normal"
+  },
+  {
+    "start": 315,
+    "end": 319,
+    "text": "Es leyenda local, no una hipótesis de investigación.",
+    "type": "normal"
+  },
+  {
+    "start": 323,
+    "end": 327,
+    "text": "El poema de Wilfrid Gibson, aunque no describe el registro",
+    "type": "normal"
+  },
+  {
+    "start": 327.64,
+    "end": 329.64,
+    "text": "real, tuvo un efecto real.",
+    "type": "normal"
+  },
+  {
+    "start": 329.64,
+    "end": 333.64,
+    "text": "Convirtió este caso en uno de los más citados de la literatura",
+    "type": "normal"
+  },
+  {
+    "start": 333.64,
+    "end": 335.64,
+    "text": "marítima británica, inspirando canciones,",
+    "type": "normal"
+  },
+  {
+    "start": 335.64,
+    "end": 339.64,
+    "text": "obras de teatro y hasta una película en 2019.",
+    "type": "normal"
+  },
+  {
+    "start": 341.64,
+    "end": 345.64,
+    "text": "Irónicamente, esa dramatización literaria terminó siendo para",
+    "type": "normal"
+  },
+  {
+    "start": 345.64,
+    "end": 349.64,
+    "text": "el público general más conocida que la investigación oficial",
+    "type": "normal"
+  },
+  {
+    "start": 349.64,
+    "end": 351.64,
+    "text": "misma.",
+    "type": "normal"
+  },
+  {
+    "start": 351.64,
+    "end": 355.64,
+    "text": "El caso también influyó en cambios reales de procedimiento.",
+    "type": "normal"
+  },
+  {
+    "start": 356.28,
+    "end": 360.28,
+    "text": "Entonces, las juntas de faros reforzaron los protocolos de",
+    "type": "normal"
+  },
+  {
+    "start": 360.28,
+    "end": 364.28,
+    "text": "seguridad para el trabajo en embarcaderos durante mal tiempo",
+    "type": "normal"
+  },
+  {
+    "start": 364.28,
+    "end": 366.28,
+    "text": "en estaciones remotas.",
+    "type": "normal"
+  },
+  {
+    "start": 368.28,
+    "end": 372.28,
+    "text": "Hoy, el faro funciona de forma completamente automática,",
+    "type": "normal"
+  },
+  {
+    "start": 372.28,
+    "end": 374.28,
+    "text": "sin fareros humanos permanentes.",
+    "type": "normal"
+  },
+  {
+    "start": 374.28,
+    "end": 378.28,
+    "text": "En parte, un cambio tecnológico general de la industria,",
+    "type": "normal"
+  },
+  {
+    "start": 378.28,
+    "end": 382.28,
+    "text": "pero que aquí también carga el peso simbólico de este caso",
+    "type": "normal"
+  },
+  {
+    "start": 382.28,
+    "end": 384.28,
+    "text": "específico.",
+    "type": "normal"
+  },
+  {
+    "start": 386.28,
+    "end": 390.28,
+    "text": "Cinco años después, el faro de Flannan sigue funcionando,",
+    "type": "normal"
+  },
+  {
+    "start": 390.28,
+    "end": 392.28,
+    "text": "ahora de forma automática.",
+    "type": "normal"
+  },
+  {
+    "start": 394.28,
+    "end": 398.28,
+    "text": "La explicación oficial de la ola sigue siendo la más citada",
+    "type": "normal"
+  },
+  {
+    "start": 398.28,
+    "end": 402.28,
+    "text": "por los propios registros de la junta de faros.",
+    "type": "normal"
+  },
+  {
+    "start": 402.28,
+    "end": 406.28,
+    "text": "Pero la escena que dejaron, la comida a medio terminar,",
+    "type": "normal"
+  },
+  {
+    "start": 406.28,
+    "end": 410.28,
+    "text": "la silla volcada, los impermeables colgados,",
+    "type": "normal"
+  },
+  {
+    "start": 410.28,
+    "end": 414.28,
+    "text": "sigue generando la misma pregunta incómoda.",
+    "type": "normal"
+  },
+  {
+    "start": 414.92,
+    "end": 416.92,
+    "text": "El faro de Flannan es de forma repentino,",
+    "type": "normal"
+  },
+  {
+    "start": 416.92,
+    "end": 420.92,
+    "text": "adentro del faro, como para que ni siquiera alcanzaran a ponerse",
+    "type": "normal"
+  },
+  {
+    "start": 420.92,
+    "end": 422.92,
+    "text": "la ropa que los habría protegido.",
+    "type": "normal"
+  },
+  {
+    "start": 424.92,
+    "end": 426.92,
+    "text": "Esto ha sido sin explicación.",
+    "type": "normal"
+  }
+]

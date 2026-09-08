@@ -1,0 +1,788 @@
+[
+  {
+    "start": 0,
+    "end": 5.52,
+    "text": "Bergen, Noruega, 29 de noviembre de 1970.",
+    "type": "normal"
+  },
+  {
+    "start": 5.52,
+    "end": 8.8,
+    "text": "Un padre sale a caminar con sus dos hijas por un valle apartado",
+    "type": "normal"
+  },
+  {
+    "start": 8.8,
+    "end": 11.4,
+    "text": "que los locales, desde hacía generaciones,",
+    "type": "normal"
+  },
+  {
+    "start": 11.4,
+    "end": 14.56,
+    "text": "llamaban de una sola forma.",
+    "type": "normal"
+  },
+  {
+    "start": 14.56,
+    "end": 17.64,
+    "text": "El Valle de la Muerte.",
+    "type": "hook"
+  },
+  {
+    "start": 17.64,
+    "end": 21.92,
+    "text": "Entre las rocas encuentran el cuerpo calcinado de una mujer.",
+    "type": "normal"
+  },
+  {
+    "start": 21.92,
+    "end": 24.76,
+    "text": "Su rostro y su cabello estaban casi completamente destruidos",
+    "type": "normal"
+  },
+  {
+    "start": 24.76,
+    "end": 27.4,
+    "text": "por el fuego.",
+    "type": "normal"
+  },
+  {
+    "start": 27.4,
+    "end": 33.68,
+    "text": "Nadie, hasta el día de hoy, ha podido decir con certeza quién era.",
+    "type": "normal"
+  },
+  {
+    "start": 33.68,
+    "end": 35.76,
+    "text": "Bienvenido a Sin Explicación.",
+    "type": "normal"
+  },
+  {
+    "start": 35.76,
+    "end": 41.16,
+    "text": "Este es el expediente de la mujer de Isdal.",
+    "type": "normal"
+  },
+  {
+    "start": 41.16,
+    "end": 44.2,
+    "text": "Junto al cuerpo, la policía encontró varios objetos que no",
+    "type": "normal"
+  },
+  {
+    "start": 44.2,
+    "end": 47.52,
+    "text": "encajaban con una muerte accidental.",
+    "type": "normal"
+  },
+  {
+    "start": 47.52,
+    "end": 50.64,
+    "text": "Un frasco de somníferos, parcialmente disuelto por el",
+    "type": "normal"
+  },
+  {
+    "start": 50.64,
+    "end": 56.12,
+    "text": "calor, guantes de goma y las etiquetas de toda su ropa,",
+    "type": "normal"
+  },
+  {
+    "start": 56.16,
+    "end": 61.56,
+    "text": "cuidadosamente cortadas, una por una.",
+    "type": "normal"
+  },
+  {
+    "start": 61.56,
+    "end": 65.4,
+    "text": "No había ningún documento de identidad, ningún bolso,",
+    "type": "normal"
+  },
+  {
+    "start": 65.4,
+    "end": 69.12,
+    "text": "nada que dijera un nombre.",
+    "type": "normal"
+  },
+  {
+    "start": 69.12,
+    "end": 74,
+    "text": "La autopsia determinó que la mujer, de entre 25 y 40 años,",
+    "type": "normal"
+  },
+  {
+    "start": 74,
+    "end": 77.4,
+    "text": "había muerto por una combinación de las quemaduras y una",
+    "type": "normal"
+  },
+  {
+    "start": 77.4,
+    "end": 83.72,
+    "text": "intoxicación por las pastillas encontradas junto a ella.",
+    "type": "normal"
+  },
+  {
+    "start": 83.72,
+    "end": 87.32,
+    "text": "Pero la pregunta más simple, ¿quién era?,",
+    "type": "normal"
+  },
+  {
+    "start": 87.32,
+    "end": 92.8,
+    "text": "quedó completamente abierta.",
+    "type": "normal"
+  },
+  {
+    "start": 92.8,
+    "end": 96.04,
+    "text": "Días después, la policía encontró dos maletas que la",
+    "type": "normal"
+  },
+  {
+    "start": 96.04,
+    "end": 99.04,
+    "text": "mujer había dejado en la estación de trenes de Bergen",
+    "type": "normal"
+  },
+  {
+    "start": 99.04,
+    "end": 101.44,
+    "text": "antes de morir.",
+    "type": "normal"
+  },
+  {
+    "start": 101.44,
+    "end": 104.44,
+    "text": "Adentro, ropa de varias tallas distintas,",
+    "type": "normal"
+  },
+  {
+    "start": 104.44,
+    "end": 107.6,
+    "text": "como si estuviera preparada para parecer una persona diferente",
+    "type": "normal"
+  },
+  {
+    "start": 107.6,
+    "end": 110.6,
+    "text": "según la ocasión.",
+    "type": "normal"
+  },
+  {
+    "start": 110.64,
+    "end": 115.44,
+    "text": "Una peluca, anteojos con cristales de vidrio normal sin",
+    "type": "normal"
+  },
+  {
+    "start": 115.44,
+    "end": 118.88,
+    "text": "ninguna graduación, es decir, un disfraz,",
+    "type": "normal"
+  },
+  {
+    "start": 118.88,
+    "end": 122.36,
+    "text": "no una necesidad médica.",
+    "type": "normal"
+  },
+  {
+    "start": 122.36,
+    "end": 126.32,
+    "text": "Y un cuaderno con anotaciones en un código que nadie, ni entonces",
+    "type": "normal"
+  },
+  {
+    "start": 126.32,
+    "end": 129.04,
+    "text": "ni ahora, ha logrado descifrar por completo.",
+    "type": "normal"
+  },
+  {
+    "start": 132.8,
+    "end": 136.48,
+    "text": "Investigando hacia atrás, la policía reconstruyó los últimos",
+    "type": "normal"
+  },
+  {
+    "start": 136.48,
+    "end": 139.12,
+    "text": "meses de la mujer.",
+    "type": "normal"
+  },
+  {
+    "start": 139.12,
+    "end": 142.4,
+    "text": "Se había hospedado en al menos ocho hoteles distintos de",
+    "type": "normal"
+  },
+  {
+    "start": 142.4,
+    "end": 146.72,
+    "text": "Noruega, usando cada vez un nombre diferente.",
+    "type": "normal"
+  },
+  {
+    "start": 146.72,
+    "end": 153.36,
+    "text": "Fenella Lorque, Vera Jarle, Claudia Tielt, Geneviève Lansier.",
+    "type": "normal"
+  },
+  {
+    "start": 153.36,
+    "end": 156.2,
+    "text": "Ninguno de esos nombres correspondía a ninguna persona",
+    "type": "normal"
+  },
+  {
+    "start": 156.2,
+    "end": 159.96,
+    "text": "real registrada en ningún país.",
+    "type": "normal"
+  },
+  {
+    "start": 159.96,
+    "end": 162.04,
+    "text": "Hablaba varios idiomas con fluidez,",
+    "type": "normal"
+  },
+  {
+    "start": 162.04,
+    "end": 165.48,
+    "text": "según testigos de los hoteles, francés, alemán y algo de",
+    "type": "normal"
+  },
+  {
+    "start": 165.48,
+    "end": 168.96,
+    "text": "noruego con acento extranjero.",
+    "type": "normal"
+  },
+  {
+    "start": 168.96,
+    "end": 172.76,
+    "text": "Pagaba siempre en efectivo, con billetes de distintas monedas",
+    "type": "normal"
+  },
+  {
+    "start": 172.76,
+    "end": 173.24,
+    "text": "europeas.",
+    "type": "normal"
+  },
+  {
+    "start": 176.64,
+    "end": 180.52,
+    "text": "El personal de varios de esos hoteles recordó detalles muy",
+    "type": "normal"
+  },
+  {
+    "start": 180.52,
+    "end": 183.2,
+    "text": "específicos de ella años después,",
+    "type": "normal"
+  },
+  {
+    "start": 183.2,
+    "end": 187.24,
+    "text": "cuando la policía volvió a tocar sus puertas.",
+    "type": "normal"
+  },
+  {
+    "start": 187.24,
+    "end": 190.56,
+    "text": "Una recepcionista en Stavanger contó que la mujer pedía",
+    "type": "normal"
+  },
+  {
+    "start": 190.56,
+    "end": 193.92,
+    "text": "habitaciones alejadas de la recepción y que se ponía",
+    "type": "normal"
+  },
+  {
+    "start": 193.92,
+    "end": 197.56,
+    "text": "visiblemente nerviosa cuando algún huésped intentaba",
+    "type": "normal"
+  },
+  {
+    "start": 197.56,
+    "end": 201.64,
+    "text": "conversar con ella en el pasillo.",
+    "type": "normal"
+  },
+  {
+    "start": 201.64,
+    "end": 205.68,
+    "text": "Un camarero en Bergen recordó que, una noche,",
+    "type": "normal"
+  },
+  {
+    "start": 205.68,
+    "end": 208.92,
+    "text": "la vio destruir varias hojas de papel en el baño de un",
+    "type": "normal"
+  },
+  {
+    "start": 208.92,
+    "end": 212.92,
+    "text": "restaurante y que se marchó apenas notó que él la",
+    "type": "normal"
+  },
+  {
+    "start": 212.92,
+    "end": 215.76,
+    "text": "observaba.",
+    "type": "normal"
+  },
+  {
+    "start": 215.76,
+    "end": 219.44,
+    "text": "Varios testigos coincidieron en algo curioso.",
+    "type": "normal"
+  },
+  {
+    "start": 219.44,
+    "end": 224.24,
+    "text": "Nunca aceptaba que nadie le tomara una fotografía completa.",
+    "type": "normal"
+  },
+  {
+    "start": 224.24,
+    "end": 227.2,
+    "text": "En las pocas imágenes que existen de ella,",
+    "type": "normal"
+  },
+  {
+    "start": 227.2,
+    "end": 231.76,
+    "text": "siempre aparece de perfil con el rostro parcialmente cubierto o",
+    "type": "normal"
+  },
+  {
+    "start": 231.76,
+    "end": 232.4,
+    "text": "volteado.",
+    "type": "normal"
+  },
+  {
+    "start": 235.04,
+    "end": 240.2,
+    "text": "Ese patrón, evitar cámaras de forma consistente en una época",
+    "type": "normal"
+  },
+  {
+    "start": 240.2,
+    "end": 244.32,
+    "text": "donde fotografiarse era mucho menos común que hoy,",
+    "type": "normal"
+  },
+  {
+    "start": 244.32,
+    "end": 248.48,
+    "text": "es para muchos investigadores una de las señales más claras",
+    "type": "normal"
+  },
+  {
+    "start": 248.48,
+    "end": 252.12,
+    "text": "de que estaba ocultando deliberadamente su identidad,",
+    "type": "normal"
+  },
+  {
+    "start": 252.12,
+    "end": 254.24,
+    "text": "no solo viajando con discreción.",
+    "type": "normal"
+  },
+  {
+    "start": 257.8,
+    "end": 260.96,
+    "text": "No todos los investigadores creen en la hipótesis del",
+    "type": "normal"
+  },
+  {
+    "start": 260.96,
+    "end": 263.44,
+    "text": "espionaje.",
+    "type": "normal"
+  },
+  {
+    "start": 263.44,
+    "end": 266.88,
+    "text": "Algunos plantean que pudo tratarse de una mujer con un",
+    "type": "normal"
+  },
+  {
+    "start": 266.88,
+    "end": 271.56,
+    "text": "trastorno psiquiátrico severo, viviendo una fuga disociativa",
+    "type": "normal"
+  },
+  {
+    "start": 271.56,
+    "end": 274.92,
+    "text": "que la llevó a construir identidades múltiples sin",
+    "type": "normal"
+  },
+  {
+    "start": 274.92,
+    "end": 279.6,
+    "text": "ningún propósito de inteligencia detrás.",
+    "type": "normal"
+  },
+  {
+    "start": 279.6,
+    "end": 283.76,
+    "text": "Otros sugieren que pudo estar huyendo de una pareja violenta o",
+    "type": "normal"
+  },
+  {
+    "start": 283.76,
+    "end": 286.16,
+    "text": "de una red de tráfico de personas,",
+    "type": "normal"
+  },
+  {
+    "start": 286.16,
+    "end": 289.92,
+    "text": "usando identidades falsas simplemente para sobrevivir,",
+    "type": "normal"
+  },
+  {
+    "start": 289.92,
+    "end": 293.72,
+    "text": "no para espiar a nadie.",
+    "type": "normal"
+  },
+  {
+    "start": 293.72,
+    "end": 297.68,
+    "text": "El problema con estas teorías es que ninguna explica del todo el",
+    "type": "normal"
+  },
+  {
+    "start": 297.68,
+    "end": 301.76,
+    "text": "cuaderno cifrado, ni por qué alguien en esa situación",
+    "type": "normal"
+  },
+  {
+    "start": 301.76,
+    "end": 305.12,
+    "text": "necesitaría dominar varios idiomas europeos con tanta",
+    "type": "normal"
+  },
+  {
+    "start": 305.12,
+    "end": 309.24,
+    "text": "fluidez, ni por qué pagaba consistentemente en múltiples",
+    "type": "normal"
+  },
+  {
+    "start": 309.24,
+    "end": 313.12,
+    "text": "monedas distintas.",
+    "type": "normal"
+  },
+  {
+    "start": 313.12,
+    "end": 316.28,
+    "text": "Cada teoría explica una parte del caso.",
+    "type": "normal"
+  },
+  {
+    "start": 316.28,
+    "end": 319.44,
+    "text": "Ninguna, hasta hoy, lo explica completo.",
+    "type": "normal"
+  },
+  {
+    "start": 322.8,
+    "end": 328.2,
+    "text": "Para 1970, en plena Guerra Fría, Bergen tenía una base naval de",
+    "type": "normal"
+  },
+  {
+    "start": 328.2,
+    "end": 330.72,
+    "text": "la OTAN cerca.",
+    "type": "normal"
+  },
+  {
+    "start": 330.72,
+    "end": 334.76,
+    "text": "La combinación de identidades falsas, idiomas múltiples,",
+    "type": "normal"
+  },
+  {
+    "start": 334.76,
+    "end": 338.12,
+    "text": "un cuaderno cifrado y una muerte que borró deliberadamente",
+    "type": "normal"
+  },
+  {
+    "start": 338.12,
+    "end": 342,
+    "text": "cualquier rastro de identidad, llevó a muchos investigadores,",
+    "type": "normal"
+  },
+  {
+    "start": 342,
+    "end": 346.96,
+    "text": "entonces y ahora, a una misma hipótesis,",
+    "type": "normal"
+  },
+  {
+    "start": 346.96,
+    "end": 349.44,
+    "text": "que la mujer de Isdal era una espía.",
+    "type": "normal"
+  },
+  {
+    "start": 351.92,
+    "end": 355.52,
+    "text": "Es importante ser claros, ningún gobierno ha confirmado",
+    "type": "normal"
+  },
+  {
+    "start": 355.52,
+    "end": 359.52,
+    "text": "jamás esta teoría, ni Noruego ni de ningún otro país.",
+    "type": "normal"
+  },
+  {
+    "start": 359.52,
+    "end": 362.76,
+    "text": "No existe prueba documental de una operación de inteligencia",
+    "type": "normal"
+  },
+  {
+    "start": 362.76,
+    "end": 366.68,
+    "text": "específica detrás de su muerte.",
+    "type": "normal"
+  },
+  {
+    "start": 366.68,
+    "end": 369.88,
+    "text": "Es, hasta hoy, la hipótesis más citada,",
+    "type": "normal"
+  },
+  {
+    "start": 369.88,
+    "end": 371.4,
+    "text": "no un hecho establecido.",
+    "type": "normal"
+  },
+  {
+    "start": 374.52,
+    "end": 379.92,
+    "text": "En 1971, apenas meses después, el caso se cerró oficialmente",
+    "type": "normal"
+  },
+  {
+    "start": 379.92,
+    "end": 383.12,
+    "text": "como un posible suicidio.",
+    "type": "normal"
+  },
+  {
+    "start": 383.12,
+    "end": 386.72,
+    "text": "Muchos, incluyendo periodistas noruegos que retomaron el caso",
+    "type": "normal"
+  },
+  {
+    "start": 386.72,
+    "end": 390.28,
+    "text": "décadas después, consideran ese cierre sospechosamente",
+    "type": "normal"
+  },
+  {
+    "start": 390.28,
+    "end": 395.8,
+    "text": "apresurado para un caso con tantos elementos sin explicar.",
+    "type": "normal"
+  },
+  {
+    "start": 395.8,
+    "end": 399.24,
+    "text": "El cuerpo fue enterrado en una tumba anónima en Bergen,",
+    "type": "normal"
+  },
+  {
+    "start": 399.24,
+    "end": 403.36,
+    "text": "marcada solo con un número.",
+    "type": "normal"
+  },
+  {
+    "start": 403.36,
+    "end": 406.28,
+    "text": "Y ahí quedó durante más de cuatro décadas.",
+    "type": "normal"
+  },
+  {
+    "start": 409.32,
+    "end": 413.36,
+    "text": "En 2016, periodistas de la cadena noruega NRK,",
+    "type": "normal"
+  },
+  {
+    "start": 413.36,
+    "end": 417.04,
+    "text": "junto con la policía, reabrieron el caso.",
+    "type": "normal"
+  },
+  {
+    "start": 417.04,
+    "end": 420.68,
+    "text": "Exhumaron los restos y enviaron una muestra de su mandíbula,",
+    "type": "normal"
+  },
+  {
+    "start": 420.68,
+    "end": 424.12,
+    "text": "preservada en un archivo forense, a la Universidad de Canberra,",
+    "type": "normal"
+  },
+  {
+    "start": 424.12,
+    "end": 427.16,
+    "text": "en Australia.",
+    "type": "normal"
+  },
+  {
+    "start": 427.16,
+    "end": 430.84,
+    "text": "Ahí, científicos usaron análisis isotópico,",
+    "type": "normal"
+  },
+  {
+    "start": 430.84,
+    "end": 434.16,
+    "text": "una técnica que estudia rastros químicos que la comida y el agua",
+    "type": "normal"
+  },
+  {
+    "start": 434.16,
+    "end": 437.72,
+    "text": "de la infancia dejan en los dientes para intentar rastrear",
+    "type": "normal"
+  },
+  {
+    "start": 437.72,
+    "end": 438.36,
+    "text": "su origen.",
+    "type": "normal"
+  },
+  {
+    "start": 441.16,
+    "end": 443.56,
+    "text": "El resultado, la mujer probablemente",
+    "type": "normal"
+  },
+  {
+    "start": 443.56,
+    "end": 446.84,
+    "text": "creció en Europa Central o del Este y se trasladó hacia Francia",
+    "type": "normal"
+  },
+  {
+    "start": 446.84,
+    "end": 449.72,
+    "text": "durante su adolescencia, posiblemente justo antes",
+    "type": "normal"
+  },
+  {
+    "start": 449.72,
+    "end": 453.6,
+    "text": "o durante la Segunda Guerra Mundial.",
+    "type": "normal"
+  },
+  {
+    "start": 453.6,
+    "end": 457,
+    "text": "Es un dato real y verificado, pero sigue sin darle un nombre.",
+    "type": "normal"
+  },
+  {
+    "start": 459.64,
+    "end": 463.72,
+    "text": "Hoy, más de 50 años después, la mujer de Isdal sigue enterrada",
+    "type": "normal"
+  },
+  {
+    "start": 463.72,
+    "end": 467,
+    "text": "bajo un número, no un nombre.",
+    "type": "normal"
+  },
+  {
+    "start": 467,
+    "end": 470,
+    "text": "La ciencia moderna logró acercarse a su origen,",
+    "type": "normal"
+  },
+  {
+    "start": 470,
+    "end": 475.44,
+    "text": "pero no a su identidad ni a la razón exacta de su muerte.",
+    "type": "normal"
+  },
+  {
+    "start": 475.44,
+    "end": 478.84,
+    "text": "Una mujer huyendo de algo con una vida armada de identidades",
+    "type": "normal"
+  },
+  {
+    "start": 478.84,
+    "end": 483.28,
+    "text": "falsas por necesidad, una gente de inteligencia atrapada",
+    "type": "normal"
+  },
+  {
+    "start": 483.28,
+    "end": 486.64,
+    "text": "entre las tensiones de la Guerra Fría,",
+    "type": "normal"
+  },
+  {
+    "start": 486.64,
+    "end": 491.28,
+    "text": "o algo que todavía no hemos considerado.",
+    "type": "normal"
+  },
+  {
+    "start": 491.28,
+    "end": 495.04,
+    "text": "Lo único seguro es que, más de 50 años después,",
+    "type": "normal"
+  },
+  {
+    "start": 495.04,
+    "end": 498.24,
+    "text": "nadie ha podido cerrar ese expediente con una respuesta",
+    "type": "normal"
+  },
+  {
+    "start": 498.24,
+    "end": 500.88,
+    "text": "real.",
+    "type": "normal"
+  },
+  {
+    "start": 500.88,
+    "end": 502.72,
+    "text": "Esto ha sido sin explicación.",
+    "type": "normal"
+  }
+]
