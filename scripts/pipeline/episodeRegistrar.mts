@@ -58,7 +58,7 @@ export const writeShots = (episodeId: string, shots: Shot[]) => {
   writeFileSync(path.join(DATA_DIR, `shots-${episodeId}.json`), JSON.stringify(shots, null, 2) + "\n");
 };
 
-const IMPORT_ANCHOR_RE = /(import rawClips\d+ from "\.\.\/data\/clips-\d+\.json";\n)(?!import rawClips)/;
+const IMPORT_ANCHOR_RE = /(import rawClips\d+ from "\.\.\/data\/clips-\d+\.json";\r?\n)(?!import rawClips)/;
 const EXPORT_LINE_RE = /export const episodes: EpisodeConfig\[\] = \[([^\]]*)\];/;
 
 // Inserta (o actualiza, si ya existe) una entrada en remotion/lib/episodes.ts
@@ -147,7 +147,7 @@ const episode${episodeId}: EpisodeConfig = {
     // Reemplaza el bloque `const episodeXXX: EpisodeConfig = { ... };` existente
     // completo — el cierre `};` al inicio de línea solo aparece ahí (los arrays
     // internos cierran con `],`), así que el match no ambigua con nada más.
-    const blockRe = new RegExp(`const episode${episodeId}: EpisodeConfig = \\{[\\s\\S]*?\\n\\};\\n`);
+    const blockRe = new RegExp(`const episode${episodeId}: EpisodeConfig = \\{[\\s\\S]*?\\r?\\n\\};\\r?\\n`);
     if (!blockRe.test(src)) {
       throw new Error(
         `episodes.ts tiene "id: \\"${episodeId}\\"" pero no se encontró el bloque \`const episode${episodeId}\` para reemplazarlo — revisar el archivo a mano.`

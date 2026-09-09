@@ -1,13 +1,16 @@
 // Configuración compartida del pipeline de producción audiovisual.
 // Ver plan: agente autónomo por cuenta sobre D:\MATERIAL VIDEOS.
+import { resolveScannableChannels } from "./channelRegistry.mts";
 
 export const MATERIAL_ROOT = process.env.MATERIAL_ROOT || "D:\\MATERIAL VIDEOS";
 
-// V1: solo cuentas "tipo documental" — ya tienen composición/branding Remotion
-// propios (Intro/Logos/ClosingCTA). Las demás cuentas en Material Videos
-// (Chismes, Peliculas, Musica, Asmr, Alza la voz) esperan su propia plantilla.
-export const ACCOUNTS = ["SIN EXPLICACIÓN"] as const;
-export type AccountName = (typeof ACCOUNTS)[number];
+// Fase 4.8 — ya NO es un literal fijo: se resuelve desde channelRegistry.mts
+// (canales con estado ACTIVE/READY/TEST Y un RenderProvider real). Hoy
+// resuelve exactamente a ["SIN EXPLICACIÓN"] porque es el único canal que
+// cumple ambas condiciones — agregar un RenderProvider nuevo para otro canal
+// alcanza para que empiece a escanearse, sin tocar este archivo ni agent.mts.
+export const ACCOUNTS: readonly string[] = resolveScannableChannels();
+export type AccountName = string;
 
 // Carpetas de salida dentro de cada cuenta — nunca se escanean como entrada.
 export const OUTPUT_FOLDER_NAMES = ["Videos YouTube Completos", "Clips"];

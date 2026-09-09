@@ -12,11 +12,10 @@ import { checkCompleteness } from "./completenessChecker.mts";
 import { loadProject, hashSetsEqual } from "./projectManifest.mts";
 import { hashAll } from "./fileRegistry.mts";
 import { analyzeScript, buildTtsChapters } from "./scriptAnalyzer.mts";
-import { probeVideo, probeImage, probeAudioDurationSeconds } from "./mediaCatalog.mts";
+import { probeVideo, probeImage } from "./mediaCatalog.mts";
 import type { VideoPoolItem, ImagePoolItem } from "./mediaCatalog.mts";
-import { transcribeNarration, type RawSegment } from "./transcriber.mts";
+import { type RawSegment } from "./transcriber.mts";
 import { tagCaptions, alignedSentencesFor } from "./captionTagger.mts";
-import { detectSilences } from "./silenceDetector.mts";
 import { assignVisuals } from "./visualAssigner.mts";
 import { generateNarration } from "./voiceGenerator.mts";
 import {
@@ -27,12 +26,31 @@ import {
   writeShots,
   registerEpisode,
 } from "./episodeRegistrar.mts";
-import { renderMain, renderShort } from "./renderer.mts";
 import { checkRenderedVideo, checkClip } from "./qualityChecker.mts";
+// Fase 4.8 — resuelve el RenderProvider del canal en vez de llamar a
+// MachineBridge.render directamente con un compositionId fijo (mismo
+// MachineBridge por debajo para "documentary-remotion", el único provider
+// real hoy). Ver scripts/pipeline/renderProviderRegistry.mts.
+import { resolveRenderProvider } from "./renderProviderRegistry.mts";
 import { selectClips, selectClipsSequential } from "./clipSelector.mts";
 import { exportMainVideo, exportClip } from "./exportManager.mts";
 import { CLIP_MAX_SECONDS, CLIP_MIN_SECONDS, MAIN_TARGET_MAX_SECONDS, MAIN_TARGET_MIN_SECONDS } from "./config.mts";
 import { FPS } from "../../remotion/theme.ts";
+// Fase 4.6 — probe de audio, detección de silencios, transcripción y render
+// pasan por MachineBridge (agent/machine/), que envuelve exactamente estas
+// mismas funciones (mediaCatalog.mts/silenceDetector.mts/transcriber.mts/
+// renderer.mts, sin cambios) con seguridad de rutas y validación de
+// composición añadidas. probeVideo/probeImage NO migran (ver docs/
+// machine-access.md — su firma no es compatible: hacen extracción de
+// keywords y devuelven un shape distinto a MediaInfo). El concat de audio de
+// generateNarration tampoco migra (sus chunks viven en un tmpdir fuera de las
+// raíces permitidas del Bridge). reselectClips.mts sigue usando las funciones
+// originales directamente, sin pasar por el Bridge todavía.
+import { machineBridge } from "../../agent/machine/machineBridge.mts";
+if (!machineBridge.media || !machineBridge.render) {
+  throw new Error("MachineBridge.media/render deben estar implementados (ver agent/machine/machineBridge.mts) para correr el pipeline.");
+}
+const media = machineBridge.media;
 
 export const log = (msg: string) => console.log(`[${new Date().toISOString().slice(11, 19)}] ${msg}`);
 
@@ -59,6 +77,13 @@ export type ProcessResult =
 // process.exit() en ningún lado — quien la llama decide qué hacer con el
 // resultado (el CLI de abajo sale del proceso; el agente sigue con la cola).
 export async function processProject(account: string, episodeId: string): Promise<ProcessResult> {
+  // Fase 4.8 — resuelve el RenderProvider del canal ANTES de cualquier paso
+  // costoso (whisper/ElevenLabs/render): si el canal no tiene provider
+  // (BLOCKED/HISTORICAL, o sin provider integrado todavía), falla rápido con
+  // un error claro (CHANNEL_*) en vez de gastar trabajo real para terminar
+  // fallando solo al llegar al render.
+  const renderProvider = resolveRenderProvider(account);
+
   // Fase 4.5 — GATE DE AUTORIZACIÓN, segunda capa de defensa. agent.mts ya
   // filtra esto antes de encolar (ver decideEnqueue en agent.mts), pero
   // processProject() puede llamarse directamente (CLI manual, o un bug futuro
@@ -118,13 +143,13 @@ export async function processProject(account: string, episodeId: string): Promis
     const cached = JSON.parse(readFileSync(captionsPath, "utf-8")) as { start: number; end: number; text: string }[];
     segments = cached.map((c) => ({ start: c.start, end: c.end, text: c.text }));
   } else {
-    log("Transcribiendo narración (whisper)...");
-    segments = transcribeNarration(ep.narrationFile!);
+    log("Transcribiendo narración (whisper, vía MachineBridge.media)...");
+    segments = await media.transcribe(ep.narrationFile!, true);
   }
   log(`  ${segments.length} segmentos`);
 
-  log("Detectando silencios...");
-  const silences = detectSilences(ep.narrationFile!);
+  log("Detectando silencios (vía MachineBridge.media)...");
+  const silences = await media.detectSilences(ep.narrationFile!);
   log(`  ${silences.length} silencios`);
 
   log("Etiquetando captions (hook/reveal) por alineación con el guion...");
@@ -133,7 +158,7 @@ export async function processProject(account: string, episodeId: string): Promis
   const nonNormal = captions.filter((c) => c.type !== "normal").length;
   log(`  ${captions.length} captions, ${nonNormal} hook/reveal`);
 
-  const narrationDurationSeconds = probeAudioDurationSeconds(ep.narrationFile!);
+  const narrationDurationSeconds = (await media.probe(ep.narrationFile!)).durationSeconds;
   if (narrationDurationSeconds < MAIN_TARGET_MIN_SECONDS || narrationDurationSeconds > MAIN_TARGET_MAX_SECONDS) {
     log(
       `  aviso: la narración dura ${(narrationDurationSeconds / 60).toFixed(1)} min, fuera del objetivo 10-15 min (no bloquea, solo aviso)`
@@ -169,8 +194,13 @@ export async function processProject(account: string, episodeId: string): Promis
   });
   log(`  ${registerResult === "inserted" ? `insertado, chapterNumber=${chapterNumber}` : "actualizado (ya estaba registrado)"}`);
 
-  log("Renderizando video largo (esto puede tardar varios minutos)...");
-  const mainOut = renderMain(episodeId);
+  log(`Renderizando video largo (esto puede tardar varios minutos, vía RenderProvider "${renderProvider.id}")...`);
+  // renderProvider.renderMain() para "documentary-remotion" hace exactamente
+  // lo que renderMain() hacía antes de la Fase 4.8: MachineBridge.render con
+  // el mismo compositionId y el mismo out/main-{id}.mp4. Sin reuseIfExists ni
+  // timeoutMs: se preserva el comportamiento actual (siempre renderiza, sin
+  // límite de tiempo).
+  const mainOut = (await renderProvider.renderMain(episodeId)).path;
   const mainQa = checkRenderedVideo(mainOut, narrationDurationSeconds);
   if (!mainQa.ok) {
     log(`QA del video largo FALLÓ: ${mainQa.reason}`);
@@ -197,7 +227,7 @@ export async function processProject(account: string, episodeId: string): Promis
     const label = isSequential ? "Parte" : "Clip";
     const localIndex = isSequential ? i - editorialClips.length : i;
     log(`Renderizando ${label} ${localIndex + 1} (${i + 1}/${clips.length})...`);
-    const clipOut = renderShort(episodeId, i);
+    const clipOut = (await renderProvider.renderClip(episodeId, i)).path;
     const clipDurationSec = (clips[i].endFrame - clips[i].startFrame) / FPS;
     const clipQa = checkClip(clipOut, CLIP_MIN_SECONDS, CLIP_MAX_SECONDS);
     if (!clipQa.ok) {
