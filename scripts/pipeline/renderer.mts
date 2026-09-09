@@ -12,13 +12,18 @@ const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..");
 // llega a tener espacios.
 const quoteArg = (arg: string): string => (/[\s"]/.test(arg) ? `"${arg.replace(/"/g, '""')}"` : arg);
 
-const renderComposition = (compositionId: string, outRelPath: string): string => {
+// `timeoutMs` es opcional y no lo usa ningún llamador existente (renderMain/
+// renderShort no lo pasan, así que su comportamiento no cambia) — se agrega
+// en Fase 4.5 únicamente para que agent/machine/renderBridge.mts pueda acotar
+// la espera sin duplicar esta invocación de `npx remotion render`.
+export const renderComposition = (compositionId: string, outRelPath: string, opts?: { timeoutMs?: number }): string => {
   const outPath = path.join(REPO_ROOT, outRelPath);
   const args = ["remotion", "render", "remotion/index.ts", compositionId, outPath].map(quoteArg);
   execFileSync("npx", args, {
     stdio: "inherit",
     cwd: REPO_ROOT,
     shell: true,
+    ...(opts?.timeoutMs ? { timeout: opts.timeoutMs } : {}),
   });
   return outPath;
 };

@@ -69,16 +69,29 @@ export const generateNarration = async (
       chunkFiles.push(chunkPath);
     }
 
-    if (chunkFiles.length === 1) {
-      writeFileSync(outputPath, readFileSync(chunkFiles[0]));
-    } else {
-      const listPath = path.join(tmpDir, "list.txt");
-      const listContent = chunkFiles.map((f) => `file '${f.replace(/'/g, "'\\''")}'`).join("\n");
-      writeFileSync(listPath, listContent);
-      const result = spawnSync("ffmpeg", ["-y", "-f", "concat", "-safe", "0", "-i", listPath, "-c", "copy", outputPath]);
-      if (result.status !== 0) {
-        throw new Error(`ffmpeg concat falló: ${result.stderr?.toString()}`);
-      }
+    concatAudioFiles(chunkFiles, outputPath);
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true });
+  }
+};
+
+// Extraído de generateNarration (antes estaba inline en su if/else) para que
+// agent/machine/mediaBridge.mts pueda envolver el mismo concat de audio por
+// ffmpeg sin duplicar la invocación — comportamiento idéntico, incluido el
+// atajo de un solo archivo (copia directa, sin pasar por ffmpeg).
+export const concatAudioFiles = (chunkPaths: string[], outputPath: string): void => {
+  if (chunkPaths.length === 1) {
+    writeFileSync(outputPath, readFileSync(chunkPaths[0]));
+    return;
+  }
+  const tmpDir = mkdtempSync(path.join(tmpdir(), "pipeline-concat-"));
+  try {
+    const listPath = path.join(tmpDir, "list.txt");
+    const listContent = chunkPaths.map((f) => `file '${f.replace(/'/g, "'\\''")}'`).join("\n");
+    writeFileSync(listPath, listContent);
+    const result = spawnSync("ffmpeg", ["-y", "-f", "concat", "-safe", "0", "-i", listPath, "-c", "copy", outputPath]);
+    if (result.status !== 0) {
+      throw new Error(`ffmpeg concat falló: ${result.stderr?.toString()}`);
     }
   } finally {
     rmSync(tmpDir, { recursive: true, force: true });
