@@ -30,6 +30,16 @@ function parseLocation(filePath: string): { folderName: string; folderType: Fold
   return { folderName, folderType };
 }
 
+// scripts/pipeline/exportManager.mts nombra el archivo final liderando SIEMPRE
+// con el número de carpeta del episodio (ej. "008 - Video Completo.mp4",
+// "008 - Clip 1.mp4") — ver su comentario. Extracción best-effort: si algún
+// archivo no sigue esa convención (ej. subido a mano con otro nombre),
+// episode_id queda simplemente sin determinar, nunca se inventa un valor.
+function extractEpisodeId(fileName: string): string | null {
+  const match = fileName.match(/^(\d+)\s*-/);
+  return match ? match[1] : null;
+}
+
 export async function processFile(filePath: string): Promise<void> {
   const location = parseLocation(filePath);
   if (!location) return; // no es un vídeo en Videos YouTube Completos/Clips de ninguna cuenta
@@ -64,6 +74,7 @@ export async function processFile(filePath: string): Promise<void> {
     filePath,
     fileHash,
     fileSize,
+    episodeId: extractEpisodeId(path.basename(filePath)),
   });
 
   if (result.outcome !== "inserted") return; // duplicado o conflicto: ya quedó todo registrado en registerFile()

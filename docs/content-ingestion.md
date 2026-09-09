@@ -1,8 +1,16 @@
-# Ingesta de contenido — Fase 2 (cambio metodológico)
+# Ingesta de contenido — Fase 2 (cambio metodológico) / Fase 4.3 (implementación)
 
 > Este documento reemplaza la premisa de que Agente 1 = investigación web autónoma como entrada
 > primaria. La entrada primaria ahora es una persona que busca y selecciona material fuera del
-> sistema, y lo entrega a través de una Inbox. Todo lo aquí descrito es DISEÑO, no implementado.
+> sistema, y lo entrega a través de una Inbox.
+>
+> **[ACTUALIZADO — Fase 4.3]** La Inbox como carpeta observada, `ContentSubmission`,
+> `manifest.json`, `ContentProvider`/`ContentPackage` y la idempotencia por `submission_checksum`
+> **ya están implementados** como código real en `agent/ingestion/` — ver
+> `docs/system-contracts.md` §3/§7 para el detalle exacto de qué pasó de DISEÑO a IMPLEMENTADO.
+> Sigue siendo diseño (no implementado): el formulario web de Inbox, el Agente de investigación
+> opcional, y cualquier disparo automático (hoy es invocación manual vía `npm run agent:ingest`,
+> sin watcher ni scheduler).
 
 ## 1. Por qué cambia el diseño, no solo el diagrama
 

@@ -19,8 +19,13 @@ export async function registerFile(params: {
   filePath: string;
   fileHash: string;
   fileSize: number;
+  // Fase 4.3: agrupa este content_file con los demás del mismo episodio
+  // (content_files.episode_id, ver docs/system-contracts.md §1 — decisión de
+  // Fase 2.1 de NO crear una tabla `episodes` separada). Opcional: si no se
+  // pudo determinar de forma confiable, queda NULL, nunca se inventa.
+  episodeId?: string | null;
 }): Promise<RegisterResult> {
-  const { contentAccountId, folderType, filePath, fileHash, fileSize } = params;
+  const { contentAccountId, folderType, filePath, fileHash, fileSize, episodeId } = params;
 
   const { data: inserted, error: insertError } = await supabaseAdmin
     .from("content_files")
@@ -31,6 +36,7 @@ export async function registerFile(params: {
       file_hash: fileHash,
       file_size: fileSize,
       status: "detected",
+      episode_id: episodeId ?? null,
     })
     .select("id")
     .maybeSingle();
