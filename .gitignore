@@ -1,0 +1,27 @@
+# dependencies
+/node_modules
+
+# local env files (nunca el real, solo .env.local.example se versiona)
+.env.local
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# remotion — renders/bundles locales, nunca versionados
+/remotion/out
+/out
+
+# agente de producción (scripts/pipeline): estado local, logs, cachés
+/scripts/pipeline/state
+/logs
+
+# agente de publicación (agent/): logs locales
+/agent/logs
+
+# supabase CLI
+/supabase/.temp/
+
+# misc
+.DS_Store
+npm-debug.log*

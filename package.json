@@ -1,0 +1,43 @@
+{
+  "name": "automatizacion-completa-de-contenido",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "remotion": "remotion studio remotion/index.ts --port=3210",
+    "remotion:render": "remotion render remotion/index.ts",
+    "render:main": "node scripts/render-main.mjs",
+    "render:shorts": "node scripts/render-shorts.mjs",
+    "social:publish": "tsx scripts/publish-due-social-posts.mts",
+    "social:youtube-token": "tsx scripts/get-youtube-refresh-token.mts",
+    "pipeline:process": "tsx scripts/pipeline/processOne.mts",
+    "pipeline:authorize": "tsx scripts/pipeline/authorization.mts authorize",
+    "pipeline:revoke": "tsx scripts/pipeline/authorization.mts revoke",
+    "pipeline:hold": "tsx scripts/pipeline/authorization.mts hold",
+    "pipeline:release": "tsx scripts/pipeline/authorization.mts release",
+    "agent:watch": "tsx agent/run.mts",
+    "agent:analyze": "tsx agent/analyze/run.mts",
+    "agent:schedule": "tsx agent/schedule/run.mts",
+    "agent:publish": "tsx agent/publish/run.mts",
+    "agent:ingest": "tsx agent/ingestion/run.mts",
+    "ingestion:test": "tsx agent/ingestion/test-manifest-validation.mts",
+    "machine:test": "tsx agent/machine/test-machine-bridge.mts",
+    "provider:test": "tsx scripts/pipeline/test-render-provider.mts",
+    "derived-content:test": "tsx scripts/pipeline/test-derived-content.mts"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.512",
+    "@remotion/google-fonts": "4.0.512",
+    "@supabase/supabase-js": "^2.105.1",
+    "chokidar": "^3.6.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "remotion": "4.0.512"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "tsx": "^4.19.2",
+    "typescript": "^5"
+  }
+}
