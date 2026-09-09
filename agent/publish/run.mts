@@ -14,7 +14,7 @@ import { log } from "../logger.mts";
 import { DRY_RUN, CLAIMED_AT_MIGRATION_APPLIED } from "./config.mts";
 import { claimPost, revertToPending } from "./claimPost.mts";
 import { resolveAndVerifyContentFile } from "./resolveContentFile.mts";
-import { ensureUploadedToStorage } from "./storageBridge.mts";
+import { ensureUploadedToStorage, cleanupVideoIfDone } from "./storageBridge.mts";
 import { resolveAndValidateIdentity } from "./resolveIdentity.mts";
 import { classifyError, decideRetry } from "./retryPolicy.mts";
 import { PUBLISHERS } from "../../lib/social/publishers.ts";
@@ -106,6 +106,20 @@ async function processPost(postId: string): Promise<void> {
     }
     await supabaseAdmin.from("social_posts").update(publishedPayload).eq("id", post.id);
     log.info("[PUBLISH] Publicado con exito", { postId: post.id, externalPostId });
+
+    // Fase 5.0 — pieza traída de Flow A (ver storageBridge.mts::cleanupVideoIfDone).
+    // Solo aplica a lo que de verdad se subió a Storage (Instagram/Facebook) -
+    // YouTube se entregó directo desde disco, nunca ocupó Storage.
+    if (platform !== "youtube" && "video_path" in postForPublisher) {
+      try {
+        await cleanupVideoIfDone(postForPublisher.video_path as string);
+      } catch (cleanupErr) {
+        log.warn("[PUBLISH] No se pudo limpiar el video de Storage (no bloquea la publicación ya exitosa)", {
+          postId: post.id,
+          error: cleanupErr instanceof Error ? cleanupErr.message : String(cleanupErr),
+        });
+      }
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     await finishWithFailure(post, message, classifyError(message) === "retryable");

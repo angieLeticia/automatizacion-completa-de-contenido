@@ -56,6 +56,30 @@ export async function ensureUploadedToStorage(contentFile: ContentFileRow): Prom
   return { videoPath, videoUrl: data.publicUrl, alreadyExisted: false };
 }
 
+// Fase 5.0 — traído de scripts/publish-due-social-posts.mts (Flow A, el
+// script legacy) sin reescribir su lógica: borra el vídeo del bucket una vez
+// que TODAS las publicaciones que lo usan terminaron en "published" — las
+// redes ya lo alojan ellas mismas. Si alguna quedó en "error"/"pending", se
+// conserva para poder reintentar. Flow B (agent/publish/) no lo tenía; es la
+// única pieza real que le faltaba para poder reemplazar a Flow A por completo
+// (ver docs/system-contracts.md §5). Solo se ejecuta cuando un post llega a
+// "published" de verdad — con DRY_RUN=true por defecto (Fase 4B.1), nunca
+// ocurre sin publicación real autorizada explícitamente.
+export async function cleanupVideoIfDone(videoPath: string): Promise<void> {
+  const { count, error } = await supabaseAdmin
+    .from("social_posts")
+    .select("id", { count: "exact", head: true })
+    .eq("video_path", videoPath)
+    .neq("status", "published");
+
+  if (error) {
+    throw new Error(`Error consultando social_posts para decidir limpieza de '${videoPath}': ${error.message}`);
+  }
+  if (!count) {
+    await supabaseAdmin.storage.from(SOCIAL_VIDEOS_BUCKET).remove([videoPath]);
+  }
+}
+
 export interface UrlReachabilityResult {
   ok: boolean;
   status: number;
