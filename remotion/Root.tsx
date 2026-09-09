@@ -1,5 +1,4 @@
 import { Composition } from "remotion";
-import { OutfitShowcase } from "./Composition";
 import { MainDocumentary } from "./MainDocumentary";
 import { ShortClip } from "./ShortClip";
 import { Intro } from "./Intro";
@@ -11,46 +10,28 @@ import { introDurationInFrames } from "./lib/introTimeline";
 import { episodes, mainDurationInFrames } from "./lib/episodes";
 import { chapters } from "./lib/chapters";
 import { layout, FPS } from "./theme";
-import { StarDust, STAR_DUST_DURATION_IN_FRAMES } from "./star-dust/compositions/StarDust";
-import {
-  EntertainmentVideo,
-  ENTERTAINMENT_VIDEO_DURATION_IN_FRAMES,
-} from "./entertainment/compositions/EntertainmentVideo";
+// Fase 5.1 — QuoteVideo migrado desde el repositorio independiente de ALZA
+// LA VOZ (0 commits reales, ver informe de Fase 5.1) — template genérico,
+// parametrizado por VideoDef, sin ningún dato de canal hardcodeado.
+import { QuoteVideo } from "./QuoteVideo";
+import { videos as alzaLaVozVideos, durationInFrames as quoteDurationInFrames } from "../channels/alza-la-voz/videos";
+
+const QUOTE_FORMATS = [
+  { id: "vertical", width: 1080, height: 1920 },
+  { id: "square", width: 1080, height: 1080 },
+] as const;
+
+// NOTA (Fase 4.1 — adaptación standalone): este Root.tsx registraba también
+// StarDust, PremiosJuventud2026 (EntertainmentVideo) y OutfitShowcase — piezas
+// de una sola vez / de e-commerce, deliberadamente excluidas del snapshot de
+// agentes (ver docs/operational-status.md y el historial de Fase 3.4/3.6). No
+// se reconstruyen aquí. Este archivo solo registra el pipeline reutilizable
+// (MainDocumentary/ShortClip), que es lo que scripts/render-main.mjs y
+// scripts/render-shorts.mjs invocan realmente.
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      <Composition
-        id="StarDust"
-        component={StarDust}
-        durationInFrames={STAR_DUST_DURATION_IN_FRAMES}
-        fps={30}
-        width={1920}
-        height={1080}
-      />
-
-      <Composition
-        id="PremiosJuventud2026"
-        component={EntertainmentVideo}
-        durationInFrames={ENTERTAINMENT_VIDEO_DURATION_IN_FRAMES}
-        fps={30}
-        width={1920}
-        height={1080}
-      />
-
-      <Composition
-        id="OutfitShowcase"
-        component={OutfitShowcase}
-        durationInFrames={150}
-        fps={30}
-        width={1080}
-        height={1920}
-        defaultProps={{
-          title: "Visteapy",
-          imageUrl: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1080",
-        }}
-      />
-
       {episodes.map((episode) => (
         <Composition
           key={`MainDocumentary-${episode.id}`}
@@ -118,6 +99,21 @@ export const RemotionRoot: React.FC = () => {
             calculateMetadata={async ({ props }) => ({
               durationInFrames: Math.max(props.endFrame - props.startFrame, 1),
             })}
+          />
+        )),
+      )}
+
+      {alzaLaVozVideos.map((video) =>
+        QUOTE_FORMATS.map((format) => (
+          <Composition
+            key={`Quote-alza-la-voz-${video.id}-${format.id}`}
+            id={`Quote-alza-la-voz-${video.id}-${format.id}`}
+            component={QuoteVideo}
+            durationInFrames={quoteDurationInFrames(video, FPS)}
+            fps={FPS}
+            width={format.width}
+            height={format.height}
+            defaultProps={{ video, channelBrand: "Alza la Voz" }}
           />
         )),
       )}
