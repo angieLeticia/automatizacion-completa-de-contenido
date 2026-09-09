@@ -126,6 +126,13 @@ pregunta "¿cómo se diferencia contenido automático de manual?")
 Los 5 restantes (ALZA LA VOZ, ASMR, ENCIENDE EL CAOS, PELICULAS, MUSICA) **no tienen ninguna fila
 en `content_accounts`**.
 
+**[RESUELTO — Fase 5.0, no es un bug]** Comparando contra `channelRegistry.mts` (Fase 4.8/4.9,
+9 canales reales incluyendo `CHISMES`): las 3 filas existentes corresponden **exactamente** a los
+3 únicos canales con `channelStatus` `ACTIVE`/`TEST` (no `BLOCKED`/`HISTORICAL`). Los 6 canales sin
+fila (`ALZA LA VOZ`, `ASMR`, `ENCIENDE EL CAOS`, `PELICULAS`, `MUSICA`, `CHISMES`) son exactamente
+los `BLOCKED`/`HISTORICAL`. **No se propone backfill** — la ausencia de fila para un canal
+bloqueado es coherente con que nunca debe entrar al pipeline automático, no un dato faltante.
+
 **[EVIDENCIA — código]** `agent/discoverAccounts.mts:2-3`: *"El nombre de carpeta es la ÚNICA
 forma de reconocer una cuenta — si una carpeta no aparece aquí, el agente jamás la procesa ni la
 adivina."* Por lo tanto, todo el material que el Agente 1 produce para esos 5 canales **nunca
@@ -137,6 +144,73 @@ entra** al pipeline de registro/metadata/publicación automática (Agente 2 lado
 (`scripts/pipeline/agent.mts`, el núcleo real del Agente 2) está *hardcodeado* a un solo canal.
 Ni siquiera OBJETOS MALDITOS o LUNA VERDE (que sí tienen `content_accounts`) son procesados por
 este pipeline.
+
+### Actualización — Fase 4.8: `ACCOUNTS` deja de ser literal, pero no lee `content_accounts` todavía
+
+**[IMPLEMENTADO]** `scripts/pipeline/config.mts`'s `ACCOUNTS` ahora se resuelve desde
+`scripts/pipeline/channelRegistry.mts` (`resolveScannableChannels()`) en vez de ser un array
+literal — hoy resuelve exactamente a `["SIN EXPLICACIÓN"]` (el único canal con `RenderProvider`
+real), pero la resolución ya no es un hardcode, es una consulta a un registro.
+
+**[DECISIÓN EXPLÍCITA — no una omisión]** `channelRegistry.mts` es **local a este repositorio**,
+NO lee `content_accounts` de Supabase todavía. Motivo: esta sesión no tiene credenciales de
+Supabase disponibles en este worktree, y la tabla real hoy solo tiene 3 filas (`SIN EXPLICACIÓN`,
+`OBJETOS MALDITOS`, `LUNA VERDE`, ver evidencia arriba) — **menos** canales que los 9 reales en
+disco. El registro local usa la evidencia real ya documentada (`operational-status.md`), no los
+datos parciales de la tabla. Migrar `resolveChannelConfig()` para leer `content_accounts` (mismo
+patrón que `agent/discoverAccounts.mts`) requiere primero que esa tabla tenga una fila por cada
+canal real — trabajo de datos, no de código, y no se hizo en esta fase.
+
+**[PROPUESTA DE MIGRACIÓN — NO APLICADA, requiere autorización explícita para producción]**
+Para que `content_accounts` pueda ser la fuente de verdad real del `RenderProvider` de cada canal:
+```sql
+ALTER TABLE public.content_accounts
+  ADD COLUMN IF NOT EXISTS render_provider_id TEXT NULL;
+-- NULL = sin RenderProvider integrado todavía (mismo significado que
+-- channelRegistry.mts hoy). No requiere backfill destructivo — todas las
+-- filas existentes quedan NULL hasta que se decida su provider real.
+```
+No ejecutada en esta sesión (sin credenciales, y no es estrictamente necesaria para que Fase 4.8
+funcione — el registro local ya cumple el mismo contrato). Documentada para cuando se decida
+migrar la fuente de verdad de local a Supabase.
+
+### Actualización — Fase 4.9: DerivedContent (CLIP/HIGHLIGHT/VERTICAL) NO necesita tabla nueva
+
+**[EVIDENCIA]** `content_files.folder_type` ya tiene un `CHECK (folder_type IN ('completo', 'clip'))`
+— esto YA ES la representación real de "derivado vs. principal" que usa Agent 3 (`agent/config.mts`
+`OUTPUT_FOLDERS = { completo: "Videos YouTube Completos", clip: "Clips" }`, ya escaneadas por su
+watcher). Responde directamente la pregunta de la Sección 14: **no hace falta una tabla
+`derived_content` separada** — extender lo que ya existe alcanza.
+
+**[PROPUESTA DE MIGRACIÓN — NO APLICADA, no destructiva, sin DROP, sin backfill forzado]**
+```sql
+-- 1) Permitir los dos tipos nuevos de derivado (HIGHLIGHT, VERTICAL) además de
+--    'completo'/'clip'. Las filas existentes no se tocan (siguen siendo válidas).
+ALTER TABLE public.content_files DROP CONSTRAINT IF EXISTS content_files_folder_type_check;
+ALTER TABLE public.content_files ADD CONSTRAINT content_files_folder_type_check
+  CHECK (folder_type IN ('completo', 'clip', 'highlight', 'vertical'));
+
+-- 2) Trazabilidad opcional al contenido padre (Sección 8: parent_content_file_id).
+--    NULL para todo lo existente — no rompe nada, no requiere backfill.
+ALTER TABLE public.content_accounts ADD COLUMN IF NOT EXISTS render_provider_id TEXT NULL; -- (ya propuesta arriba)
+ALTER TABLE public.content_files ADD COLUMN IF NOT EXISTS parent_content_file_id UUID NULL
+  REFERENCES public.content_files(id) ON DELETE SET NULL;
+```
+Requisito operativo antes de aplicar esto de verdad: que existan carpetas físicas
+`Highlights`/`Vertical` bajo cada canal en `D:\MATERIAL VIDEOS\` y que se agreguen a
+`agent/config.mts::OUTPUT_FOLDERS` — de lo contrario Agent 3 nunca las escanearía. Ninguna de las
+dos cosas se hizo en esta fase (no hay evidencia de que esas carpetas deban existir todavía, dado
+que HIGHLIGHT/VERTICAL están en `scripts/pipeline/{highlightSelector,verticalAsset}.mts` como
+contrato/algoritmo probado, no integrados al render real).
+
+**[DECISIÓN RESPETADA]** `content_files.episode_id TEXT` (Fase 2.1) sigue siendo la única identidad
+de agrupación de episodio — no se propone ninguna tabla `episodes` nueva, tal como exige
+explícitamente la Sección 14.
+
+**[DESCONOCIDO — sin verificar en esta sesión]** Si la migración de Fase 2.1/4.1 (`channel_status`,
+`publication_authorized_at`, `claimed_at` documentado en Fase 1.1) ya se aplicó a la base real de
+producción. Sin credenciales de Supabase en este worktree para confirmarlo — se distingue
+explícitamente de "SCHEMA LOCAL" (este archivo) tal como pide la Sección 14.
 
 **[EVIDENCIA — datos]** De 58 `content_files` detectados (todos de SIN EXPLICACIÓN salvo 1 de
 LUNA VERDE marcado `account_conflict`), solo 3 tienen `content_metadata.status='ready'`, y esos 3

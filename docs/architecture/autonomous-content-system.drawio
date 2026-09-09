@@ -1,0 +1,169 @@
+<mxfile host="app.diagrams.net" modified="2026-09-09T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="Arquitectura real — Fase 5.1" id="autonomous-content-system">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="2200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== LEYENDA ===== -->
+        <mxCell id="leg_title" value="Leyenda de estado" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_verificado" value="VERIFICADO (evidencia real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="65" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_implementado" value="IMPLEMENTADO / PARCIAL (código existe, no probado en vivo aquí)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="100" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_futuro" value="FUTURO (contrato definido, sin implementación)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="145" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_legacy" value="LEGACY (superseded, se mantiene por compatibilidad)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="190" width="220" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_external" value="Externo (red / credenciales fuera de este repo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="235" width="220" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 1: origen / persona / agent 1 ===== -->
+        <mxCell id="persona" value="Persona" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="agent1" value="Agent 1&#10;(motor de investigación)&#10;fuera del repo, D:\" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="40" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="researchRequest" value="ResearchRequest&#10;scripts/pipeline/researchRequest.mts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="40" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="materialCrudo" value="Material crudo real&#10;D:\MATERIAL VIDEOS\&lt;canal&gt;\&lt;episodio&gt;\" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="40" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 2: ingestion ===== -->
+        <mxCell id="ingestion" value="Ingestion&#10;agent/ingestion/contentProvider.mts&#10;(destinationFor: bug narración corregido F5.1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="160" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="materialRoot" value="MATERIAL_ROOT/&lt;canal&gt;/&lt;episodio&gt;/&#10;(ContentPackage real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="760" y="160" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 3: agent 2 watcher + registries ===== -->
+        <mxCell id="agent2watcher" value="Agent 2 — watcher/queue/lock&#10;scripts/pipeline/{agent,queue,agentLock}.mts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="280" width="260" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="channelRegistry" value="ChannelRegistry&#10;scripts/pipeline/channelRegistry.mts&#10;(9 canales reales)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="280" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="renderProviderRegistry" value="RenderProviderRegistry&#10;scripts/pipeline/renderProviderRegistry.mts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="780" y="280" width="240" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 4: processOne + providers ===== -->
+        <mxCell id="processOne" value="processOne.mts&#10;(pipeline real de un episodio)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="400" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="documentaryProvider" value="documentaryRemotionProvider.mts&#10;(canal SIN EXPLICACIÓN)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="780" y="400" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="quoteProvider" value="quoteVideoProvider.mts&#10;(canal ALZA LA VOZ, BLOCKED)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="400" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 5: MachineBridge ===== -->
+        <mxCell id="mbMedia" value="MachineBridge.media&#10;agent/machine/mediaBridge.mts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="520" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="mbRender" value="MachineBridge.render&#10;agent/machine/renderBridge.mts&#10;(bug caché ESM corregido F5.1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="480" y="520" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="mbLocalAI" value="MachineBridge.localAI&#10;agent/machine/types.mts (solo tipo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="760" y="520" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 6: binarios / remotion CLI / quality gate ===== -->
+        <mxCell id="ffmpeg" value="ffmpeg / ffprobe / whisper&#10;(binarios reales del sistema)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="640" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="remotionCli" value="Remotion CLI&#10;(proceso hijo real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="480" y="640" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="qualityGate" value="Quality Gate&#10;scripts/pipeline/qualityChecker.mts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="760" y="640" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 7: derivados ===== -->
+        <mxCell id="derivedContent" value="DerivedContent&#10;scripts/pipeline/derivedContent.mts&#10;(CLIP/HIGHLIGHT/VERTICAL)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="760" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="highlightSelector" value="highlightSelector.mts&#10;(heurística hook/reveal)&#10;NO conectado al render real todavía" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="760" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="verticalAsset" value="verticalAsset.mts&#10;(valida 1080x1920/9:16 real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="820" y="760" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 8: Agent 3 ===== -->
+        <mxCell id="publicationCandidate" value="PublicationCandidate&#10;agent/publish/publicationCandidate.mts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="880" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="flowB" value="Agent 3 — Flow B&#10;agent/publish/{run,claimPost,resolveContentFile,resolveIdentity,retryPolicy}.mts&#10;DRY_RUN por defecto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="880" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="flowA" value="Agent 3 — Flow A (legacy)&#10;scripts/publish-due-social-posts.mts&#10;sin claim atómico" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="880" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== FILA 9: storage / supabase / plataformas / scheduler ===== -->
+        <mxCell id="storageBridge" value="storageBridge.mts&#10;upload idempotente + cleanupVideoIfDone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="1020" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase" value="Supabase (Postgres + Storage)&#10;NOT VERIFIED en vivo — sin credenciales" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1020" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="platforms" value="YouTube / Instagram / Facebook / TikTok&#10;NOT VERIFIED — nunca activado en este entorno" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1020" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="scheduler" value="findNextAvailableWindow.mts&#10;agent/schedule/findNextWindow.mts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1020" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="scheduleOptimization" value="scheduleOptimization.mts&#10;Etapa 2 — métricas→horario&#10;NOT_IMPLEMENTED deliberadamente" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1110" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== EDGES ===== -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="persona" target="agent1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="agent1" target="researchRequest"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="researchRequest" target="channelRegistry"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="agent1" target="materialCrudo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="materialCrudo" target="ingestion"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="ingestion" target="materialRoot"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="materialRoot" target="agent2watcher"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="agent2watcher" target="processOne"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="processOne" target="channelRegistry"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="processOne" target="renderProviderRegistry"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="renderProviderRegistry" target="channelRegistry"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="renderProviderRegistry" target="documentaryProvider"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="renderProviderRegistry" target="quoteProvider"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="processOne" target="mbMedia"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="documentaryProvider" target="mbRender"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="quoteProvider" target="mbRender"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="mbMedia" target="ffmpeg"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="mbRender" target="remotionCli"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="remotionCli" target="qualityGate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="qualityGate" target="derivedContent"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="derivedContent" target="highlightSelector"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="derivedContent" target="verticalAsset"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="verticalAsset" target="publicationCandidate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="publicationCandidate" target="flowB"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="flowA" target="flowB"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="flowB" target="storageBridge"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="storageBridge" target="supabase"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="flowB" target="platforms"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1" source="flowB" target="scheduler"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="scheduler" target="scheduleOptimization"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;" edge="1" parent="1" source="flowB" target="supabase"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

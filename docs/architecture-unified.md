@@ -36,6 +36,11 @@ si** la evidencia futura demuestra que invocar la función al final de cada paso
 (ej. si algo necesita reaccionar sin que ningún agente lo dispare) — no antes, y no por
 anticipación.
 
+> **[ACTUALIZADO — Fase 4.3]** El bloque INBOX/INGESTA del diagrama de abajo ya es código real
+> en `agent/ingestion/` (invocación manual vía `npm run agent:ingest`, sin watcher ni scheduler
+> — ver `docs/system-contracts.md` §3/§7 y `docs/content-ingestion.md`). El resto del diagrama
+> (orquestador, Agente 1, motor único de publicación) sigue siendo diseño.
+
 ## 2. Diagrama de arquitectura propuesta
 
 ```
@@ -258,3 +263,50 @@ aditivas").
 | GitHub Actions | Minutos/mes del plan | Cron de 10 min ≈ 4320 ejecuciones/mes; cada una corta (segundos si no hay pendientes) — dentro de rango gratuito típico, a confirmar cuando se active |
 | APIs sociales (YouTube/Meta) | Rate limit + cuota diaria | `posting_schedule_rules.max_posts_per_day` ya existe para esto — falta que el motor único lo respete activamente (hoy no se verifica en el código de publicación) |
 | Concurrencia | Lock de proceso único en Agente 2 | Al escalar de 1 a 8 canales activos simultáneos, este lock puede volverse cuello de botella — evaluar lock por canal en fase posterior, no ahora |
+
+## 11. Auditoría de Fase 4.7 — la resolución de `ACCOUNTS` (§4) sigue sin implementar
+
+**[EVIDENCIA — Fase 4.7]** `scripts/pipeline/config.mts` sigue exactamente igual que cuando se
+escribió la §4: `export const ACCOUNTS = ["SIN EXPLICACIÓN"] as const;`. La recomendación de leer
+`content_accounts` (mismo patrón que `agent/discoverAccounts.mts`, ya funcionando en Agente 3)
+nunca se implementó. Confirmado por lectura directa del código, no por documentación.
+
+**[HALLAZGO NUEVO, no cubierto por §3/§4]** Incluso implementando esa resolución tal como está
+recomendada, agregar un canal a `ACCOUNTS` **no lo haría producible correctamente por sí solo**.
+El propio comentario del código (línea 6-8 de `config.mts`) es explícito: `ACCOUNTS` está limitado
+a "cuentas tipo documental" porque son las únicas con composición Remotion propia
+(`MainDocumentary`/`ShortClip`/`Intro`/`ChapterCard`/`ClosingCTA`, todas construidas alrededor de
+un formato específico: narración + captions + shots sincronizados). Un canal como ASMR o Chismes
+necesitaría su propia composición Remotion — esto es trabajo de diseño/composición nuevo, no una
+resolución de configuración. **No existe hoy ningún mecanismo para que un canal declare qué
+composición Remotion usar** — es una pieza de arquitectura que falta diseñar antes de que la
+resolución de `ACCOUNTS` de la §4 tenga sentido para más de un canal.
+
+**Estado real (taxonomía obligatoria) — actualizado en Fase 4.8:**
+- Resolución de `ACCOUNTS` vía configuración (§4): **IMPLEMENTADO Y VALIDADO** — pero local
+  (`scripts/pipeline/channelRegistry.mts`), no vía `content_accounts` de Supabase todavía (ver
+  `docs/database-contract.md` — la tabla real solo tiene 3 de los 9 canales, menos que el
+  registro local). `ACCOUNTS` ya no es un array literal: se resuelve con `resolveScannableChannels()`.
+- Selector de composición Remotion por canal (`RenderProvider`): **IMPLEMENTADO Y VALIDADO** para
+  el único canal que lo necesita hoy (`documentary-remotion`, envuelve exactamente el mismo
+  `MachineBridge.render` de la Fase 4.5-4.7, sin reescribirlo). Ver `docs/system-contracts.md`
+  §RenderProvider. `resolveRenderProvider(channel)` da errores tipados
+  (`ChannelNotFoundError`/`ChannelNotProducibleError`/`ChannelProviderNotFoundError`/
+  `ChannelProviderNotIntegratedError`) en vez de fallar ambiguo.
+- `content_accounts.style` (tono/temas/hashtags/palabras prohibidas): **PARCIAL**, sin cambios
+  desde §4 (poblado para SIN EXPLICACIÓN y LUNA VERDE, vacío para el resto).
+- `ALZA LA VOZ`: **BLOCKED, provider declarado (`alza-la-voz-external`) pero deliberadamente NO
+  implementado** — su Remotion es un repositorio independiente
+  (`D:\MATERIAL VIDEOS\ALZA LA VOZ\Alza-la-Voz`, propio `package.json`/`node_modules`). Integrarlo
+  requeriría invocar un proceso en otro repositorio — decisión arquitectónica aparte, no tomada.
+- Canales sin ningún provider (OBJETOS MALDITOS, LUNA VERDE, ENCIENDE EL CAOS, ASMR, PELICULAS,
+  MUSICA, CHISMES): siguen exactamente en el mismo estado que antes de Fase 4.8 — el registro los
+  clasifica correctamente, pero ningún canal nuevo puede producir contenido real hasta que exista
+  su propio `RenderProvider`.
+
+**Prueba real de multicanal (Fase 4.8, no fabricada):** `resolveRenderProvider()` se probó contra
+los 9 canales reales — 1 resuelve el provider real, 6 BLOCKED/HISTORICAL se rechazan con
+`ChannelNotProducibleError` (incluido ALZA LA VOZ, con provider declarado pero igual bloqueado por
+diseño), 2 TEST-sin-provider se rechazan con `ChannelProviderNotFoundError`. Ningún canal se
+fabricó ni se forzó a pasar. Ver `scripts/pipeline/test-render-provider.mts`
+(`npm run provider:test`, 13/13 PASS) y el informe de Fase 4.8.

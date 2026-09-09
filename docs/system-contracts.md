@@ -88,13 +88,22 @@ antes. Regla de agregación explícita, calculada por el orquestador (§4), no p
 
 ## 3. Contrato Ingesta → Agente 2 (reemplaza el actual "si existe el archivo, pasa")
 
+> **[ACTUALIZADO — Fase 4.3, IMPLEMENTADO]** `completenessChecker.mts` (Agente 2) **no se tocó**
+> — sigue exigiendo solo `Guion*.md` + (`Videos/` o `Imagenes/`), sin saber nada de manifests.
+> Lo que sí existe ahora es la capa de Ingesta (`agent/ingestion/`) que valida un `manifest.json`
+> **antes** de materializar los archivos en esa misma convención de carpetas — el manifest real
+> implementado es más simple que el ejemplo enriquecido de abajo (ver nota al final de esta
+> sección). El ejemplo con `classification`/`dedup`/`copyright_check` sigue siendo **DISEÑO, no
+> implementado** — sirve como dirección para cuando el Agente de investigación opcional exista.
+
 **[EVIDENCIA]** Contrato real hoy: `completenessChecker.mts` solo exige `Guion*.md` + (`Videos/`
 o `Imagenes/`). No valida fuentes, copyright, dedup, ni metadata.
 
-**[DECISIÓN]** Nuevo artefacto obligatorio por episodio: `manifest.json`, escrito por el módulo
-de **Ingesta** (no por "Agente 1" — la Ingesta es quien recibe el `ContentSubmission`, sea de
-una persona o del agente de investigación opcional, y lo convierte en este manifest; ver
-`docs/content-ingestion.md`), en la raíz de `D:\MATERIAL VIDEOS\<Canal>\<NNN>\`:
+**[DECISIÓN — diseño original, parcialmente implementado]** Nuevo artefacto obligatorio por
+episodio: `manifest.json`, escrito por el módulo de **Ingesta** (no por "Agente 1" — la Ingesta
+es quien recibe el `ContentSubmission`, sea de una persona o del agente de investigación
+opcional, y lo convierte en este manifest; ver `docs/content-ingestion.md`), en la raíz de
+`D:\MATERIAL VIDEOS\<Canal>\<NNN>\`:
 
 ```json
 {
@@ -118,10 +127,22 @@ una persona o del agente de investigación opcional, y lo convierte en este mani
 }
 ```
 
-**[DECISIÓN]** El gate de Agente 2 (extensión de `checkCompleteness`) pasa a exigir:
-`manifest.json` presente y bien formado + `classification` no vacía + guion referenciado
-existe + `copyright_check.protected_material_downloaded=false`. **Se mantiene READY sin exigir
-narración** (ya es correcto — se genera en Agente 2).
+**[IMPLEMENTADO — Fase 4.3, forma real]** El `manifest.json` que `agent/ingestion/validateManifest.mts`
+valida hoy es más simple que el ejemplo de arriba — `ContentSubmission`
+(`agent/ingestion/types.mts`): `submission_id`, `channel`, `episode_id?`, `files[]` (cada uno
+`{kind, path, sha256}`, `kind` ∈ `video|image|audio|script|reference`), `sources?`,
+`submission_checksum`, `schema_version`. La validación real (`VALID`/`INVALID`/`INCOMPLETE`/
+`INVALID_HASH`) verifica forma, existencia de cada archivo declarado, y que su SHA-256 real
+coincida — **no** valida todavía `classification`/`copyright_check`/`dedup` como campos
+estructurados (eso queda para cuando el agente de investigación opcional exista y tenga algo
+real que reportar ahí). `min_sources_met`/`copyright_check` como gate obligatorio **no están
+implementados** — siguen siendo diseño.
+
+**[DECISIÓN — diseño original, no implementado todavía]** El gate de Agente 2 (extensión de
+`checkCompleteness`) pasaría a exigir `classification` + `copyright_check.
+protected_material_downloaded=false` — **no se tocó `completenessChecker.mts`** en esta fase
+(regla explícita: no modificar Agente 2 salvo estrictamente necesario). **Se mantiene READY sin
+exigir narración** (ya era correcto antes — se genera en Agente 2).
 
 **[DECISIÓN — matiz por origen]** `min_sources_met` y `sources[]` siguen siendo **obligatorios**
 cuando `submitted_by` indica el agente de investigación opcional (mantiene la política ya
@@ -191,6 +212,17 @@ como adapter — su única función (publicar sin claim atómico) queda estricta
 (regla: no eliminar código); marcarlo `@deprecated` en un comentario y dejar de invocarlo desde
 cualquier workflow nuevo, una vez el motor único esté probado.
 
+**[IMPLEMENTADO — Fase 5.0]** La única pieza real que le faltaba al Flujo B para poder subsumir
+por completo al Flujo A era `cleanupVideoIfDone()` (borra el video de Storage cuando todas sus
+publicaciones ya terminaron en `published`). Se trajo a `agent/publish/storageBridge.mts` (misma
+lógica exacta, sin reescribirla) y se conecta desde `agent/publish/run.mts` tras una publicación
+real exitosa — con **fail isolation**: un error de limpieza se loguea pero nunca revierte ni
+bloquea la publicación ya registrada como exitosa. Solo aplica a Instagram/Facebook (lo que
+realmente pasa por Storage); YouTube sigue con entrega directa desde disco, sin Storage. El
+Flujo A (`scripts/publish-due-social-posts.mts`) sigue sin eliminarse (regla vigente), pero ya no
+tiene ninguna función que Flujo B no cubra. Publicación sigue OFF (`DRY_RUN=true` por defecto,
+sin cambios) — esta pieza es código real pero inactivo hasta que se autorice publicación real.
+
 ## 6. `episode_log` — bitácora, no bus de eventos
 
 > **[ACTUALIZADO — Fase 2.1, aprobado]** Esto NO es un catálogo de eventos con
@@ -224,9 +256,18 @@ bitácora.
 
 ## 7. Interfaces de abstracción (para no acoplar todo a rutas Windows / render desconocido)
 
+**[IMPLEMENTADO — Fase 4.3]** `ContentProvider`/`ContentPackage` (sección 3) ya son código real
+en `agent/ingestion/contentProvider.mts` y `agent/ingestion/contentPackage.mts` —
+`FsInboxContentProvider` es la única implementación, envuelve `scanEpisode()`/
+`checkCompleteness()` de `scripts/pipeline` sin modificarlos, y `ContentPackage.files` reutiliza
+el tipo `EpisodeFiles` existente vía `import type` (cero duplicación de esa forma).
+
 **[ACTUALIZADO]** El diseño completo de `StorageProvider` (con sus capas local/nube/repositorio
 y la evaluación A/B/C de respaldo de multimedia) se movió a `docs/storage-strategy.md` — aquí
-solo queda la firma que Agente 2 consume, sin cambiar su comportamiento actual:
+solo queda la firma que Agente 2 consume, sin cambiar su comportamiento actual. **`StorageProvider`
+formal como interfaz TypeScript sigue sin implementarse** — lo que Fase 4.3 sí implementó
+(`FsInboxContentProvider` materializando en `MATERIAL_ROOT`) cubre una parte de su responsabilidad
+de forma concreta, sin la interfaz genérica todavía:
 
 ```ts
 // StorageProvider — abstrae D:\MATERIAL VIDEOS (hoy) sin forzar su migración inmediata.
@@ -241,13 +282,41 @@ interface StorageProvider {
 // Implementación única inicial: LocalFsStorageProvider(MATERIAL_ROOT) — envuelve exactamente
 // lo que scripts/pipeline/materialScanner.mts + fileRegistry.mts ya hacen, sin reescribirlos.
 
-// RenderProvider — para no fingir saber cómo se renderizan 3 canales
+// RenderProvider — para no fingir saber cómo se renderizan todos los canales.
+// [IMPLEMENTADO Y VALIDADO — Fase 4.8] Firma real (scripts/pipeline/renderProvider.mts) —
+// dos operaciones nombradas (documental largo + clip corto) en vez de un render(manifest)
+// genérico, porque así es como processOne.mts realmente necesita invocarlo:
 interface RenderProvider {
-  render(manifest: EpisodeManifest): Promise<{ videoPath: string; hash: string }>;
+  id: string;
+  renderMain(episodeId: string): Promise<{ path: string; hash: string; reused: boolean }>;
+  renderClip(episodeId: string, clipIndex: number): Promise<{ path: string; hash: string; reused: boolean }>;
 }
-// Implementación conocida: RemotionPipelineRenderProvider (scripts/pipeline) — confirmado
-// para SIN EXPLICACIÓN únicamente.
-// ENCIENDE EL CAOS, ALZA LA VOZ, ASMR: RENDER_PROVIDER = UNKNOWN. No se implementa ninguna
-// clase para estos tres hasta investigar el mecanismo real (Fase posterior, fuera de esta
-// auditoría). Quedan BLOCKED para el orquestador automático hasta entonces.
 ```
+**Implementación real única: `documentaryRemotionProvider`**
+(`scripts/pipeline/documentaryRemotionProvider.mts`) — envuelve exactamente
+`MachineBridge.render.renderComposition` (Fase 4.5-4.7), sin reescribir nada. Resolución
+channel → provider vía `resolveRenderProvider()` (`scripts/pipeline/renderProviderRegistry.mts`),
+consumida desde `processOne.mts` — nunca un `if/else` por canal.
+
+**Estado real por canal (Fase 4.8, ver `scripts/pipeline/channelRegistry.mts` y
+`docs/architecture-unified.md` §11):**
+- `SIN EXPLICACIÓN`: `documentary-remotion` — único provider real e integrado.
+- `ALZA LA VOZ`: provider **declarado** (`alza-la-voz-external`, Remotion independiente en
+  `D:\MATERIAL VIDEOS\ALZA LA VOZ\Alza-la-Voz`) pero **NO implementado a propósito** — integrar un
+  proceso de otro repositorio es una decisión arquitectónica aparte, no tomada en esta fase.
+  `resolveRenderProvider("ALZA LA VOZ")` lanza `ChannelNotProducibleError` (canal BLOCKED, la
+  comprobación de estado tiene prioridad sobre la de provider).
+- `ENCIENDE EL CAOS`, `ASMR`, `PELICULAS`, `MUSICA`: BLOCKED, sin provider — `ChannelNotProducibleError`.
+- `OBJETOS MALDITOS`, `LUNA VERDE`: TEST, sin provider — `ChannelProviderNotFoundError` (error
+  específico, no un "Cannot read undefined").
+- `CHISMES`: HISTORICAL — `ChannelNotProducibleError`.
+
+**Investigación real de ALZA LA VOZ (Fase 4.9, Sección 12 — inspección de archivos, sin ejecutar nada):**
+- **Cómo renderiza:** `node scripts/render-all.mjs` dentro de `D:\MATERIAL VIDEOS\ALZA LA VOZ\Alza-la-Voz`, que hace `execSync("npx remotion render remotion/index.ts <id> out/<id>.mp4 --codec=h264")` por cada id de una lista **hardcodeada de 8 composiciones** (`motivadoras-vertical`, `motivadoras-square`, `mujeres-vertical`, ... — combinaciones tema×formato, NO una por episodio numérico).
+- **Inputs:** su propio `remotion/data/` + `remotion/QuoteVideo.tsx` — sin relación con `EpisodeFiles`/`scanEpisode()` de este repo.
+- **Outputs:** `out/<id>.mp4` dentro de ESE repositorio, no en `D:\MATERIAL VIDEOS\ALZA LA VOZ\<episodio>\`.
+- **Depende de su propio `package.json`/`node_modules`:** sí, completamente independiente (mismo `remotion@4.0.512` por coincidencia, no por acoplamiento).
+- **¿Puede invocarse como proceso controlado, de forma nominal?** Técnicamente sí — `execFileSync("npx", [...], { cwd: ALZA_LA_VOZ_ROOT })` sería una operación nombrada, no un `execute(command)` arbitrario. **Pero NO se implementa en esta fase** por dos motivos reales, no por precaución genérica:
+  1. **No existe mapeo real episodeId → compositionId.** Las carpetas reales en disco (`001_Frases_Motivadoras`, `002_Frases_para_la_Mujer`, ...) no corresponden 1:1 a los 8 ids hardcodeados en `render-all.mjs` (que son tema×formato, no episodio×nada) — construir ese mapeo requeriría inspeccionar `remotion/data/` de ese repo con más profundidad, trabajo no hecho.
+  2. **Expandiría el perímetro de confianza de MachineBridge.** `RenderBridge`/`renderer.mts` están deliberadamente acotados a `REPO_ROOT` (cwd fijo, `out/` como única raíz de salida segura — Fase 4.5). Permitir un segundo root externo (`D:\MATERIAL VIDEOS\ALZA LA VOZ\Alza-la-Voz`) es una decisión de seguridad real (expandir qué directorios puede tocar el proceso de render), no un simple cambio de configuración — queda documentada, no tomada unilateralmente.
+- **Conclusión:** `alza-la-voz-external` permanece **DECLARED / NOT INTEGRATED** (Sección 28) — correcto mantenerlo así hasta una decisión explícita sobre el punto 2.
