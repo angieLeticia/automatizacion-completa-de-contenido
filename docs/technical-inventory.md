@@ -30,7 +30,7 @@ Estado real del sistema, componente por componente. Categorías usadas: `IMPLEME
 | Agent 2 — watcher/queue/lock | `scripts/pipeline/{agent,queue,agentLock}.mts` | Orquestación real, sin cambios de arquitectura | chokidar, filesystem | — | `VALIDADO` |
 | Agent 2 — `processOne.mts` | `scripts/pipeline/processOne.mts` | Pipeline real de un episodio | MachineBridge, RenderProvider | `agent.mts` | `VALIDADO` (COMPLETED real, Fase 5.1) |
 | `PublicationCandidate` | `agent/publish/publicationCandidate.mts` | Contrato metadata multiplataforma | ninguna | Agent 3 (futuro) | `VALIDADO` (contrato + construcción real con contenido real) |
-| Agent 3 — Flow B unificado | `agent/publish/{run,claimPost,resolveContentFile,resolveIdentity,storageBridge,retryPolicy}.mts` | Publicación real endurecida, DRY_RUN por defecto | Supabase | — | `IMPLEMENTADO`, `NOT VERIFIED` en vivo (sin credenciales en este worktree) |
+| Agent 3 — Flow B unificado | `agent/publish/{run,claimPost,resolveContentFile,resolveIdentity,storageBridge,retryPolicy}.mts` | Publicación real endurecida, DRY_RUN por defecto | Supabase | — | `IMPLEMENTADO`, `NOT VERIFIED` en vivo (sin credenciales en este worktree — ver [phase-5.2-supabase-verification.md](phase-5.2-supabase-verification.md), incluye gap encontrado: `channel_status` no se verifica en la ruta de publicación, solo en la de render) |
 | Agent 3 — Flow A (legacy) | `scripts/publish-due-social-posts.mts` | Publicación simple, sin claim atómico | Supabase | — | `LEGACY` (sin funciones que Flow B no cubra ya, desde Fase 5.0) |
 | `scheduleOptimization.mts` | `agent/schedule/scheduleOptimization.mts` | Contrato Etapa 2 (métricas→horario) | `post_metrics` (vacía) | ninguno | `FUTURO`, deliberadamente `NOT_IMPLEMENTED` |
 | `findNextAvailableWindow` | `agent/schedule/findNextWindow.mts` | Resolución real de horario por canal/plataforma/día | `posting_schedule_rules` (Supabase) | `scheduleContent.mts` | `IMPLEMENTADO`, `NOT VERIFIED` en vivo aquí |
@@ -42,6 +42,6 @@ Estado real del sistema, componente por componente. Categorías usadas: `IMPLEME
 
 | Repositorio | Estado en GitHub | Código real | Decisión |
 |---|---|---|---|
-| `angieLeticia/Alza-la-Voz` | Vacío (`git ls-remote` = 0 refs) | Sí, local en D:\, 0 commits reales | **Migrado** a este repo (`remotion/QuoteVideo.tsx` + `channels/alza-la-voz/`) — pendiente decisión de eliminación del shell vacío en GitHub |
+| `angieLeticia/Alza-la-Voz` | Vacío (`git ls-remote` = 0 refs, reconfirmado Fase 5.2) | Sí, local en D:\, 0 commits reales | **Migrado** a este repo (`remotion/QuoteVideo.tsx` + `channels/alza-la-voz/`). `EXTERNAL_REPO_RETIREMENT_PENDING_HUMAN_ACTION` — sin `gh` CLI ni token de GitHub en este entorno, el borrado del repositorio vacío en GitHub debe hacerlo una persona (Settings → Danger Zone → Delete this repository) |
 | PELICULAS | No existe evidencia | No existe `.git` ni `package.json` bajo `D:\MATERIAL VIDEOS\PELICULAS` | Ninguna acción — no hay repositorio que migrar ni eliminar |
 | MUSICA | No existe evidencia | No existe `.git` ni `package.json` bajo `D:\MATERIAL VIDEOS\MUSICA` | Ninguna acción — no hay repositorio que migrar ni eliminar |

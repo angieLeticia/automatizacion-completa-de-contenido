@@ -49,6 +49,11 @@ Documentos de referencia:
   es el único punto de acceso a ffmpeg/ffprobe/whisper/Remotion/filesystem.
 - [`docs/operational-status.md`](docs/operational-status.md) — estado real de cada uno
   de los 9 canales conocidos (evidencia física, no aspiracional).
+- [`docs/phase-5.2-supabase-verification.md`](docs/phase-5.2-supabase-verification.md) —
+  auditoría de código de las tablas/variables que usa Agent 3, y por qué la
+  verificación contra Supabase real está detenida (sin credenciales en este
+  worktree). Incluye un gap real encontrado: `channel_status` no se valida en
+  la ruta de publicación.
 
 ### Flujo de un episodio (canal ya producible)
 
