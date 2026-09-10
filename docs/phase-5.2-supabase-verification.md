@@ -70,13 +70,37 @@ gating de canal que no están unificados — el de render (fuerte, por
 `is_active` y `channel_status` se mantengan consistentes manualmente esto no
 es un bug observable, pero es una inconsistencia arquitectónica real que
 debería cerrarse antes de activar publicación real para cualquier canal fuera
-de SIN EXPLICACIÓN. **No se modificó código para esto — requiere una decisión
-de diseño (¿el gate va en `resolveIdentity`? ¿en `claimPost`? ¿en ambos?) que
-corresponde a una fase explícita, no a un cambio silencioso aquí.**
+de SIN EXPLICACIÓN.
 
-Estado: `IDENTITY: NOT VERIFIED` (lógica revisada y consistente por
-inspección de código; sin conexión real no se puede confirmar contra datos
-reales, y el gap de `channel_status` queda documentado, no cerrado).
+**Actualización — Fase 5.2.1 (gap cerrado en código, IMPLEMENTED):**
+`agent/publish/channelAuthorization.mts` añade `evaluateChannelAuthorization(channelStatus)`,
+una función pura (sin ningún import de Supabase) que decide:
+- `channel_status IN ('BLOCKED', 'HISTORICAL')` → `{ blocked: true, reason: ... }` —
+  `resolveAndValidateIdentity()` la usa (ver `resolveIdentity.mts`, ahora selecciona
+  también `channel_status` junto a `channel_id`) y devuelve `{ ok: false, reason }`
+  ANTES de que el post pueda llegar a `claimPost`/`run.mts`'s publish branch —
+  igual que el mismatch de `channel_id` ya existente, mismo patrón, sin duplicación.
+- `channel_status === 'ACTIVE'` → único estado que autoriza publicación real
+  (`authorizedForRealPublication: true`).
+- `channel_status IN ('TEST', 'READY')` (y `null`/desconocido) → no bloquea el
+  resto del flujo (claim/schedule funcionan igual), pero
+  `authorizedForRealPublication: false` — `READY` se decide así explícitamente
+  por ambigüedad de contrato (ver comentario en `channelAuthorization.mts`),
+  no se inventa que signifique publicación real.
+
+`agent/publish/run.mts` combina esto con el DRY_RUN global SIN que ninguno
+sustituya al otro: `if (DRY_RUN || !identityOutcome.authorizedForRealPublication)`
+— la publicación real solo ocurre cuando AMBAS condiciones lo permiten.
+
+Cubierto por 15 casos reales en `agent/publish/test-publication-authorization.mts`
+(`npm run publish-authorization:test`), sin necesitar Supabase — ver detalle en
+`docs/phase-5.2.1-identity-channel-status.md`.
+
+Estado: `IDENTITY: IMPLEMENTED` (channel_status ahora forma parte del contrato de
+autorización, en código, probado sin Supabase). `VERIFIED AGAINST REAL SUPABASE:
+NOT VERIFIED` — sigue sin conexión real para confirmar `content_accounts.channel_status`
+tal como está en producción, y para ejercitar `resolveAndValidateIdentity()`/`run.mts`
+de punta a punta (ambos requieren el cliente Supabase real para poder importarse).
 
 ## 4. Scheduling — hallazgo de auditoría estática
 
@@ -116,7 +140,7 @@ Estado: `IDEMPOTENCY: IMPLEMENTADO (schema declarado) / NOT VERIFIED (producció
 | Área | Estado |
 |---|---|
 | Supabase connection | `NOT VERIFIED` — credenciales ausentes en este worktree |
-| Identity (lógica) | `NOT VERIFIED` — código consistente por inspección; gap de `channel_status` documentado, no cerrado |
+| Identity (lógica) | `IMPLEMENTED` (Fase 5.2.1: `channel_status` ahora forma parte del contrato — ver §3) / `NOT VERIFIED AGAINST REAL SUPABASE` |
 | Channel identity isolation | `NOT VERIFIED` — el check `channel_id` existe en código; sin datos reales no se ejercitó |
 | Scheduling | `NOT VERIFIED` |
 | Atomic claim | `NOT VERIFIED` contra datos reales (mecanismo revisado y correcto por inspección de código) |

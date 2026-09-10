@@ -77,11 +77,17 @@ async function processPost(postId: string): Promise<void> {
     }
   }
 
-  if (DRY_RUN) {
+  // Fase 5.2.1: channel_status es un control ADICIONAL a DRY_RUN, nunca un
+  // sustituto — un canal sin authorizedForRealPublication (channel_status
+  // distinto de ACTIVE) se trata igual que DRY_RUN=true, sin importar el
+  // valor global de DRY_RUN (evita que activar DRY_RUN=false para un canal
+  // ACTIVE arrastre consigo canales TEST/READY).
+  if (DRY_RUN || !identityOutcome.authorizedForRealPublication) {
     log.info("[PUBLISH][DRY_RUN] Se habria publicado - deteniendose ANTES de llamar a la API externa", {
       postId: post.id,
       platform,
       socialAccountLabel: identityOutcome.account.label,
+      reason: DRY_RUN ? "DRY_RUN" : `channel_status='${identityOutcome.channelStatus}' no autoriza publicación real`,
       ...deliveryLog,
       title: post.title,
       hashtagCount: post.hashtags.length,

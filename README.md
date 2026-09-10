@@ -52,8 +52,11 @@ Documentos de referencia:
 - [`docs/phase-5.2-supabase-verification.md`](docs/phase-5.2-supabase-verification.md) —
   auditoría de código de las tablas/variables que usa Agent 3, y por qué la
   verificación contra Supabase real está detenida (sin credenciales en este
-  worktree). Incluye un gap real encontrado: `channel_status` no se valida en
-  la ruta de publicación.
+  worktree).
+- [`docs/phase-5.2.1-identity-channel-status.md`](docs/phase-5.2.1-identity-channel-status.md) —
+  cierre del gap anterior: `content_accounts.channel_status` ahora forma
+  parte del contrato de autorización de publicación de Agent 3
+  (`agent/publish/channelAuthorization.mts`), no solo del de render.
 
 ### Flujo de un episodio (canal ya producible)
 
