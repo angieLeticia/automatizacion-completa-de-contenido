@@ -164,3 +164,18 @@ inventaron ni se solicitaron credenciales — este documento existe para que,
 cuando esas credenciales estén disponibles (en un entorno controlado, nunca
 compartidas en texto plano al asistente), la Fase 5.2 pueda retomarse
 exactamente en la Sección 6 sin repetir el trabajo de código ya hecho aquí.
+
+## 9. Fase 5.2.2 — re-chequeo de credenciales
+
+Re-verificado al inicio de Fase 5.2.2 (2026-09-10, mismo worktree):
+`NEXT_PUBLIC_SUPABASE_URL` = `MISSING`, `SUPABASE_SERVICE_ROLE_KEY` = `MISSING`,
+`.env.local` sigue sin existir en disco. Sin cambio de estado desde el cierre
+de Fase 5.2. Por regla explícita de Fase 5.2.2 ("si alguna falta, detente en
+la parte que requiera conexión real"), la fase completa de verificación en
+vivo (Secciones 3-19 de su encargo: solo-lectura, auditoría de schema real,
+content_accounts/social_accounts reales, identity/channel_status/scheduling/
+idempotencia/atomic claim/Flow B contra datos reales, E2E) queda `BLOCKED` —
+ninguna requiere una decisión de diseño ni fue "no se pudo demostrar", sino
+que ninguna pudo siquiera intentarse por ausencia de credenciales. Ningún
+código fue modificado en Fase 5.2.2 — nada que verificar en vivo pudo
+ejecutarse.
