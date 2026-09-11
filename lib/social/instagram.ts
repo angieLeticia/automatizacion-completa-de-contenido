@@ -13,7 +13,11 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function publishToInstagram(post: SocialPost, creds: InstagramCredentials): Promise<PublishResult> {
+export async function publishToInstagram(
+  post: SocialPost,
+  creds: InstagramCredentials,
+  onOperationRef?: (ref: string) => void | Promise<void>
+): Promise<PublishResult> {
   const createRes = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${creds.ig_user_id}/media`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -28,6 +32,12 @@ export async function publishToInstagram(post: SocialPost, creds: InstagramCrede
     throw new Error(`No se pudo crear el contenedor de Instagram: ${createRes.status} ${await createRes.text()}`);
   }
   const { id: creationId } = (await createRes.json()) as { id: string };
+
+  // Fase 5.4 — reporta la referencia real ANTES del polling (hasta 5 min) y
+  // antes de media_publish. Confirmado por documentación oficial de Meta:
+  // GET /{creation_id}?fields=status_code está pensado exactamente para
+  // reconciliar este escenario (ver agent/publish/reconciliation.mts).
+  if (onOperationRef) await onOperationRef(creationId);
 
   const deadline = Date.now() + POLL_TIMEOUT_MS;
   let statusCode = "IN_PROGRESS";

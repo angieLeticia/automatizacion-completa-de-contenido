@@ -6,6 +6,7 @@
 import { supabaseAdmin } from "../supabaseClient.mts";
 import { CLAIMED_AT_MIGRATION_APPLIED, STALE_CLAIM_MINUTES, MAX_RETRIES } from "./config.mts";
 import { decideRetry } from "./retryPolicy.mts";
+import { classifyStaleClaim, publishAttemptPlaceholder } from "./staleClaimClassification.mts";
 import type { SocialPostRow } from "./types.mts";
 
 // Devuelve la fila si este proceso gano el claim, o null si perdio (otro proceso
@@ -44,14 +45,45 @@ export async function revertToPending(postId: string): Promise<void> {
   const updatePayload: Record<string, unknown> = { status: "pending" };
   if (CLAIMED_AT_MIGRATION_APPLIED) {
     updatePayload.claimed_at = null;
+    updatePayload.publisher_operation_ref = null;
   }
   const { error } = await supabaseAdmin.from("social_posts").update(updatePayload).eq("id", postId).eq("status", "publishing");
   if (error) throw new Error(`Error al revertir social_post ${postId} a pending: ${error.message}`);
 }
 
-// INERTE hasta que se apruebe y ejecute la migracion "ADD COLUMN claimed_at" -
-// mientras CLAIMED_AT_MIGRATION_APPLIED sea false, esta funcion no hace nada y
-// nunca se llama desde run.mts. Preparada para cuando se active.
+// Fase 5.4 — se llama INMEDIATAMENTE antes de invocar al publisher real
+// (run.mts), para CUALQUIER plataforma, incluidas las que no tienen una
+// referencia intermedia real (Facebook). Escribe un placeholder
+// "pending:<platform>" — no una referencia real todavía, pero suficiente para
+// que classifyStaleClaim() nunca confunda "estamos a punto de publicar" con
+// "nunca llegamos a intentarlo". Si el publisher SÍ obtiene una referencia
+// real después (YouTube/Instagram), persistOperationRef() la sobreescribe.
+export async function markPublishAttemptStarted(postId: string, platform: string): Promise<void> {
+  if (!CLAIMED_AT_MIGRATION_APPLIED) return; // sin la columna aplicada, no hay nada seguro que escribir
+  const { error } = await supabaseAdmin
+    .from("social_posts")
+    .update({ publisher_operation_ref: publishAttemptPlaceholder(platform) })
+    .eq("id", postId)
+    .eq("status", "publishing");
+  if (error) throw new Error(`Error marcando intento de publicación para ${postId}: ${error.message}`);
+}
+
+// Fase 5.4 — llamado por el publisher (vía el callback onOperationRef) en
+// cuanto obtiene una referencia real de la plataforma (uploadUrl de YouTube,
+// creationId de Instagram), sobreescribiendo el placeholder de arriba.
+export async function persistOperationRef(postId: string, ref: string): Promise<void> {
+  if (!CLAIMED_AT_MIGRATION_APPLIED) return;
+  const { error } = await supabaseAdmin
+    .from("social_posts")
+    .update({ publisher_operation_ref: ref })
+    .eq("id", postId)
+    .eq("status", "publishing");
+  if (error) throw new Error(`Error persistiendo publisher_operation_ref para ${postId}: ${error.message}`);
+}
+
+// INERTE hasta que se apruebe y ejecute la migracion (columnas claimed_at +
+// publisher_operation_ref) - mientras CLAIMED_AT_MIGRATION_APPLIED sea false,
+// esta funcion no hace nada. Preparada para cuando se active.
 //
 // Condicion de claim huerfano: status='publishing' AND claimed_at mas antiguo
 // que STALE_CLAIM_MINUTES. Un claim que sigue procesando de verdad (ej. la
@@ -60,30 +92,57 @@ export async function revertToPending(postId: string): Promise<void> {
 // ver config.mts) y nunca se toca de nuevo mientras el proceso sigue vivo, asi
 // que un claim realmente en curso y uno huerfano solo se distinguen por tiempo.
 //
-// Interaccion con retry_count: recuperar un claim huerfano se trata exactamente
-// como un fallo reintentable mas (no se inventa un mecanismo de conteo aparte) -
-// reutiliza decideRetry() para que la recuperacion respete el mismo limite de
-// MAX_RETRIES que cualquier otro fallo, evitando que un post se recupere en
-// bucle infinito si el crash se repite.
-export async function recoverStaleClaims(): Promise<{ recoveredToPending: number; movedToError: number }> {
+// Fase 5.4 - CASO A vs CASO B/C (ver staleClaimClassification.mts,
+// docs/phase-5.4-claim-recovery.md): NUNCA se asume "seguro reintentar" solo
+// por el timeout. publisher_operation_ref es la evidencia real: NULL = el
+// publisher jamas pudo haberse llamado (CASO A, unico caso que reintenta
+// automaticamente); cualquier otro valor = pudo haberse llamado (CASO B/C,
+// SIEMPRE termina en verification_required, nunca en pending automatico).
+//
+// CASO A - interaccion con retry_count: se trata exactamente como un fallo
+// reintentable mas (no se inventa un mecanismo de conteo aparte) - reutiliza
+// decideRetry() para que la recuperacion respete el mismo limite de
+// MAX_RETRIES que cualquier otro fallo (CASO E), evitando que un post se
+// recupere en bucle infinito si el crash se repite.
+export async function recoverStaleClaims(): Promise<{ recoveredToPending: number; movedToVerification: number; movedToError: number }> {
   if (!CLAIMED_AT_MIGRATION_APPLIED) {
-    return { recoveredToPending: 0, movedToError: 0 };
+    return { recoveredToPending: 0, movedToVerification: 0, movedToError: 0 };
   }
 
   const cutoff = new Date(Date.now() - STALE_CLAIM_MINUTES * 60_000).toISOString();
   const { data: stale, error } = await supabaseAdmin
     .from("social_posts")
-    .select("id, retry_count")
+    .select("id, retry_count, publisher_operation_ref")
     .eq("status", "publishing")
     .lt("claimed_at", cutoff);
 
   if (error) throw new Error(`Error buscando claims huerfanos: ${error.message}`);
 
   let recoveredToPending = 0;
+  let movedToVerification = 0;
   let movedToError = 0;
 
   for (const row of stale ?? []) {
-    const decision = decideRetry("retryable", row.retry_count);
+    const classification = classifyStaleClaim(row.publisher_operation_ref);
+
+    let updatePayload: Record<string, unknown>;
+    if (classification.action === "retry") {
+      const decision = decideRetry("retryable", row.retry_count);
+      updatePayload = {
+        status: decision.nextStatus,
+        retry_count: decision.nextRetryCount,
+        claimed_at: null,
+        publisher_operation_ref: null,
+        error_message: `Claim huerfano recuperado tras ${STALE_CLAIM_MINUTES} minutos sin actividad (posible crash del proceso, ${classification.reason}). Intento ${decision.nextRetryCount}/${MAX_RETRIES}.`,
+      };
+    } else {
+      updatePayload = {
+        status: "verification_required",
+        claimed_at: null,
+        error_message: `Claim huerfano con posible intento de publicación real (${classification.reason}). Requiere reconciliación o revisión humana - NO reintentado automáticamente.`,
+      };
+    }
+
     // .select() + .maybeSingle() en el UPDATE condicional deja ver si ESTE
     // proceso realmente gano la fila (fila devuelta) o si otro barrido
     // concurrente ya la habia recuperado primero (0 filas, WHERE ya no
@@ -91,21 +150,18 @@ export async function recoverStaleClaims(): Promise<{ recoveredToPending: number
     // fila dos veces en sus totales aunque el dato en si ya este protegido.
     const { data: updated, error: updateError } = await supabaseAdmin
       .from("social_posts")
-      .update({
-        status: decision.nextStatus,
-        retry_count: decision.nextRetryCount,
-        claimed_at: null,
-        error_message: `Claim huerfano recuperado tras ${STALE_CLAIM_MINUTES} minutos sin actividad (posible crash del proceso). Intento ${decision.nextRetryCount}/${MAX_RETRIES}.`,
-      })
+      .update(updatePayload)
       .eq("id", row.id)
       .eq("status", "publishing") // sigue siendo un UPDATE condicional - atomico frente a otro barrido concurrente
       .select("id")
       .maybeSingle();
     if (updateError) throw new Error(`Error recuperando claim huerfano ${row.id}: ${updateError.message}`);
     if (!updated) continue; // otro recuperador concurrente ya la tomo primero
-    if (decision.nextStatus === "pending") recoveredToPending++;
+
+    if (updatePayload.status === "verification_required") movedToVerification++;
+    else if (updatePayload.status === "pending") recoveredToPending++;
     else movedToError++;
   }
 
-  return { recoveredToPending, movedToError };
+  return { recoveredToPending, movedToVerification, movedToError };
 }

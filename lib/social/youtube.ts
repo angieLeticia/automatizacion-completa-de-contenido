@@ -50,7 +50,11 @@ async function resolveVideoSource(post: SocialPost): Promise<{ stream: ReadableS
   return { stream: videoRes.body, contentLength };
 }
 
-export async function publishToYouTube(post: SocialPost, creds: YouTubeCredentials): Promise<PublishResult> {
+export async function publishToYouTube(
+  post: SocialPost,
+  creds: YouTubeCredentials,
+  onOperationRef?: (ref: string) => void | Promise<void>
+): Promise<PublishResult> {
   const accessToken = await getAccessToken(creds);
   const { stream, contentLength } = await resolveVideoSource(post);
 
@@ -83,6 +87,13 @@ export async function publishToYouTube(post: SocialPost, creds: YouTubeCredentia
   if (!uploadUrl) {
     throw new Error("YouTube no devolvió la URL de subida resumible (header Location).");
   }
+
+  // Fase 5.4 — reporta la referencia real ANTES de subir los bytes (puede
+  // tardar minutos para archivos grandes) para que quede persistida si el
+  // proceso muere durante la subida. Confirmado por documentación oficial de
+  // Google: esta misma uploadUrl permite reconciliar después (ver
+  // agent/publish/reconciliation.mts).
+  if (onOperationRef) await onOperationRef(uploadUrl);
 
   const uploadRes = await fetch(uploadUrl, {
     method: "PUT",

@@ -2,7 +2,12 @@
 // interfaz SocialPost quedo desactualizada desde la Fase 1 (le faltan
 // content_file_id/hashtags/retry_count/schedule_rule_id) y no se toca aqui.
 export type SocialPlatform = "youtube" | "instagram" | "facebook" | "tiktok";
-export type SocialPostStatus = "pending" | "publishing" | "published" | "error";
+// Fase 5.4 — "verification_required": un post cuyo claim venció Y para el que
+// existe evidencia (real o de placeholder, ver claimPost.mts) de que se pudo
+// haber llamado al publisher real. Nunca se alcanza por inferencia/timeout
+// solo — requiere reconciliación explícita o revisión humana para salir de
+// aquí (ver docs/phase-5.4-claim-recovery.md).
+export type SocialPostStatus = "pending" | "publishing" | "published" | "error" | "verification_required";
 
 export interface SocialPostRow {
   id: string;
@@ -21,6 +26,15 @@ export interface SocialPostRow {
   schedule_rule_id: string | null;
   created_at: string;
   published_at: string | null;
+  // Fase 5.4 — solo se lee/escribe si CLAIMED_AT_MIGRATION_APPLIED=true (la
+  // columna todavía no existe en producción real, ver supabase/schema.sql).
+  claimed_at?: string | null;
+  // Fase 5.4 — NULL = nunca se intentó llamar al publisher real (seguro
+  // reintentar). "pending:<platform>" = intento marcado pero sin referencia
+  // real de la plataforma (ej. Facebook). Cualquier otro valor = referencia
+  // real de la plataforma (uploadUrl de YouTube, creationId de Instagram) —
+  // ver agent/publish/staleClaimClassification.mts.
+  publisher_operation_ref?: string | null;
 }
 
 export interface SocialAccountRow {

@@ -132,7 +132,19 @@ CREATE TABLE IF NOT EXISTS public.social_posts (
   title             TEXT,
   caption           TEXT,
   scheduled_at      TIMESTAMPTZ NOT NULL,
-  status            TEXT        NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'publishing', 'published', 'error')),
+  -- [MODIFICADO — Fase 5.4, no aplicado aún en producción] agrega
+  -- 'verification_required': un claim vencido para el que existe evidencia
+  -- (real o de placeholder, ver publisher_operation_ref abajo) de que el
+  -- publisher real pudo haberse llamado. NUNCA se alcanza por inferencia —
+  -- ver docs/phase-5.4-claim-recovery.md. El ALTER TABLE real, dado que este
+  -- CHECK es un constraint de columna sin nombre explícito, es:
+  --   ALTER TABLE public.social_posts DROP CONSTRAINT social_posts_status_check;
+  --   ALTER TABLE public.social_posts ADD CONSTRAINT social_posts_status_check
+  --     CHECK (status IN ('pending','publishing','published','error','verification_required'));
+  -- (nombre inferido por la convención ya confirmada real en esta misma base
+  -- para content_accounts_channel_status_check, Fase 5.2.2 — no verificado
+  -- para ESTE constraint específico hasta ejecutarlo).
+  status            TEXT        NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'publishing', 'published', 'error', 'verification_required')),
   external_post_id  TEXT,
   error_message     TEXT,
   created_at        TIMESTAMPTZ DEFAULT NOW(),
@@ -151,7 +163,17 @@ CREATE TABLE IF NOT EXISTS public.social_posts (
   -- publicación no debe publicar en real así DRY_RUN=false (ver
   -- docs/system-contracts.md §4).
   publication_authorized_at TIMESTAMPTZ,
-  publication_authorized_by TEXT
+  publication_authorized_by TEXT,
+  -- [NUEVO — Fase 5.4, no aplicado aún en producción]
+  -- NULL = el publisher real nunca pudo haberse llamado para este claim
+  -- (seguro reintentar automáticamente). "pending:<platform>" = se marcó el
+  -- intento pero no hay referencia real de la plataforma (Facebook, o un
+  -- crash antes de obtenerla). Cualquier otro valor = referencia real
+  -- (uploadUrl de YouTube, creationId de Instagram) — permite reconciliar
+  -- contra la plataforma real. Ver agent/publish/staleClaimClassification.mts
+  -- y docs/phase-5.4-claim-recovery.md. ALTER TABLE real necesario:
+  --   ALTER TABLE public.social_posts ADD COLUMN publisher_operation_ref TEXT NULL;
+  publisher_operation_ref TEXT
 );
 ALTER TABLE public.social_posts ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Solo sistema gestiona social_posts" ON public.social_posts;

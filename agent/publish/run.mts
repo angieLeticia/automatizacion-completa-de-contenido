@@ -12,7 +12,7 @@ import "./config.mts";
 import { supabaseAdmin } from "../supabaseClient.mts";
 import { log } from "../logger.mts";
 import { DRY_RUN, CLAIMED_AT_MIGRATION_APPLIED } from "./config.mts";
-import { claimPost, revertToPending } from "./claimPost.mts";
+import { claimPost, revertToPending, recoverStaleClaims, markPublishAttemptStarted, persistOperationRef } from "./claimPost.mts";
 import { resolveAndVerifyContentFile } from "./resolveContentFile.mts";
 import { ensureUploadedToStorage, cleanupVideoIfDone } from "./storageBridge.mts";
 import { resolveAndValidateIdentity } from "./resolveIdentity.mts";
@@ -104,11 +104,24 @@ async function processPost(postId: string): Promise<void> {
     return;
   }
 
+  // Fase 5.4 - checkpoint ANTES de llamar al publisher real, para CUALQUIER
+  // plataforma (incluida Facebook, que nunca obtiene una referencia real) -
+  // es lo que le permite a recoverStaleClaims() distinguir con certeza "nunca
+  // llegamos a intentar publicar" (CASO A, seguro reintentar) de "pudimos
+  // haber llamado a la plataforma real" (CASO B/C, nunca reintento
+  // automatico). Ver docs/phase-5.4-claim-recovery.md.
+  await markPublishAttemptStarted(post.id, platform);
+
   try {
-    const { externalPostId } = await publish(postForPublisher as unknown as Parameters<typeof publish>[0], identityOutcome.account.credentials);
+    const { externalPostId } = await publish(
+      postForPublisher as unknown as Parameters<typeof publish>[0],
+      identityOutcome.account.credentials,
+      CLAIMED_AT_MIGRATION_APPLIED ? (ref) => persistOperationRef(post.id, ref) : undefined
+    );
     const publishedPayload: Record<string, unknown> = { status: "published", external_post_id: externalPostId, published_at: new Date().toISOString(), error_message: null };
     if (CLAIMED_AT_MIGRATION_APPLIED) {
       publishedPayload.claimed_at = null;
+      publishedPayload.publisher_operation_ref = null;
     }
     await supabaseAdmin.from("social_posts").update(publishedPayload).eq("id", post.id);
     log.info("[PUBLISH] Publicado con exito", { postId: post.id, externalPostId });
@@ -142,12 +155,22 @@ async function finishWithFailure(post: SocialPostRow, reason: string, retryable:
   const updatePayload: Record<string, unknown> = { status: decision.nextStatus, retry_count: decision.nextRetryCount, error_message: reason };
   if (CLAIMED_AT_MIGRATION_APPLIED) {
     updatePayload.claimed_at = null;
+    updatePayload.publisher_operation_ref = null;
   }
   await supabaseAdmin.from("social_posts").update(updatePayload).eq("id", post.id);
 }
 
 async function main() {
   log.info(`[PUBLISH] Iniciando capa de publicacion endurecida (Fase 4B.1). DRY_RUN=${DRY_RUN}`);
+
+  // Fase 5.4 - mismo patron ya probado en agent/analyze/run.mts:28 (Agent 2):
+  // recuperar claims huerfanos ANTES de buscar trabajo nuevo. Inerte por
+  // completo mientras CLAIMED_AT_MIGRATION_APPLIED=false (default), ver
+  // claimPost.mts::recoverStaleClaims().
+  const recovery = await recoverStaleClaims();
+  if (recovery.recoveredToPending || recovery.movedToVerification || recovery.movedToError) {
+    log.info("[PUBLISH] Claims huerfanos recuperados", recovery);
+  }
 
   const { data: dueRows, error } = await supabaseAdmin
     .from("social_posts")

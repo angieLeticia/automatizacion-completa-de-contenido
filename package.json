@@ -23,7 +23,8 @@
     "machine:test": "tsx agent/machine/test-machine-bridge.mts",
     "provider:test": "tsx scripts/pipeline/test-render-provider.mts",
     "derived-content:test": "tsx scripts/pipeline/test-derived-content.mts",
-    "publish-authorization:test": "tsx agent/publish/test-publication-authorization.mts"
+    "publish-authorization:test": "tsx agent/publish/test-publication-authorization.mts",
+    "claim-recovery:test": "tsx agent/publish/test-claim-recovery.mts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",
