@@ -127,7 +127,25 @@ inyección de dependencias — fuera del alcance de una "corrección mínima".
 ## 8. Estado final de esta fase
 
 - `IDENTITY`: `IMPLEMENTED` (channel_status es ahora parte del contrato, en
-  código, probado sin Supabase) — `NOT VERIFIED AGAINST REAL SUPABASE`.
-- `PUBLICATION AUTHORIZATION`: `IMPLEMENTED` — `NOT VERIFIED AGAINST REAL SUPABASE`.
-- `SUPABASE`: sigue `NOT VERIFIED` (sin credenciales, sin cambios en esta fase).
+  código, probado sin Supabase) — `NOT VERIFIED AGAINST REAL SUPABASE` **en el
+  momento en que se escribió esta fase**.
+- `PUBLICATION AUTHORIZATION`: `IMPLEMENTED` — `NOT VERIFIED AGAINST REAL SUPABASE` **en el momento en que se escribió esta fase**.
+- `SUPABASE`: `NOT VERIFIED` **en el momento en que se escribió esta fase** (sin credenciales, sin cambios en esta fase).
 - `PUBLICACIÓN REAL`: `OFF` (sin cambios).
+
+**Actualización — Fase 5.2.2 (VERIFICADO EN SUPABASE REAL):** con credenciales
+reales disponibles, se aplicó el `ALTER TABLE` que esta fase ya había dejado
+como cambio de schema pendiente (`supabase/schema.sql` líneas 52-57, sin
+modificar), y se re-ejecutó `resolveAndValidateIdentity()` (solo lectura)
+contra un `social_post` real — el resultado pasó de un error de schema
+("content_account no encontrada") al bloqueo de negocio correcto
+("channel_status='HISTORICAL' no autoriza publicación"). El código de esta
+fase (`channelAuthorization.mts`, `resolveIdentity.mts`, `run.mts`) **no
+necesitó ningún cambio** — funcionó exactamente como estaba escrito, sin
+workarounds relacionados con la ausencia de la columna. Detalle completo en
+[`phase-5.2-supabase-verification.md`](phase-5.2-supabase-verification.md) §10.
+
+- `IDENTITY`: **`VERIFIED AGAINST REAL SUPABASE`**.
+- `PUBLICATION AUTHORIZATION`: **`VERIFIED AGAINST REAL SUPABASE`** (el gate bloquea correctamente; el camino positivo con `channel_status='ACTIVE'` sigue sin datos reales que lo autoricen — ningún canal está en `ACTIVE`).
+- `SUPABASE`: **`VERIFIED`** (conexión real, schema real, datos reales).
+- `PUBLICACIÓN REAL`: `OFF` (sin cambios — ningún canal fue promovido).

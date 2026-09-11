@@ -18,6 +18,18 @@ encargo. Se necesitan tres identidades independientes, cada una resolviendo un p
 
 Ninguna de las cuatro reemplaza a las otras — actúan en capas distintas del pipeline.
 
+**Actualización — Fase 5.2.2 (VERIFICADO EN SUPABASE REAL):** el `UNIQUE(content_file_id, account_id)`
+que faltaba en la fila "Publicación" fue aplicado — `CREATE UNIQUE INDEX
+social_posts_content_file_account_idx ON public.social_posts (content_file_id, account_id)
+WHERE content_file_id IS NOT NULL` (exactamente el declarado en
+`supabase/schema.sql`), ejecutado por el usuario en el SQL Editor, comando
+exitoso sin conflicto con los 4 `social_posts` reales existentes. **Confirmado
+por `pg_indexes` real**: existe como UNIQUE PARTIAL INDEX (no como `CONSTRAINT`
+con nombre) — ver
+[`phase-5.2-supabase-verification.md`](phase-5.2-supabase-verification.md) §6
+para la evidencia completa del catálogo. La fila "Falta" de la tabla de
+arriba, para **Publicación**, queda cerrada.
+
 ## 2. Máquina de estados — separar proyecto/episodio de publicación por plataforma
 
 **[DECISIÓN]** Dos máquinas de estado independientes, no una:

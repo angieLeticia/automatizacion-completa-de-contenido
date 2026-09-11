@@ -207,10 +207,20 @@ contrato/algoritmo probado, no integrados al render real).
 de agrupación de episodio — no se propone ninguna tabla `episodes` nueva, tal como exige
 explícitamente la Sección 14.
 
-**[DESCONOCIDO — sin verificar en esta sesión]** Si la migración de Fase 2.1/4.1 (`channel_status`,
-`publication_authorized_at`, `claimed_at` documentado en Fase 1.1) ya se aplicó a la base real de
-producción. Sin credenciales de Supabase en este worktree para confirmarlo — se distingue
-explícitamente de "SCHEMA LOCAL" (este archivo) tal como pide la Sección 14.
+**[RESUELTO — Fase 5.2.2, VERIFICADO EN SUPABASE REAL]** La pregunta de si la
+migración de `channel_status` ya se había aplicado quedó respondida con
+evidencia real: **no estaba aplicada** (confirmado por REST y por
+`information_schema`/`pg_attribute` consultados directamente en el SQL Editor
+de Supabase). Se aplicó en esa fase el `ALTER TABLE` exacto que
+`supabase/schema.sql` ya declaraba (líneas 52-57) — `content_accounts` real
+tiene ahora `channel_status`, `NOT NULL DEFAULT 'HISTORICAL'`, con el `CHECK`
+confirmado vía `pg_constraint`. Las 3 filas reales quedaron en `HISTORICAL`
+(ningún canal se activó). `claimed_at` **sí existe** en `social_posts` real
+(hallazgo aparte de Fase 5.2.2) aunque el código no la usa todavía
+(`CLAIMED_AT_MIGRATION_APPLIED=false`). `publication_authorized_at` no fue
+verificado en esta fase. Ver
+[`phase-5.2-supabase-verification.md`](phase-5.2-supabase-verification.md) §10
+para el detalle completo.
 
 **[EVIDENCIA — datos]** De 58 `content_files` detectados (todos de SIN EXPLICACIÓN salvo 1 de
 LUNA VERDE marcado `account_conflict`), solo 3 tienen `content_metadata.status='ready'`, y esos 3
