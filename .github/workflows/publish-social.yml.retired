@@ -1,3 +1,32 @@
+# ============================================================================
+# RETIRADO — Fase 5.4.3 (auditoría Fase 5.4.2, GAP 1).
+#
+# Este archivo YA NO tiene extensión .yml (se renombró a .yml.retired) — por
+# eso GitHub Actions ya NO lo reconoce como workflow: no hay cron, no hay
+# "Run workflow" manual, no aparece en la pestaña Actions. Es la forma más
+# reversible de retirar la ejecución automática sin borrar nada: para
+# reactivarlo, basta con renombrarlo de vuelta a .github/workflows/publish-social.yml
+# (git mv) y confirmarlo explícitamente con una nueva autorización humana.
+#
+# MOTIVO: scripts/publish-due-social-posts.mts (Flow A, legacy) publicaba
+# real cada 10 minutos vía este cron, SIN ninguna de las protecciones de
+# Flow B (agent/publish/*): sin claim atómico condicionado a status='pending'
+# (su UPDATE marcaba "publishing" incondicionalmente por id), sin comprobar
+# channel_status (Fase 5.2.1), sin DRY_RUN, sin PublicationOutcomeUncertainError
+# ni verification_required (Fase 5.4/5.4.1). Auditoría Fase 5.4.2 confirmó
+# (vía git show contra agents-origin/main) que este archivo SÍ estaba pusheado
+# al remoto — es decir, era un mecanismo potencialmente activo, no solo
+# código muerto local.
+#
+# Agent 3 — Flow B (agent/publish/run.mts) es ahora el ÚNICO flujo de
+# publicación autorizado. Ver docs/system-contracts.md §5 y
+# docs/technical-inventory.md para el estado completo.
+#
+# El script scripts/publish-due-social-posts.mts se conserva intacto (no se
+# borra, regla vigente desde Fase 5.0) para trazabilidad/auditoría y una
+# eventual eliminación controlada futura — NO debe invocarse en ningún
+# workflow ni tarea programada mientras este aviso exista.
+# ============================================================================
 name: Publicar redes sociales programadas
 
 on:
