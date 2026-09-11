@@ -194,6 +194,16 @@ insertar en estado `NOT_YET_AUTHORIZED` (o dejar `publication_authorized_at IS N
 humano explícito (botón en `/admin/social`, ya existe la superficie de UI) libera el
 `scheduled_at` real. Esto es nuevo — hoy no existe ese gate.
 
+**[ACTUALIZADO — Fase 5.14]** El campo terminó implementándose (propuesto, no aplicado aún en
+producción — ver `supabase/schema.sql`) en **`social_posts.publication_authorized_at`/
+`publication_authorized_by`**, no en `content_metadata` como proponía este párrafo — autorización
+POR PUBLICACIÓN/PLATAFORMA (más granular que por episodio+canal), consistente con que un mismo
+episodio puede tener varias `social_posts` (una por plataforma) con calendarios/autorizaciones
+independientes. `scheduleContent.mts` **sigue insertando directamente** en `social_posts` (no se
+tocó, fuera del alcance de Fase 5.14) — el gate se aplicó en `agent/publish/run.mts`, DESPUÉS del
+claim, no antes del INSERT de scheduling. Ver `docs/phase-5.14-human-review.md` para el diseño
+completo y la justificación de por qué el gate vive ahí y no en `scheduleContent.mts`.
+
 ## 5. Motor único de publicación (resuelve Flujo A vs Flujo B)
 
 **[DECISIÓN — la propuesta del encargo es técnicamente correcta, se adopta con una corrección]**
@@ -234,6 +244,27 @@ realmente pasa por Storage); YouTube sigue con entrega directa desde disco, sin 
 Flujo A (`scripts/publish-due-social-posts.mts`) sigue sin eliminarse (regla vigente), pero ya no
 tiene ninguna función que Flujo B no cubra. Publicación sigue OFF (`DRY_RUN=true` por defecto,
 sin cambios) — esta pieza es código real pero inactivo hasta que se autorice publicación real.
+
+**[ACTUALIZADO — Fase 5.4.3, GAP 1 de la auditoría Fase 5.4.2]** La afirmación anterior ("Flujo A
+se retira, no se mantiene") describía una intención de diseño, pero el mecanismo de ejecución
+automática (`.github/workflows/publish-social.yml`, cron cada 10 min) seguía existiendo y
+**estaba pusheado a `agents-origin/main`** — confirmado con `git show agents-origin/main:...`
+durante la auditoría Fase 5.4.2. Flujo A nunca tuvo `channel_status`, `DRY_RUN`,
+`PublicationOutcomeUncertainError` ni `verification_required` — cualquier ejecución real de ese
+cron habría podido publicar sin ninguna de las protecciones de Fase 5.2.1–5.4.1. Se retiró la
+ejecución automática renombrando el archivo a `publish-social.yml.retired` (GitHub Actions deja
+de reconocerlo como workflow — ni cron ni "Run workflow" manual), de forma reversible (basta con
+`git mv` de vuelta + autorización explícita). El script en sí **sigue sin eliminarse** (regla
+vigente). Ver `docs/phase-5.4.3-gap-closure.md` para el detalle completo, incluida la evidencia de
+que no existe ningún otro workflow ni mecanismo automático que invoque este script.
+
+**Estado formal desde Fase 5.4.3:**
+- **Flujo A** — `LEGACY / RETIRED / NO AUTOMATIC EXECUTION`. Código conservado para
+  trazabilidad y una eventual eliminación controlada futura; no debe invocarse desde ningún
+  workflow ni tarea programada.
+- **Flujo B** (`agent/publish/run.mts`) — **UNIFIED PUBLICATION ENGINE**, único flujo de
+  publicación autorizado, protegido (channel_status + DRY_RUN + claim atómico + manejo de
+  resultado incierto).
 
 ## 6. `episode_log` — bitácora, no bus de eventos
 

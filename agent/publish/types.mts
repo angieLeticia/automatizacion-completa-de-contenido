@@ -35,6 +35,16 @@ export interface SocialPostRow {
   // real de la plataforma (uploadUrl de YouTube, creationId de Instagram) —
   // ver agent/publish/staleClaimClassification.mts.
   publisher_operation_ref?: string | null;
+  // Fase 5.14 — gate de revisión humana POR PUBLICACIÓN, condición ADICIONAL
+  // a DRY_RUN/channel_status (nunca un sustituto). Ambas columnas todavía NO
+  // existen en producción real (propuestas, no aplicadas — ver
+  // docs/phase-5.14-human-review.md) - por eso son opcionales aquí: una
+  // fila obtenida vía `SELECT *` antes de aplicar la migración simplemente
+  // no trae estas claves (undefined, no un error), lo cual
+  // humanReviewGate.mts::isPublicationAuthorized() trata igual que null -
+  // "no autorizado" es siempre el default seguro, con o sin la migración.
+  publication_authorized_at?: string | null;
+  publication_authorized_by?: string | null;
 }
 
 export interface SocialAccountRow {

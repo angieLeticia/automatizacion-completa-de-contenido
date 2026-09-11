@@ -1,5 +1,6 @@
 import { createReadStream, statSync } from "node:fs";
 import { Readable } from "node:stream";
+import { PublicationOutcomeUncertainError } from "./types";
 import type { PublishResult, SocialPost } from "./types";
 
 export interface YouTubeCredentials {
@@ -105,6 +106,18 @@ export async function publishToYouTube(
   if (!uploadRes.ok) {
     throw new Error(`Falló la subida del vídeo a YouTube: ${uploadRes.status} ${await uploadRes.text()}`);
   }
-  const uploaded = (await uploadRes.json()) as { id: string };
-  return { externalPostId: uploaded.id };
+  // Fase 5.4.1 — a partir de aquí, uploadRes.ok=true significa que YouTube YA
+  // recibió y aceptó todos los bytes del video (la acción irreversible/pública
+  // ya pudo haber ocurrido). Cualquier fallo de parseo del cuerpo NO debe
+  // tratarse como "seguro reintentar" - el uploadUrl (ya persistido vía
+  // onOperationRef más arriba) se conserva para reconciliar.
+  try {
+    const uploaded = (await uploadRes.json()) as { id: string };
+    return { externalPostId: uploaded.id };
+  } catch (err) {
+    throw new PublicationOutcomeUncertainError(
+      `YouTube respondió éxito (HTTP ${uploadRes.status}) a la subida del video, pero no se pudo interpretar la respuesta - no se puede afirmar que el video no se haya creado.`,
+      { platform: "youtube", operationRef: uploadUrl, httpStatus: uploadRes.status, originalError: err }
+    );
+  }
 }

@@ -24,7 +24,11 @@
     "provider:test": "tsx scripts/pipeline/test-render-provider.mts",
     "derived-content:test": "tsx scripts/pipeline/test-derived-content.mts",
     "publish-authorization:test": "tsx agent/publish/test-publication-authorization.mts",
-    "claim-recovery:test": "tsx agent/publish/test-claim-recovery.mts"
+    "claim-recovery:test": "tsx agent/publish/test-claim-recovery.mts",
+    "uncertain-outcome:test": "tsx agent/publish/test-uncertain-outcome.mts",
+    "gap-closure-5.4.3:test": "tsx agent/publish/test-gap-closure-5.4.3.mts",
+    "reconciliation:test": "tsx agent/publish/test-reconciliation.mts",
+    "human-review:test": "tsx agent/publish/test-human-review.mts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",

@@ -41,3 +41,30 @@ export interface SocialPost {
 export interface PublishResult {
   externalPostId: string;
 }
+
+// Fase 5.4.1 — significa EXCLUSIVAMENTE: "la plataforma respondió HTTP
+// exitoso (res.ok === true) - ya pudo haber aceptado/publicado de verdad -
+// pero no pudimos completar de forma segura la interpretación/persistencia
+// del resultado". NUNCA se lanza para un rechazo HTTP normal (400/401/403/
+// 404/rate-limit) ni para un fallo de red ANTES de recibir respuesta - esos
+// casos conservan el comportamiento existente (agent/publish/retryPolicy.mts).
+// Un publisher NUNCA debe silenciar esta excepción ni reintentar solo -
+// debe propagarla tal cual a quien lo invoque.
+export class PublicationOutcomeUncertainError extends Error {
+  readonly platform: SocialPlatform;
+  readonly operationRef?: string;
+  readonly httpStatus?: number;
+  readonly originalError?: unknown;
+
+  constructor(
+    message: string,
+    details: { platform: SocialPlatform; operationRef?: string; httpStatus?: number; originalError?: unknown }
+  ) {
+    super(message);
+    this.name = "PublicationOutcomeUncertainError";
+    this.platform = details.platform;
+    this.operationRef = details.operationRef;
+    this.httpStatus = details.httpStatus;
+    this.originalError = details.originalError;
+  }
+}

@@ -132,18 +132,18 @@ CREATE TABLE IF NOT EXISTS public.social_posts (
   title             TEXT,
   caption           TEXT,
   scheduled_at      TIMESTAMPTZ NOT NULL,
-  -- [MODIFICADO — Fase 5.4, no aplicado aún en producción] agrega
+  -- [APLICADO — Fase 5.5, VERIFIED AGAINST REAL SUPABASE] agrega
   -- 'verification_required': un claim vencido para el que existe evidencia
   -- (real o de placeholder, ver publisher_operation_ref abajo) de que el
   -- publisher real pudo haberse llamado. NUNCA se alcanza por inferencia —
-  -- ver docs/phase-5.4-claim-recovery.md. El ALTER TABLE real, dado que este
-  -- CHECK es un constraint de columna sin nombre explícito, es:
+  -- ver docs/phase-5.4-claim-recovery.md. El ALTER TABLE real (ejecutado por
+  -- el usuario en el SQL Editor, dentro de una transacción BEGIN/COMMIT) fue:
   --   ALTER TABLE public.social_posts DROP CONSTRAINT social_posts_status_check;
   --   ALTER TABLE public.social_posts ADD CONSTRAINT social_posts_status_check
   --     CHECK (status IN ('pending','publishing','published','error','verification_required'));
-  -- (nombre inferido por la convención ya confirmada real en esta misma base
-  -- para content_accounts_channel_status_check, Fase 5.2.2 — no verificado
-  -- para ESTE constraint específico hasta ejecutarlo).
+  -- Nombre del constraint confirmado real vía pg_constraint (Fase 5.5) antes
+  -- de ejecutar el DROP. Aceptación real del nuevo valor confirmada en vivo
+  -- (Fase 5.6, fila temporal aislada, eliminada después).
   status            TEXT        NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'publishing', 'published', 'error', 'verification_required')),
   external_post_id  TEXT,
   error_message     TEXT,
@@ -157,22 +157,36 @@ CREATE TABLE IF NOT EXISTS public.social_posts (
   -- producción aunque nunca se documentó en el schema.sql original. Se incluye
   -- aquí correctamente por primera vez.
   claimed_at        TIMESTAMPTZ,
-  -- [NUEVO — Fase 2.1/4.1, no aplicado aún en producción]
+  -- [APLICADO — Fase 5.15, VERIFIED AGAINST REAL SUPABASE]
   -- Gate de publicación, DISTINTO del gate de autorización de render de Agente 2
   -- (ProjectManifest.authorizedAt). Mientras sea NULL, el motor único de
   -- publicación no debe publicar en real así DRY_RUN=false (ver
-  -- docs/system-contracts.md §4).
+  -- docs/system-contracts.md §4, docs/phase-5.14-human-review.md y
+  -- docs/phase-5.15-human-review-supabase-verification.md).
+  -- agent/publish/run.mts YA comprueba este gate (Fase 5.14, cableado) contra
+  -- estas columnas YA REALES en producción (Fase 5.15, migración aplicada y
+  -- verificada con un registro temporal: autorización/idempotencia/revocación
+  -- probadas contra Supabase real; las 4 social_posts reales siguen con
+  -- ambos campos en NULL — ninguna fue autorizada). ALTER TABLE real ya
+  -- ejecutado:
+  --   ALTER TABLE public.social_posts ADD COLUMN publication_authorized_at TIMESTAMPTZ NULL;
+  --   ALTER TABLE public.social_posts ADD COLUMN publication_authorized_by TEXT NULL;
   publication_authorized_at TIMESTAMPTZ,
   publication_authorized_by TEXT,
-  -- [NUEVO — Fase 5.4, no aplicado aún en producción]
+  -- [APLICADO — Fase 5.5, VERIFIED AGAINST REAL SUPABASE]
   -- NULL = el publisher real nunca pudo haberse llamado para este claim
   -- (seguro reintentar automáticamente). "pending:<platform>" = se marcó el
   -- intento pero no hay referencia real de la plataforma (Facebook, o un
   -- crash antes de obtenerla). Cualquier otro valor = referencia real
   -- (uploadUrl de YouTube, creationId de Instagram) — permite reconciliar
   -- contra la plataforma real. Ver agent/publish/staleClaimClassification.mts
-  -- y docs/phase-5.4-claim-recovery.md. ALTER TABLE real necesario:
+  -- y docs/phase-5.4-claim-recovery.md. ALTER TABLE real ejecutado (Fase 5.5):
   --   ALTER TABLE public.social_posts ADD COLUMN publisher_operation_ref TEXT NULL;
+  -- CLAIMED_AT_MIGRATION_APPLIED=true activado de forma persistente en
+  -- .env.local (Fase 5.8) — claimPost()/markPublishAttemptStarted()/
+  -- persistOperationRef()/recoverStaleClaims() ya leen y escriben esta
+  -- columna en producción real. DRY_RUN sigue true y channel_status sigue
+  -- HISTORICAL en las 3 cuentas reales — publicación real sigue bloqueada.
   publisher_operation_ref TEXT
 );
 ALTER TABLE public.social_posts ENABLE ROW LEVEL SECURITY;

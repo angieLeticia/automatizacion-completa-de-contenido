@@ -1,3 +1,4 @@
+import { PublicationOutcomeUncertainError } from "./types";
 import type { PublishResult, SocialPost } from "./types";
 
 const GRAPH_VERSION = "v19.0";
@@ -64,6 +65,19 @@ export async function publishToInstagram(
   if (!publishRes.ok) {
     throw new Error(`Falló la publicación en Instagram: ${publishRes.status} ${await publishRes.text()}`);
   }
-  const published = (await publishRes.json()) as { id: string };
-  return { externalPostId: published.id };
+  // Fase 5.4.1 — a partir de aquí, publishRes.ok=true significa que Instagram
+  // YA ejecutó media_publish (la acción irreversible/pública, distinta de
+  // crear el contenedor o del polling de estado, ninguno de los cuales
+  // publica nada todavía). Cualquier fallo de parseo del cuerpo NO debe
+  // tratarse como "seguro reintentar" - el creationId (ya persistido vía
+  // onOperationRef más arriba) se conserva para reconciliar.
+  try {
+    const published = (await publishRes.json()) as { id: string };
+    return { externalPostId: published.id };
+  } catch (err) {
+    throw new PublicationOutcomeUncertainError(
+      `Instagram respondió éxito (HTTP ${publishRes.status}) a media_publish, pero no se pudo interpretar la respuesta - no se puede afirmar que el post no se haya publicado.`,
+      { platform: "instagram", operationRef: creationId, httpStatus: publishRes.status, originalError: err }
+    );
+  }
 }

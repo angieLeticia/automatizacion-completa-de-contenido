@@ -7,6 +7,9 @@ import { supabaseAdmin } from "../supabaseClient.mts";
 import { CLAIMED_AT_MIGRATION_APPLIED, STALE_CLAIM_MINUTES, MAX_RETRIES } from "./config.mts";
 import { decideRetry } from "./retryPolicy.mts";
 import { classifyStaleClaim, publishAttemptPlaceholder } from "./staleClaimClassification.mts";
+import { buildUncertainOutcomeUpdatePayload, buildUncertainOutcomePersistFailureLog } from "./uncertainOutcome.mts";
+import { log } from "../logger.mts";
+import type { PublicationOutcomeUncertainError } from "../../lib/social/types.ts";
 import type { SocialPostRow } from "./types.mts";
 
 // Devuelve la fila si este proceso gano el claim, o null si perdio (otro proceso
@@ -60,12 +63,21 @@ export async function revertToPending(postId: string): Promise<void> {
 // real después (YouTube/Instagram), persistOperationRef() la sobreescribe.
 export async function markPublishAttemptStarted(postId: string, platform: string): Promise<void> {
   if (!CLAIMED_AT_MIGRATION_APPLIED) return; // sin la columna aplicada, no hay nada seguro que escribir
-  const { error } = await supabaseAdmin
+  // Fase 5.4.1 — gap secundario corregido: se verifica que el UPDATE haya
+  // afectado realmente una fila (mismo patrón que claimPost()/recoverStaleClaims()),
+  // en vez de confiar solo en la ausencia de error. Bajo operación normal
+  // (Atomic Claim garantiza dueño exclusivo) esto no debería fallar nunca -
+  // pero si falla, es una señal real de que algo rompió esa garantía, y
+  // llamar a publish() de todos modos sin el checkpoint sería inseguro.
+  const { data, error } = await supabaseAdmin
     .from("social_posts")
     .update({ publisher_operation_ref: publishAttemptPlaceholder(platform) })
     .eq("id", postId)
-    .eq("status", "publishing");
+    .eq("status", "publishing")
+    .select("id")
+    .maybeSingle();
   if (error) throw new Error(`Error marcando intento de publicación para ${postId}: ${error.message}`);
+  if (!data) throw new Error(`No se pudo marcar el intento de publicación para ${postId}: la fila ya no está en 'publishing' (¿perdió el claim?) - no es seguro continuar sin el checkpoint.`);
 }
 
 // Fase 5.4 — llamado por el publisher (vía el callback onOperationRef) en
@@ -73,12 +85,70 @@ export async function markPublishAttemptStarted(postId: string, platform: string
 // creationId de Instagram), sobreescribiendo el placeholder de arriba.
 export async function persistOperationRef(postId: string, ref: string): Promise<void> {
   if (!CLAIMED_AT_MIGRATION_APPLIED) return;
-  const { error } = await supabaseAdmin
+  const { data, error } = await supabaseAdmin
     .from("social_posts")
     .update({ publisher_operation_ref: ref })
     .eq("id", postId)
-    .eq("status", "publishing");
+    .eq("status", "publishing")
+    .select("id")
+    .maybeSingle();
   if (error) throw new Error(`Error persistiendo publisher_operation_ref para ${postId}: ${error.message}`);
+  if (!data) throw new Error(`No se pudo persistir publisher_operation_ref para ${postId}: la fila ya no está en 'publishing'.`);
+}
+
+// Fase 5.4.1 — reemplaza, para este caso específico, al camino de
+// finishWithFailure(): NUNCA ejecuta decideRetry(), NUNCA vuelve a 'pending',
+// NUNCA limpia claimed_at/publisher_operation_ref. Vive en este archivo (no
+// en run.mts) para ser importable en tests sin disparar main().
+//
+// Nota de correctud: escribir status='verification_required' requiere que
+// el CHECK constraint de la migración de Fase 5.4 ya esté aplicado en la
+// base real (ver supabase/schema.sql) - si se alcanzara este código ANTES
+// de esa migración, el UPDATE fallaría por violación de constraint. Eso es
+// seguro (no escribe un estado inválido, no reintenta, no duplica) y hoy es
+// además inalcanzable en la práctica: DRY_RUN=true intercepta antes de que
+// el proceso pueda llegar a llamar a un publisher real (ver run.mts).
+// Fase 5.4.3 (GAP 2 de la auditoría Fase 5.4.2) — antes, esta funcion
+// descartaba {error}/fila-afectada del UPDATE (mismo patron de riesgo que ya
+// se habia corregido en markPublishAttemptStarted()/persistOperationRef()
+// en Fase 5.4.1, pero que se paso por alto aqui). Deliberadamente NO se
+// relanza el error hacia processPost() en run.mts: para cuando se llega aqui
+// la accion irreversible YA pudo haber ocurrido (es la razon de ser de
+// PublicationOutcomeUncertainError) - relanzar haria que un fallo de
+// persistencia de ESTE post tumbe el ciclo completo de main() (el mismo
+// riesgo de disponibilidad que GAP 3), sin ganar ninguna seguridad adicional
+// (esta funcion nunca escribe pending ni llama a publish()). La unica
+// obligacion real es dejar el fallo OBSERVABLE - por eso se loguea con
+// log.error (persistido en agent/logs/, no solo consola) en vez de
+// silenciarlo.
+export async function finishWithUncertainOutcome(postId: string, err: PublicationOutcomeUncertainError): Promise<void> {
+  const updatePayload = buildUncertainOutcomeUpdatePayload(err);
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("social_posts")
+      .update(updatePayload)
+      .eq("id", postId)
+      .eq("status", "publishing")
+      .select("id")
+      .maybeSingle();
+    if (error) {
+      const { message, meta } = buildUncertainOutcomePersistFailureLog(postId, err, error.message);
+      log.error(message, meta);
+      return;
+    }
+    if (!data) {
+      const { message, meta } = buildUncertainOutcomePersistFailureLog(
+        postId,
+        err,
+        "la fila ya no esta en 'publishing' (¿perdio el claim, o ya fue procesada por otro camino?)"
+      );
+      log.error(message, meta);
+    }
+  } catch (persistErr) {
+    const causeMessage = persistErr instanceof Error ? persistErr.message : String(persistErr);
+    const { message, meta } = buildUncertainOutcomePersistFailureLog(postId, err, causeMessage);
+    log.error(message, meta);
+  }
 }
 
 // INERTE hasta que se apruebe y ejecute la migracion (columnas claimed_at +

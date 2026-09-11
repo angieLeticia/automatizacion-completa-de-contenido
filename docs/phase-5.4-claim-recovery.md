@@ -76,3 +76,110 @@ Las funciones `reconcileYouTube()`/`reconcileInstagram()` (las que hacen la llam
 ## 8. Qué NO se tocó
 
 `claimPost()` sigue siendo el mismo `UPDATE` condicional atómico (Atomic Claim, `VERIFIED` desde Fase 5.3, sin cambios en su garantía de concurrencia). `Publisher = (post, credentials) => Promise<PublishResult>` sigue siendo la firma base — el nuevo parámetro `onOperationRef` es estrictamente opcional y aditivo. `decideRetry()`/`MAX_RETRIES`/`retryPolicy.mts` sin cambios, reutilizados tal cual. Agent 2, MachineBridge, Visteapy: sin tocar.
+
+## 9. Fase 5.4.1 — corrección del gap "HTTP éxito + fallo de parseo"
+
+Una auditoría adversarial posterior encontró un camino real hacia
+publicación duplicada, **independiente de cualquier crash o timeout**: si un
+publisher recibía confirmación HTTP de éxito de la plataforma (`res.ok`)
+pero fallaba al parsear el cuerpo de la respuesta, la excepción caía en el
+`catch` genérico de `run.mts`, `classifyError()` la clasificaba `"retryable"`
+por defecto (no contiene "401"/"403"), y `finishWithFailure()` limpiaba
+`publisher_operation_ref`/`claimed_at` incondicionalmente y devolvía el post
+a `pending` — habilitando un segundo `publish()` real sobre una publicación
+que la plataforma ya pudo haber aceptado. Confirmado con evidencia exacta
+(mensaje real de `JSON.parse` → `classifyError` → `"retryable"` →
+`decideRetry` → `nextStatus: "pending"`).
+
+**Corrección implementada** (quirúrgica, sin tocar el modelo de estados ni
+la arquitectura):
+- `PublicationOutcomeUncertainError` (`lib/social/types.ts`) — significa
+  exclusivamente "la plataforma respondió éxito HTTP, no pudimos confirmar
+  el resultado". Nunca se lanza para un rechazo HTTP normal (400/401/403/
+  404) ni para un fallo de red antes de recibir respuesta — esos conservan
+  el comportamiento existente sin cambios.
+- Cada publisher (`youtube.ts`, `instagram.ts`, `facebook.ts`) envuelve
+  **solo** el parseo posterior a la confirmación `.ok` de su acción
+  irreversible/pública específica (el `PUT` de bytes en YouTube, el
+  `media_publish` en Instagram, la única llamada en Facebook) — no el resto
+  de sus llamadas intermedias (creación de contenedor, polling, refresco de
+  token), que no representan una publicación ya hecha.
+- `run.mts` distingue por `instanceof PublicationOutcomeUncertainError`,
+  **no por análisis de strings** — nunca ejecuta `decideRetry()` para este
+  caso, nunca limpia `publisher_operation_ref`/`claimed_at`.
+- `finishWithUncertainOutcome()`/`buildUncertainOutcomeUpdatePayload()`
+  (`agent/publish/claimPost.mts` + `uncertainOutcome.mts`, esta última sin
+  import de Supabase, testeable en aislamiento) — el payload de actualización
+  contiene únicamente `status='verification_required'` y `error_message`;
+  deliberadamente **no incluye** las claves `claimed_at`/`publisher_operation_ref`,
+  preservándolas intactas para reconciliación o revisión humana.
+- Gap secundario corregido: `markPublishAttemptStarted()`/`persistOperationRef()`
+  ahora verifican que su `UPDATE` afectó una fila real (mismo patrón que
+  `claimPost()`), en vez de confiar solo en la ausencia de error.
+
+**Nota de correctud sobre el orden de dependencias:** escribir
+`status='verification_required'` requiere que el `CHECK` de la migración de
+esta misma fase ya esté aplicado en producción — si se alcanzara antes, el
+`UPDATE` fallaría por violación de constraint (fallo seguro: no escribe un
+estado inválido, no reintenta, no duplica). Esto es, hoy, **inalcanzable en
+la práctica**: `DRY_RUN=true` intercepta antes de que el código pueda llegar
+a llamar a un publisher real, así que la corrección de esta fase es
+verificable en su totalidad (16 casos reales, con `fetch` real de cada
+publisher stubbeado, sin red ni Supabase) sin depender de que la migración
+de Fase 5.4 esté aplicada.
+
+**Hallazgo adicional del segundo audit adversarial (mismo día, corregido en
+la misma fase):** el gap simétrico — `publish()` ya exitoso
+(`externalPostId` real conocido) pero el `UPDATE` final a Supabase
+(`run.mts`, tras obtener el resultado) falla — caía en el mismo `catch`
+genérico, sin ser una instancia de `PublicationOutcomeUncertainError`
+(el error viene de Supabase, no del publisher). Corregido envolviendo esa
+escritura específica y reutilizando el mismo mecanismo vía
+`buildPersistenceFailureError()` (`agent/publish/uncertainOutcome.mts`) —
+este caso es, de hecho, MÁS seguro de reconciliar que el de parseo: se
+conoce el `external_post_id` real, solo falló persistirlo, y ese ID queda
+incluido en el mensaje de `verification_required`.
+
+**Tests**: `agent/publish/test-uncertain-outcome.mts`
+(`npm run uncertain-outcome:test`), 20/20 — ejercita el código REAL de los
+3 publishers (no solo lógica de clasificación) mediante un stub de `fetch`
+global: éxito+parseo-falla para las 3 plataformas (con el `operationRef`
+real conservado para YouTube/Instagram, y confirmando que Facebook no
+inventa uno), rechazo HTTP normal (403) y fallo de red antes de respuesta
+(ambos conservan el comportamiento anterior, nunca
+`PublicationOutcomeUncertainError`), la construcción del payload de
+`verification_required` (nunca incluye `claimed_at`/`publisher_operation_ref`),
+y el caso de fallo de persistencia post-éxito (`external_post_id` real
+conservado en el mensaje).
+
+## Cierre — Fases 5.5/5.6/5.8/5.9
+
+Lo que este documento dejaba como diseño/pendiente ya está **aplicado y
+verificado contra Supabase real**, no solo probado con lógica pura:
+
+- **Fase 5.5** — migración aplicada: `publisher_operation_ref` creada,
+  `social_posts_status_check` reemplazado para incluir `verification_required`
+  (nombre y definición del constraint confirmados vía `pg_constraint` antes de
+  ejecutar el `DROP`). `claimed_at` **ya existía** en producción desde antes
+  (hallazgo de Fase 5.2.2) — no se volvió a crear.
+- **Fase 5.6** — `recoverStaleClaims()` real probado en vivo con 2 filas
+  temporales aisladas (nunca las 4 `social_posts` reales): sin
+  `publisher_operation_ref` → `pending` (retry, `retry_count` incrementado);
+  con `publisher_operation_ref` → `verification_required` (`claimed_at`
+  limpiado, `publisher_operation_ref` preservado). Cero llamadas a YouTube/
+  Instagram/Facebook/TikTok durante la prueba (instrumentado y confirmado).
+  Filas temporales eliminadas; las 4 reales quedaron byte-a-byte idénticas.
+- **Fase 5.8** — `CLAIMED_AT_MIGRATION_APPLIED=true` activado de forma
+  **persistente** en `.env.local` (antes solo se había probado con la bandera
+  fijada en el proceso hijo de un script temporal). `DRY_RUN=true` y
+  `channel_status='HISTORICAL'` (las 3 cuentas reales) sin cambios —
+  publicación real sigue bloqueada por ambas barreras, independientes de esta
+  bandera (auditado en Fase 5.7).
+- **Fase 5.9** — auditoría de cierre: las 4 `social_posts` reales y las 3
+  `content_accounts` reales confirmadas intactas una vez más; Flow A
+  confirmado sin ejecución automática; suite de tests completa en verde.
+
+El diseño de reconciliación manual (`reconcileUnknownPublication()`, YouTube/
+Instagram) sigue **implementado pero `NOT VERIFIED AGAINST REAL PLATFORM`**
+(sin OAuth real) — eso no cambió en estas fases y sigue pendiente de
+credenciales reales para probarse.

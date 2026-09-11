@@ -29,12 +29,25 @@ export function mapYouTubeResumableStatus(httpStatus: number): ReconciliationRes
   return "CANNOT_VERIFY"; // cualquier otro código: no se adivina, no hay evidencia suficiente
 }
 
+// Fase 5.10 — envuelto en try/catch a propósito: un fallo de red (timeout,
+// DNS, conexión rechazada) o cualquier otra excepción durante el fetch NO
+// debe propagarse sin control - la única conclusión segura ante "no pudimos
+// ni siquiera completar la consulta" es la misma que ante una respuesta
+// ambigua (CANNOT_VERIFY/UNKNOWN), nunca una excepción sin clasificar que
+// podría dejar a quien llame en un estado indefinido. No cambia ningún caso
+// que ya devolvía CANNOT_VERIFY (404/500/etc. via mapYouTubeResumableStatus)
+// - solo cubre el caso, antes no manejado, en que el fetch mismo nunca
+// resuelve con una respuesta.
 export async function reconcileYouTube(uploadUrl: string, contentLength: string): Promise<ReconciliationResult> {
-  const res = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: { "Content-Range": `bytes */${contentLength}` },
-  });
-  return mapYouTubeResumableStatus(res.status);
+  try {
+    const res = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Range": `bytes */${contentLength}` },
+    });
+    return mapYouTubeResumableStatus(res.status);
+  } catch {
+    return "CANNOT_VERIFY";
+  }
 }
 
 // --- Instagram ---------------------------------------------------------------
@@ -62,11 +75,22 @@ export function mapInstagramContainerStatus(statusCode: string): ReconciliationR
   }
 }
 
+// Fase 5.10 — mismo motivo que reconcileYouTube(): un fallo de red ANTES de
+// cualquier respuesta, o una respuesta con cuerpo malformado (JSON inválido,
+// campo status_code ausente), deben resolver a CANNOT_VERIFY/UNKNOWN en vez
+// de lanzar. `!res.ok` ya cubría rechazos HTTP normales (401/403/404/429/5xx)
+// - esto añade la cobertura para lo que ocurre ANTES o DESPUÉS de esa
+// comprobación (el propio fetch, o el parseo del cuerpo).
 export async function reconcileInstagram(creationId: string, accessToken: string): Promise<ReconciliationResult> {
-  const res = await fetch(`https://graph.facebook.com/v19.0/${creationId}?fields=status_code&access_token=${accessToken}`);
-  if (!res.ok) return "CANNOT_VERIFY";
-  const data = (await res.json()) as { status_code: string };
-  return mapInstagramContainerStatus(data.status_code);
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${creationId}?fields=status_code&access_token=${accessToken}`);
+    if (!res.ok) return "CANNOT_VERIFY";
+    const data = (await res.json()) as { status_code: string };
+    if (typeof data.status_code !== "string") return "CANNOT_VERIFY";
+    return mapInstagramContainerStatus(data.status_code);
+  } catch {
+    return "CANNOT_VERIFY";
+  }
 }
 
 // --- Facebook ---------------------------------------------------------------
