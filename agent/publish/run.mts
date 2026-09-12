@@ -18,6 +18,7 @@ import { resolveAndVerifyContentFile } from "./resolveContentFile.mts";
 import { ensureUploadedToStorage, cleanupVideoIfDone } from "./storageBridge.mts";
 import { resolveAndValidateIdentity } from "./resolveIdentity.mts";
 import { isPublicationAuthorized, describeAuthorizationGap } from "./humanReviewGate.mts";
+import { verifyYoutubeChannelIdentity } from "./youtubeChannelIdentity.mts";
 import { classifyError, decideRetry } from "./retryPolicy.mts";
 import { PUBLISHERS } from "../../lib/social/publishers.ts";
 import { PublicationOutcomeUncertainError } from "../../lib/social/types.ts";
@@ -124,6 +125,36 @@ async function processPost(postId: string): Promise<void> {
   if (!publish) {
     await finishWithFailure(post, `Sin publisher para '${platform}'.`, false);
     return;
+  }
+
+  // Fase 5.18 — identidad ESTRUCTURAL de YouTube: DRY_RUN/channel_status/
+  // Human Review ya garantizan "un humano autorizó publicar en este canal",
+  // pero ninguno confirma que la cuenta configurada sea REALMENTE el canal
+  // de YouTube que se cree que es (Fase 5.17 encontró que la única
+  // "verificación" existente era leer el label a ojo). Se llama a Google
+  // AQUÍ a propósito (no antes, no en resolveIdentity.mts) - es el único
+  // punto donde ya se confirmó DRY_RUN=false + channel_status=ACTIVE +
+  // autorización humana, así que es la única vez que de verdad se está a
+  // punto de publicar - evita gastar cuota de la API / depender de Google
+  // en cada ciclo de DRY_RUN rutinario. FAIL-CLOSED: cualquier resultado
+  // que no sea VERIFIED bloquea, exactamente igual que un fallo de
+  // DRY_RUN/channel_status/Human Review - nunca sustituye a esas barreras,
+  // se suma a ellas. Alcance de esta fase: solo YouTube (única plataforma
+  // con OAuth real verificado, Fase 5.17); Instagram/Facebook no tienen
+  // credentials.channel_id y no se tocan aquí.
+  if (platform === "youtube") {
+    const identityCheck = await verifyYoutubeChannelIdentity(identityOutcome.account.credentials as { client_id: string; client_secret: string; refresh_token: string; channel_id?: string });
+    if (identityCheck.status !== "VERIFIED") {
+      log.warn("[PUBLISH] Identidad estructural de YouTube NO verificada - el publisher NO se invoca", {
+        postId: post.id,
+        platform,
+        identityStatus: identityCheck.status,
+        reason: identityCheck.reason,
+      });
+      await finishWithFailure(post, identityCheck.reason, identityCheck.retryable);
+      return;
+    }
+    log.info("[PUBLISH] Identidad estructural de YouTube verificada contra la API real", { postId: post.id });
   }
 
   // Fase 5.4 - checkpoint ANTES de llamar al publisher real, para CUALQUIER

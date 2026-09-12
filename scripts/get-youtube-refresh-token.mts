@@ -18,7 +18,12 @@ const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
 authUrl.searchParams.set("client_id", clientId);
 authUrl.searchParams.set("redirect_uri", REDIRECT_URI);
 authUrl.searchParams.set("response_type", "code");
-authUrl.searchParams.set("scope", "https://www.googleapis.com/auth/youtube.upload");
+// Fase 5.17 — se añade youtube.readonly junto al ya existente youtube.upload:
+// el publisher real (lib/social/youtube.ts) solo necesita upload (sin cambios
+// ahí), pero verificar identidad de canal vía channels.list?mine=true
+// requiere explícitamente un scope de lectura - confirmado contra la API
+// real (HTTP 403 ACCESS_TOKEN_SCOPE_INSUFFICIENT con solo youtube.upload).
+authUrl.searchParams.set("scope", "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly");
 authUrl.searchParams.set("access_type", "offline");
 authUrl.searchParams.set("prompt", "consent");
 

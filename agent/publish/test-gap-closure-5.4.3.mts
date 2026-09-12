@@ -84,12 +84,22 @@ function main() {
     check("TEST 5 — el archivo documenta explícitamente su retiro", /RETIRAD[OA]/i.test(retiredContent));
   }
 
+  // Fase 5.18 — se relajó de "cero archivos .yml/.yaml adicionales" a "ningún
+  // OTRO workflow invoca al script legacy de publicación": el 12 sept 2026 se
+  // agregó legítimamente `deploy-website-pages.yml` (despliegue de un sitio
+  // estático a GitHub Pages, disparado solo por cambios en `website/**` —
+  // relacionado con la verificación de dominio de TikTok de Fase 5.12, sin
+  // ninguna relación con Flow A/social publishing). La garantía real que
+  // importa (nunca reintroducir un segundo cron que publique) sigue
+  // verificándose explícitamente: ningún workflow .yml activo debe mencionar
+  // el script legacy ni ejecutar publicación automática.
   const workflowsDir = path.join(REPO_ROOT, ".github", "workflows");
-  const remainingYml = readdirSync(workflowsDir).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
+  const activeYmlFiles = readdirSync(workflowsDir).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
+  const workflowsReferencingLegacyPublish = activeYmlFiles.filter((f) => readFileSync(path.join(workflowsDir, f), "utf-8").includes("publish-due-social-posts"));
   check(
-    "TEST 5 — no existe NINGÚN otro archivo .yml/.yaml en .github/workflows/ (ni un segundo cron equivalente)",
-    remainingYml.length === 0,
-    `archivos .yml/.yaml restantes: ${JSON.stringify(remainingYml)}`
+    "TEST 5 — ningún workflow ACTIVO (.yml/.yaml) invoca scripts/publish-due-social-posts.mts (Flow A sigue sin disparador automático)",
+    workflowsReferencingLegacyPublish.length === 0,
+    `workflows activos: ${JSON.stringify(activeYmlFiles)} | referencian Flow A: ${JSON.stringify(workflowsReferencingLegacyPublish)}`
   );
 
   console.log(`\n${failures === 0 ? "TODOS LOS CASOS PASARON" : `${failures} CASO(S) FALLARON`}`);
