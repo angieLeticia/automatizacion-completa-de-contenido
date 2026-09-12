@@ -31,7 +31,9 @@
     "human-review:test": "tsx agent/publish/test-human-review.mts",
     "youtube-identity:test": "tsx agent/publish/test-youtube-identity.mts",
     "youtube-credential-resolver:test": "tsx scripts/test-youtube-credential-resolver.mts",
-    "youtube-privacy:test": "tsx lib/social/test-youtube-privacy.mts"
+    "youtube-privacy:test": "tsx lib/social/test-youtube-privacy.mts",
+    "youtube-upload:test": "tsx lib/social/test-youtube-upload.mts",
+    "target-post-selection:test": "tsx agent/publish/test-target-post-selection.mts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",

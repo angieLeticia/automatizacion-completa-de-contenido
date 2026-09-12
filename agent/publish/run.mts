@@ -20,6 +20,7 @@ import { resolveAndValidateIdentity } from "./resolveIdentity.mts";
 import { isPublicationAuthorized, describeAuthorizationGap } from "./humanReviewGate.mts";
 import { verifyYoutubeChannelIdentity } from "./youtubeChannelIdentity.mts";
 import { classifyError, decideRetry } from "./retryPolicy.mts";
+import { resolveTargetMode, evaluateTargetPostEligibility } from "./targetPostSelection.mts";
 import { PUBLISHERS } from "../../lib/social/publishers.ts";
 import { PublicationOutcomeUncertainError } from "../../lib/social/types.ts";
 import type { SocialPostRow } from "./types.mts";
@@ -274,6 +275,49 @@ async function finishWithFailure(post: SocialPostRow, reason: string, retryable:
 
 async function main() {
   log.info(`[PUBLISH] Iniciando capa de publicacion endurecida (Fase 4B.1). DRY_RUN=${DRY_RUN}`);
+
+  // Fase 5.20 (RIESGO 1 del preflight de prueba controlada) — si POST_ID esta
+  // definido, esta corrida se dedica EXCLUSIVAMENTE a ese post: nunca se
+  // consulta la lista de "vencidos" (los otros posts pendientes del mismo
+  // canal/content_account NUNCA se resuelven, ni se evaluan, ni se tocan de
+  // ninguna forma), y NUNCA hay fallback de vuelta a "procesar todos". La
+  // eligibilidad (existe, esta pending, coincide con EXPECTED_PLATFORM/
+  // EXPECTED_CONTENT_FILE_ID si se dieron) se decide en una funcion pura
+  // (targetPostSelection.mts) para que la regla sea 100% testeable sin
+  // Supabase real. recoverStaleClaims() se omite deliberadamente en este
+  // modo - es una limpieza de claims huerfanos de CUALQUIER post, y esta
+  // corrida no debe tocar ninguna fila fuera de la que se pidio.
+  const target = resolveTargetMode(process.env);
+  if (target.mode === "single") {
+    const { data: row, error: rowError } = await supabaseAdmin
+      .from("social_posts")
+      .select("id, status, content_file_id, account_id")
+      .eq("id", target.postId)
+      .maybeSingle();
+    if (rowError) {
+      log.error("[PUBLISH] Error consultando el POST_ID solicitado", { postId: target.postId, error: rowError.message });
+      process.exitCode = 1;
+      return;
+    }
+
+    let actualPlatform: string | null = null;
+    if (row) {
+      const { data: acct } = await supabaseAdmin.from("social_accounts").select("platform").eq("id", row.account_id).maybeSingle();
+      actualPlatform = acct?.platform ?? null;
+    }
+
+    const eligibility = evaluateTargetPostEligibility(row, actualPlatform, target);
+    if (!eligibility.ok) {
+      log.error("[PUBLISH] Modo dirigido BLOQUEADO - no se procesa ningun post", { postId: target.postId, reason: eligibility.reason });
+      process.exitCode = 1;
+      return;
+    }
+
+    log.info("[PUBLISH] Modo dirigido: procesando UNICAMENTE este POST_ID - ningun otro post pendiente es consultado ni tocado", { postId: target.postId });
+    await processPost(target.postId);
+    log.info("[PUBLISH] Ciclo dirigido finalizado.");
+    return;
+  }
 
   // Fase 5.4 - mismo patron ya probado en agent/analyze/run.mts:28 (Agent 2):
   // recuperar claims huerfanos ANTES de buscar trabajo nuevo. Inerte por

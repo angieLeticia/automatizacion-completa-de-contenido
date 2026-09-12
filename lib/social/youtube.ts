@@ -108,13 +108,34 @@ export async function publishToYouTube(
   // agent/publish/reconciliation.mts).
   if (onOperationRef) await onOperationRef(uploadUrl);
 
-  const uploadRes = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: { "Content-Type": "video/mp4", "Content-Length": contentLength },
-    // @ts-expect-error -- duplex es requerido por undici para body en streaming y aún no está en los tipos de fetch
-    duplex: "half",
-    body: stream,
-  });
+  // Fase 5.20 (cierre de RIESGO 2 del preflight de prueba controlada) — a
+  // partir de esta línea, publisher_operation_ref (uploadUrl) YA está
+  // persistido. Si fetch() en sí LANZA (corte de red, timeout, conexión
+  // reiniciada) sin llegar siquiera a recibir una respuesta HTTP, no hay
+  // forma de saber si YouTube recibió/aceptó los bytes - dejar que esto se
+  // clasifique como "retryable" (comportamiento anterior) abriría una
+  // SEGUNDA sesión de subida completa en el siguiente intento, con riesgo
+  // real de video duplicado. Se trata exactamente igual que una respuesta
+  // HTTP exitosa sin cuerpo interpretable (mismo PublicationOutcomeUncertainError,
+  // Fase 5.4.1 más abajo) - nunca reintentable automáticamente. Una
+  // respuesta HTTP de error SÍ recibida (!uploadRes.ok, más abajo) es un
+  // caso distinto y no cambia: ahí YouTube SÍ contestó rechazando la subida,
+  // así que reintentar con una sesión nueva sigue siendo seguro.
+  let uploadRes: Response;
+  try {
+    uploadRes = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": "video/mp4", "Content-Length": contentLength },
+      // @ts-expect-error -- duplex es requerido por undici para body en streaming y aún no está en los tipos de fetch
+      duplex: "half",
+      body: stream,
+    });
+  } catch (err) {
+    throw new PublicationOutcomeUncertainError(
+      `Fallo de red durante la subida a YouTube (PUT) sin respuesta HTTP recibida - no se puede confirmar si el video fue aceptado: ${err instanceof Error ? err.message : String(err)}`,
+      { platform: "youtube", operationRef: uploadUrl, originalError: err }
+    );
+  }
   if (!uploadRes.ok) {
     throw new Error(`Falló la subida del vídeo a YouTube: ${uploadRes.status} ${await uploadRes.text()}`);
   }
