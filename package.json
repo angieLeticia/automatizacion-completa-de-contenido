@@ -29,7 +29,8 @@
     "gap-closure-5.4.3:test": "tsx agent/publish/test-gap-closure-5.4.3.mts",
     "reconciliation:test": "tsx agent/publish/test-reconciliation.mts",
     "human-review:test": "tsx agent/publish/test-human-review.mts",
-    "youtube-identity:test": "tsx agent/publish/test-youtube-identity.mts"
+    "youtube-identity:test": "tsx agent/publish/test-youtube-identity.mts",
+    "youtube-credential-resolver:test": "tsx scripts/test-youtube-credential-resolver.mts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",
