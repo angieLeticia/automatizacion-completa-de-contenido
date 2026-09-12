@@ -1,6 +1,7 @@
 import { createReadStream, statSync } from "node:fs";
 import { Readable } from "node:stream";
 import { PublicationOutcomeUncertainError } from "./types";
+import { resolveYoutubeUploadPrivacyStatus } from "./youtubeUploadPrivacy";
 import type { PublishResult, SocialPost } from "./types";
 
 export interface YouTubeCredentials {
@@ -56,6 +57,17 @@ export async function publishToYouTube(
   creds: YouTubeCredentials,
   onOperationRef?: (ref: string) => void | Promise<void>
 ): Promise<PublishResult> {
+  // Fase 5.20 — se resuelve ANTES de refrescar el access_token/leer el archivo:
+  // un valor mal configurado debe fallar rápido, sin gastar una llamada real a
+  // Google ni abrir el stream del video. Todas las demás barreras (claim,
+  // DRY_RUN, channel_status, Human Review, identidad estructural) ya se
+  // evaluaron en run.mts antes de llegar aquí - esto SOLO decide el valor del
+  // campo de visibilidad del payload de subida, nunca si se publica o no.
+  const privacyResolution = resolveYoutubeUploadPrivacyStatus(process.env);
+  if (!privacyResolution.ok) {
+    throw new Error(privacyResolution.reason);
+  }
+
   const accessToken = await getAccessToken(creds);
   const { stream, contentLength } = await resolveVideoSource(post);
 
@@ -75,7 +87,7 @@ export async function publishToYouTube(
           description: post.caption || "",
         },
         status: {
-          privacyStatus: "public",
+          privacyStatus: privacyResolution.value,
           selfDeclaredMadeForKids: false,
         },
       }),
