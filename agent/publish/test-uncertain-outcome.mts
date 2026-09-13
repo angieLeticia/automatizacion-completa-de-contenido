@@ -227,22 +227,21 @@ async function main() {
   );
 
   // ==================================================
-  // TEST 13 (Fase 5.11, auditoría de Facebook) — CARACTERIZACIÓN, no una
-  // corrección: un fallo de red ANTES de recibir cualquier respuesta (el
-  // propio fetch() de la única llamada de Facebook lanza) sigue
-  // clasificándose como error normal reintentable, NUNCA
-  // PublicationOutcomeUncertainError - exactamente la misma convención ya
-  // establecida y probada para YouTube (ver TEST 9 arriba). Se documenta
-  // aquí explícitamente porque, a diferencia de YouTube (protocolo
-  // resumible: una subida interrumpida JAMÁS produce un video completo,
-  // garantía del propio protocolo), Facebook usa una única llamada POST no
-  // resumible - un fallo de red DESPUÉS de que Facebook ya procesó la
-  // petición pero ANTES de que la respuesta llegue no es categóricamente
-  // descartable como "nunca se creó". Este es un riesgo residual conocido
-  // (ver docs/phase-5.11-facebook-reconciliation.md) - NO se resuelve en
-  // esta fase porque cambiar esta convención afectaría a las 3 plataformas
-  // por igual (decisión de diseño ya deliberada y probada, fuera del
-  // alcance de una auditoría específica de Facebook).
+  // TEST 13 (Fase 5.11: CARACTERIZACIÓN original — CORREGIDO en Fase 5.20,
+  // Phase A3, auditoría post-piloto): un fallo de red ANTES de recibir
+  // cualquier respuesta (el propio fetch() de la única llamada de Facebook
+  // lanza) ANTES se clasificaba como error normal reintentable — riesgo
+  // residual documentado y deliberadamente no corregido en Fase 5.11. La
+  // auditoría post-piloto de Fase 5.20 investigó si la Graph API actual
+  // permite un operationRef real (Opción A) y concluyó que NO con el método
+  // simple de una sola llamada que usa este código (Opción B — ver el
+  // comentario de decisión técnica en lib/social/facebook.ts) — por lo que
+  // se cerró el gap de clasificación: ahora SÍ es
+  // PublicationOutcomeUncertainError, igual que YouTube/Instagram, aunque
+  // Facebook siga sin reconciliación automática posible (CANNOT_VERIFY
+  // permanente en reconciliation.mts) - ver también
+  // lib/social/test-facebook-upload.mts para la cobertura completa de este
+  // publisher.
   // ==================================================
   await withStubbedFetch(
     () => {
@@ -254,9 +253,12 @@ async function main() {
         check("TEST 13 — Facebook fallo de red debía lanzar", false);
       } catch (err) {
         check(
-          "TEST 13 — Facebook: fallo de red antes de respuesta -> NUNCA PublicationOutcomeUncertainError (comportamiento actual, riesgo residual documentado, no corregido en esta fase)",
-          !(err instanceof PublicationOutcomeUncertainError)
+          "TEST 13 — Facebook: fallo de red antes de respuesta -> PublicationOutcomeUncertainError (Fase 5.20, Phase A3 - antes era retryable, riesgo cerrado)",
+          err instanceof PublicationOutcomeUncertainError
         );
+        if (err instanceof PublicationOutcomeUncertainError) {
+          check("TEST 13b — Facebook sigue sin inventar un operationRef propio (queda undefined)", err.operationRef === undefined);
+        }
       }
     }
   );

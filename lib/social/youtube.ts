@@ -2,6 +2,7 @@ import { createReadStream, statSync } from "node:fs";
 import { Readable } from "node:stream";
 import { PublicationOutcomeUncertainError } from "./types";
 import { resolveYoutubeUploadPrivacyStatus } from "./youtubeUploadPrivacy";
+import { resolveYoutubeTags } from "./youtubeHashtags";
 import type { PublishResult, SocialPost } from "./types";
 
 export interface YouTubeCredentials {
@@ -70,6 +71,7 @@ export async function publishToYouTube(
 
   const accessToken = await getAccessToken(creds);
   const { stream, contentLength } = await resolveVideoSource(post);
+  const tags = resolveYoutubeTags(post.hashtags, post.caption);
 
   const initRes = await fetch(
     "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
@@ -85,6 +87,11 @@ export async function publishToYouTube(
         snippet: {
           title: post.title || "Visteapy",
           description: post.caption || "",
+          // Fase 5.20 (Phase A1) — social_posts.hashtags -> tags reales de
+          // YouTube. resolveYoutubeTags() ya filtra duplicados (dentro de la
+          // lista y contra la descripción) y respeta el límite real de 500
+          // caracteres combinados - nunca se envía sin normalizar.
+          ...(tags.length > 0 ? { tags } : {}),
         },
         status: {
           privacyStatus: privacyResolution.value,

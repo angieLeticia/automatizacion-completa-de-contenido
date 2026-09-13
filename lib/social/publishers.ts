@@ -15,6 +15,15 @@ type Publisher = (post: SocialPost, credentials: Record<string, string>, onOpera
 
 // Registro único de "cómo se publica en cada plataforma". Añadir una nueva es
 // implementar su publishToX (recibe credenciales genéricas) y sumarla aquí.
+// TikTok — NO tiene publisher (deliberado, documentado en Fase 5.12/5.20,
+// bloqueador externo de aprobación de la app en TikTok Developer Portal, no
+// de código). Agent 1/2 SÍ generan metadata real para TikTok
+// (agent/analyze/generateMetadata.mts::buildTiktok()) - social_posts.hashtags
+// para un post de TikTok existiría igual que para las demás plataformas,
+// pero nunca llegaría a ningún lado porque no hay `tiktok` en este registro:
+// el mismo guard `if (!PUBLISHERS[platform])` (agent/schedule/resolveIdentity.mts,
+// agent/publish/resolveIdentity.mts) ya impide crear/publicar cualquier
+// social_post de TikTok, sin necesidad de ningún caso especial aquí.
 export const PUBLISHERS: Partial<Record<SocialPlatform, Publisher>> = {
   youtube: (post, creds, onOperationRef) => publishToYouTube(post, creds as never, onOperationRef),
   facebook: (post, creds) => publishToFacebook(post, creds as never),

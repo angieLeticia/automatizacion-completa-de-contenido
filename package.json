@@ -33,7 +33,14 @@
     "youtube-credential-resolver:test": "tsx scripts/test-youtube-credential-resolver.mts",
     "youtube-privacy:test": "tsx lib/social/test-youtube-privacy.mts",
     "youtube-upload:test": "tsx lib/social/test-youtube-upload.mts",
-    "target-post-selection:test": "tsx agent/publish/test-target-post-selection.mts"
+    "target-post-selection:test": "tsx agent/publish/test-target-post-selection.mts",
+    "youtube-hashtags:test": "tsx lib/social/test-youtube-hashtags.mts",
+    "caption-composition:test": "tsx lib/social/test-caption-composition.mts",
+    "instagram-upload:test": "tsx lib/social/test-instagram-upload.mts",
+    "facebook-upload:test": "tsx lib/social/test-facebook-upload.mts",
+    "retry-policy:test": "tsx agent/publish/test-retry-policy.mts",
+    "hash-mismatch:test": "tsx agent/publish/test-hash-mismatch.mts",
+    "idempotency:test": "tsx agent/publish/test-idempotency.mts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",

@@ -37,22 +37,44 @@ export function resolveTargetMode(env: NodeJS.ProcessEnv): TargetMode {
   };
 }
 
+// Fase 5.20 (Phase A5, auditoria post-piloto) — contrato real confirmado
+// ANTES de decidir el comportamiento de null: supabase/schema.sql declara
+// `scheduled_at TIMESTAMPTZ NOT NULL` - la columna JAMAS es null en
+// produccion real, y SocialPostRow.scheduled_at (types.mts) ya lo tipa como
+// `string`, nunca `string | null`. Aun asi, esta interfaz lo tipa opcional a
+// proposito (ver mas abajo) para poder expresar en un test el escenario
+// "algo entrego una fila sin scheduled_at" sin mentirle a TypeScript en el
+// resto del codebase - el comportamiento elegido para ese caso (imposible
+// hoy, pero mejor definido que dejarlo pasar) es BLOQUEAR, nunca asumir
+// elegible: es la misma consistencia que ya tiene el modo general (main()),
+// donde `.lte("scheduled_at", now)` en Postgres NUNCA selecciona una fila
+// con scheduled_at NULL (la comparacion es UNKNOWN) - el modo dirigido no
+// debe ser mas permisivo que el modo general en ningun escenario.
 export interface TargetPostRow {
   id: string;
   status: string;
   content_file_id: string | null;
+  scheduled_at?: string | null;
 }
 
 export type TargetEligibility = { ok: true } | { ok: false; reason: string };
 
-// Pura - sin red. `row` ya viene resuelto (o null si no existe) y
-// `actualPlatform` ya viene resuelto (o null si no se pudo determinar) -
-// esta funcion SOLO decide, nunca consulta Supabase. Bloquea (ok:false) ante
-// cualquier discrepancia; nunca "adivina" ni permite pasar por defecto.
+// Pura - sin red. `row`/`actualPlatform` ya vienen resueltos - esta funcion
+// SOLO decide, nunca consulta Supabase. Bloquea (ok:false) ante cualquier
+// discrepancia; nunca "adivina" ni permite pasar por defecto. `now` es
+// inyectable (default `new Date()`) para que la comparacion de tiempo sea
+// 100% determinista en tests, sin mockear el reloj global.
+//
+// RIESGO 1 del preflight de prueba controlada (Fase 5.20) — el modo dirigido
+// (POST_ID) NUNCA debe ser un bypass de scheduling: si `scheduled_at` esta
+// en el futuro respecto a `now`, se bloquea exactamente igual que si el post
+// no existiera - nada en este archivo ni en run.mts introduce un mecanismo
+// de bypass explicito para esto (no se pidio, no se implementa).
 export function evaluateTargetPostEligibility(
   row: TargetPostRow | null,
   actualPlatform: string | null,
-  target: { postId: string; expectedPlatform?: string; expectedContentFileId?: string }
+  target: { postId: string; expectedPlatform?: string; expectedContentFileId?: string },
+  now: Date = new Date()
 ): TargetEligibility {
   if (!row) {
     return { ok: false, reason: `POST_ID='${target.postId}' no existe en social_posts - bloqueado.` };
@@ -70,6 +92,21 @@ export function evaluateTargetPostEligibility(
     return {
       ok: false,
       reason: `POST_ID='${target.postId}' pertenece a la plataforma '${actualPlatform ?? "desconocida"}', se esperaba '${target.expectedPlatform}' (EXPECTED_PLATFORM) - bloqueado.`,
+    };
+  }
+  if (!row.scheduled_at) {
+    // Contractualmente imposible hoy (NOT NULL) - fail-closed de todas formas,
+    // nunca "sin scheduled_at = sin restriccion".
+    return { ok: false, reason: `POST_ID='${target.postId}' no tiene scheduled_at (ausente/vacio) - no se puede confirmar que este programacionalmente elegible. Bloqueado.` };
+  }
+  const scheduledTimeMs = new Date(row.scheduled_at).getTime();
+  if (!Number.isFinite(scheduledTimeMs)) {
+    return { ok: false, reason: `POST_ID='${target.postId}' tiene scheduled_at con formato invalido ('${row.scheduled_at}') - bloqueado.` };
+  }
+  if (scheduledTimeMs > now.getTime()) {
+    return {
+      ok: false,
+      reason: `POST_ID='${target.postId}' tiene scheduled_at en el futuro (${row.scheduled_at}) - el modo dirigido respeta la programacion igual que el modo general, no existe un bypass. Bloqueado.`,
     };
   }
   return { ok: true };

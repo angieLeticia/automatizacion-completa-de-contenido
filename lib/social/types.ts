@@ -36,6 +36,12 @@ export interface SocialPost {
   // publisher debe leer el archivo local en vez de descargar video_url. Opcional:
   // Instagram/Facebook y el flujo legacy via Storage no la usan.
   local_file_path?: string;
+  // Fase 5.20 (Phase A1) — opcional por el mismo motivo que local_file_path:
+  // la columna real (social_posts.hashtags) existe desde antes, pero esta
+  // interfaz nunca la declaraba (ver agent/publish/types.mts, comentario de
+  // cabecera). Ahora SÍ se consume: YouTube -> tags; Instagram/Facebook ->
+  // se componen dentro de caption/description (ver captionComposition.ts).
+  hashtags?: string[];
 }
 
 export interface PublishResult {

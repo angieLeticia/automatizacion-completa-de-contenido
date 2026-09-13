@@ -291,7 +291,7 @@ async function main() {
   if (target.mode === "single") {
     const { data: row, error: rowError } = await supabaseAdmin
       .from("social_posts")
-      .select("id, status, content_file_id, account_id")
+      .select("id, status, content_file_id, account_id, scheduled_at")
       .eq("id", target.postId)
       .maybeSingle();
     if (rowError) {

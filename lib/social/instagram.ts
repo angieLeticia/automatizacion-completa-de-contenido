@@ -1,4 +1,5 @@
 import { PublicationOutcomeUncertainError } from "./types";
+import { composeCaptionWithHashtags } from "./captionComposition";
 import type { PublishResult, SocialPost } from "./types";
 
 const GRAPH_VERSION = "v19.0";
@@ -25,7 +26,10 @@ export async function publishToInstagram(
     body: JSON.stringify({
       media_type: "REELS",
       video_url: post.video_url,
-      caption: post.caption || post.title || "",
+      // Fase 5.20 (Phase A1) — composeCaptionWithHashtags() agrega
+      // social_posts.hashtags al final del caption, sin duplicar los que ya
+      // estén presentes en el texto original.
+      caption: composeCaptionWithHashtags(post.caption || post.title || "", post.hashtags),
       access_token: creds.access_token,
     }),
   });
@@ -57,11 +61,26 @@ export async function publishToInstagram(
     throw new Error(`El contenedor de Instagram no terminó de procesar a tiempo (estado: ${statusCode}).`);
   }
 
-  const publishRes = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${creds.ig_user_id}/media_publish`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ creation_id: creationId, access_token: creds.access_token }),
-  });
+  // Fase 5.20 (Phase A2) — a partir de aquí creationId YA está persistido
+  // (onOperationRef más arriba). Si fetch() en sí LANZA (corte de red, sin
+  // respuesta HTTP) NO se puede descartar que media_publish ya haya
+  // ejecutado del lado de Meta - mismo motivo y mismo patrón que el cierre
+  // de YouTube (lib/social/youtube.ts, Fase 5.20). Nunca reintentable
+  // automáticamente. Un HTTP de error SÍ recibido (!publishRes.ok, más
+  // abajo) es distinto: Meta contestó rechazando, seguro reintentar.
+  let publishRes: Response;
+  try {
+    publishRes = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${creds.ig_user_id}/media_publish`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ creation_id: creationId, access_token: creds.access_token }),
+    });
+  } catch (err) {
+    throw new PublicationOutcomeUncertainError(
+      `Fallo de red durante media_publish de Instagram sin respuesta HTTP recibida - no se puede confirmar si el post fue aceptado: ${err instanceof Error ? err.message : String(err)}`,
+      { platform: "instagram", operationRef: creationId, originalError: err }
+    );
+  }
   if (!publishRes.ok) {
     throw new Error(`Falló la publicación en Instagram: ${publishRes.status} ${await publishRes.text()}`);
   }
