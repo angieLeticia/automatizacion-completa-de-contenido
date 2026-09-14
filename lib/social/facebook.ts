@@ -2,7 +2,10 @@ import { PublicationOutcomeUncertainError } from "./types";
 import { composeCaptionWithHashtags } from "./captionComposition";
 import type { PublishResult, SocialPost } from "./types";
 
-const GRAPH_VERSION = "v19.0";
+// Exportado (Fase 5.21) para que facebookPageIdentity.mts use EXACTAMENTE la
+// misma versión de la Graph API que el publisher real - nunca un literal
+// duplicado que pueda desincronizarse.
+export const GRAPH_VERSION = "v19.0";
 
 export interface FacebookCredentials {
   page_id: string;

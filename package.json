@@ -40,7 +40,8 @@
     "facebook-upload:test": "tsx lib/social/test-facebook-upload.mts",
     "retry-policy:test": "tsx agent/publish/test-retry-policy.mts",
     "hash-mismatch:test": "tsx agent/publish/test-hash-mismatch.mts",
-    "idempotency:test": "tsx agent/publish/test-idempotency.mts"
+    "idempotency:test": "tsx agent/publish/test-idempotency.mts",
+    "facebook-identity:test": "tsx agent/publish/test-facebook-identity.mts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",

@@ -19,6 +19,7 @@ import { ensureUploadedToStorage, cleanupVideoIfDone } from "./storageBridge.mts
 import { resolveAndValidateIdentity } from "./resolveIdentity.mts";
 import { isPublicationAuthorized, describeAuthorizationGap } from "./humanReviewGate.mts";
 import { verifyYoutubeChannelIdentity } from "./youtubeChannelIdentity.mts";
+import { verifyFacebookPageIdentity } from "./facebookPageIdentity.mts";
 import { classifyError, decideRetry } from "./retryPolicy.mts";
 import { resolveTargetMode, evaluateTargetPostEligibility } from "./targetPostSelection.mts";
 import { PUBLISHERS } from "../../lib/social/publishers.ts";
@@ -156,6 +157,29 @@ async function processPost(postId: string): Promise<void> {
       return;
     }
     log.info("[PUBLISH] Identidad estructural de YouTube verificada contra la API real", { postId: post.id });
+  }
+
+  // Fase 5.21 — mismo principio y mismo punto exacto del flujo que la
+  // identidad estructural de YouTube (Fase 5.18, ver bloque de arriba): se
+  // llama a Meta AQUÍ porque es la única vez que ya se confirmó DRY_RUN=false
+  // + channel_status=ACTIVE + autorización humana - la única vez que de
+  // verdad se está a punto de publicar. FAIL-CLOSED: cualquier resultado que
+  // no sea VERIFIED bloquea, se suma a los demás gates sin sustituir a
+  // ninguno. Alcance: solo Facebook (Instagram queda fuera de esta fase,
+  // sin cambios - ver mensaje de alcance de esta fase).
+  if (platform === "facebook") {
+    const identityCheck = await verifyFacebookPageIdentity(identityOutcome.account.credentials as { page_id: string; access_token: string });
+    if (identityCheck.status !== "VERIFIED") {
+      log.warn("[PUBLISH] Identidad estructural de Facebook NO verificada - el publisher NO se invoca", {
+        postId: post.id,
+        platform,
+        identityStatus: identityCheck.status,
+        reason: identityCheck.reason,
+      });
+      await finishWithFailure(post, identityCheck.reason, identityCheck.retryable);
+      return;
+    }
+    log.info("[PUBLISH] Identidad estructural de Facebook verificada contra la API real", { postId: post.id });
   }
 
   // Fase 5.4 - checkpoint ANTES de llamar al publisher real, para CUALQUIER
