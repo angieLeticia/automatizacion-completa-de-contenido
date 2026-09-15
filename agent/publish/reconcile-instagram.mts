@@ -10,6 +10,7 @@
 // llama a media_publish, NUNCA cambia channel_status ni Human Review, NUNCA
 // toca el objeto en B2. Ver docs/architecture (Fase 20) para el diseño
 // completo de las tres rutas de salida.
+import "./config.mts";
 import { supabaseAdmin } from "../supabaseClient.mts";
 import { verifyInstagramAccountIdentity } from "./instagramAccountIdentity.mts";
 import { reconcileInstagram } from "./reconciliation.mts";
