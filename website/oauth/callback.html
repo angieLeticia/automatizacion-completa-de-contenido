@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Callback OAuth de Meta</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #222;
+    background: #f7f7f7;
+  }
+  header {
+    padding: 40px 20px;
+    text-align: center;
+    background: #111;
+    color: white;
+  }
+  header h1 { margin: 0; font-size: 28px; }
+  main {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
+  section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+  }
+  .warning {
+    background: #fff3cd;
+    border: 1px solid #ffe69c;
+    color: #664d03;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+  .token-box {
+    word-break: break-all;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 13px;
+    user-select: all;
+    margin: 15px 0;
+  }
+  button {
+    background: #0057b8;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  button:hover { background: #004591; }
+  .status-ok { color: #146c2e; font-weight: bold; }
+  .status-empty { color: #444; font-weight: bold; }
+  .copy-feedback { margin-left: 10px; font-size: 14px; color: #146c2e; }
+  .hint { color: #555; font-size: 14px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Callback OAuth de Meta</h1>
+  </header>
+
+  <main>
+    <section id="result-section">
+      <p id="status-line">Procesando respuesta...</p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // Extraccion robusta de parametros del FRAGMENT (nunca de location.search
+      // - el fragmento nunca se envia al servidor, a diferencia de la query
+      // string, por eso Meta lo usa para el flujo implicito).
+      function parseFragmentParams(hash) {
+        var result = {};
+        var raw = hash.indexOf("#") === 0 ? hash.slice(1) : hash;
+        if (!raw) return result;
+        var pairs = raw.split("&");
+        for (var i = 0; i < pairs.length; i++) {
+          var pair = pairs[i];
+          if (!pair) continue;
+          var eqIdx = pair.indexOf("=");
+          var key, value;
+          if (eqIdx === -1) {
+            key = pair;
+            value = "";
+          } else {
+            key = pair.slice(0, eqIdx);
+            value = pair.slice(eqIdx + 1);
+          }
+          try {
+            key = decodeURIComponent(key);
+          } catch (e) {}
+          try {
+            value = decodeURIComponent(value);
+          } catch (e) {}
+          result[key] = value;
+        }
+        return result;
+      }
+
+      var params = parseFragmentParams(window.location.hash);
+      var accessToken = params["access_token"] || null;
+      var state = params["state"] || null;
+
+      // Limpieza INMEDIATA del fragmento de la URL/historial - antes de
+      // construir cualquier interfaz, para minimizar el tiempo que el token
+      // permanece visible en la barra de direcciones/historial del navegador.
+      if (window.location.hash) {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+
+      var section = document.getElementById("result-section");
+
+      function el(tag, attrs, children) {
+        var node = document.createElement(tag);
+        if (attrs) {
+          for (var k in attrs) {
+            if (Object.prototype.hasOwnProperty.call(attrs, k)) {
+              if (k === "text") {
+                node.textContent = attrs[k];
+              } else {
+                node.setAttribute(k, attrs[k]);
+              }
+            }
+          }
+        }
+        if (children) {
+          for (var i = 0; i < children.length; i++) node.appendChild(children[i]);
+        }
+        return node;
+      }
+
+      section.innerHTML = "";
+
+      if (accessToken) {
+        var statusP = el("p", { class: "status-ok", text: "Token recibido correctamente." });
+        section.appendChild(statusP);
+
+        var warning = el("p", {
+          class: "warning",
+          text: "Este token es sensible. No lo compartas públicamente ni lo pegues en chats. Esta página no lo almacena ni lo envía a ningún servidor.",
+        });
+        section.appendChild(warning);
+
+        var tokenBox = el("div", { class: "token-box", id: "token-box", text: accessToken });
+        section.appendChild(tokenBox);
+
+        if (state) {
+          section.appendChild(el("p", { class: "hint", text: "state recibido: " + state }));
+        }
+
+        var copyRow = el("div", {});
+        var copyBtn = el("button", { type: "button", text: "Copiar token" });
+        var feedback = el("span", { class: "copy-feedback" });
+        copyRow.appendChild(copyBtn);
+        copyRow.appendChild(feedback);
+        section.appendChild(copyRow);
+
+        copyBtn.addEventListener("click", function () {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(accessToken).then(
+              function () {
+                feedback.textContent = "Copiado.";
+              },
+              function () {
+                feedback.textContent = "No se pudo copiar automáticamente - selecciona el texto manualmente.";
+              }
+            );
+          } else {
+            feedback.textContent = "Copia no disponible en este navegador - selecciona el texto manualmente.";
+          }
+        });
+
+        section.appendChild(el("p", { class: "hint", text: "Después de copiarlo, guárdalo localmente fuera del repositorio." }));
+      } else {
+        section.appendChild(el("p", { class: "status-empty", text: "No se recibió ningún access_token." }));
+      }
+    })();
+  </script>
+</body>
+</html>
