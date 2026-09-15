@@ -41,7 +41,8 @@
     "retry-policy:test": "tsx agent/publish/test-retry-policy.mts",
     "hash-mismatch:test": "tsx agent/publish/test-hash-mismatch.mts",
     "idempotency:test": "tsx agent/publish/test-idempotency.mts",
-    "facebook-identity:test": "tsx agent/publish/test-facebook-identity.mts"
+    "facebook-identity:test": "tsx agent/publish/test-facebook-identity.mts",
+    "social:reconcile-instagram": "tsx agent/publish/reconcile-instagram.mts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.512",
