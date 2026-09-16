@@ -174,19 +174,48 @@ export async function finishWithUncertainOutcome(postId: string, err: Publicatio
 // decideRetry() para que la recuperacion respete el mismo limite de
 // MAX_RETRIES que cualquier otro fallo (CASO E), evitando que un post se
 // recupere en bucle infinito si el crash se repite.
-export async function recoverStaleClaims(): Promise<{ recoveredToPending: number; movedToVerification: number; movedToError: number }> {
+//
+// RecoverStaleClaimsDeps: unica adicion de esta auditoria (cierre de la
+// brecha "recoverStaleClaims() sin ejecutar" - ver test-recover-stale-claims.mts).
+// Extrae las DOS operaciones de persistencia que esta funcion ya hacia
+// (buscar filas huerfanas, UPDATE atomico condicional por fila) detras de una
+// interfaz inyectable, con un default que reproduce EXACTAMENTE el mismo
+// SELECT/UPDATE de siempre contra supabaseAdmin - cero cambio de
+// comportamiento cuando se llama sin argumentos (run.mts:424 sigue
+// invocandola igual). Esto permite probar la funcion REAL (no una copia) con
+// una base de datos en memoria, sin tocar Supabase real ni inventar una
+// segunda implementacion de la logica de recuperacion.
+export interface RecoverStaleClaimsDeps {
+  findStaleClaims: (cutoffIso: string) => Promise<Array<{ id: string; retry_count: number; publisher_operation_ref: string | null }>>;
+  updateIfPublishing: (postId: string, payload: Record<string, unknown>) => Promise<boolean>; // true = esta llamada gano el UPDATE condicional
+}
+
+const defaultRecoverStaleClaimsDeps: RecoverStaleClaimsDeps = {
+  async findStaleClaims(cutoffIso) {
+    const { data, error } = await supabaseAdmin
+      .from("social_posts")
+      .select("id, retry_count, publisher_operation_ref")
+      .eq("status", "publishing")
+      .lt("claimed_at", cutoffIso);
+    if (error) throw new Error(`Error buscando claims huerfanos: ${error.message}`);
+    return (data ?? []) as Array<{ id: string; retry_count: number; publisher_operation_ref: string | null }>;
+  },
+  async updateIfPublishing(postId, payload) {
+    const { data, error } = await supabaseAdmin.from("social_posts").update(payload).eq("id", postId).eq("status", "publishing").select("id").maybeSingle();
+    if (error) throw new Error(`Error recuperando claim huerfano ${postId}: ${error.message}`);
+    return !!data;
+  },
+};
+
+export async function recoverStaleClaims(
+  deps: RecoverStaleClaimsDeps = defaultRecoverStaleClaimsDeps
+): Promise<{ recoveredToPending: number; movedToVerification: number; movedToError: number }> {
   if (!CLAIMED_AT_MIGRATION_APPLIED) {
     return { recoveredToPending: 0, movedToVerification: 0, movedToError: 0 };
   }
 
   const cutoff = new Date(Date.now() - STALE_CLAIM_MINUTES * 60_000).toISOString();
-  const { data: stale, error } = await supabaseAdmin
-    .from("social_posts")
-    .select("id, retry_count, publisher_operation_ref")
-    .eq("status", "publishing")
-    .lt("claimed_at", cutoff);
-
-  if (error) throw new Error(`Error buscando claims huerfanos: ${error.message}`);
+  const stale = await deps.findStaleClaims(cutoff);
 
   let recoveredToPending = 0;
   let movedToVerification = 0;
@@ -213,19 +242,13 @@ export async function recoverStaleClaims(): Promise<{ recoveredToPending: number
       };
     }
 
-    // .select() + .maybeSingle() en el UPDATE condicional deja ver si ESTE
-    // proceso realmente gano la fila (fila devuelta) o si otro barrido
-    // concurrente ya la habia recuperado primero (0 filas, WHERE ya no
-    // coincide) - sin esto, dos recuperadores simultaneos contarian la misma
-    // fila dos veces en sus totales aunque el dato en si ya este protegido.
-    const { data: updated, error: updateError } = await supabaseAdmin
-      .from("social_posts")
-      .update(updatePayload)
-      .eq("id", row.id)
-      .eq("status", "publishing") // sigue siendo un UPDATE condicional - atomico frente a otro barrido concurrente
-      .select("id")
-      .maybeSingle();
-    if (updateError) throw new Error(`Error recuperando claim huerfano ${row.id}: ${updateError.message}`);
+    // deps.updateIfPublishing() devuelve si ESTE proceso realmente gano la
+    // fila (UPDATE condicional, WHERE status='publishing' sigue vigente) o si
+    // otro barrido concurrente ya la habia recuperado primero (false, WHERE
+    // ya no coincide) - sin esto, dos recuperadores simultaneos contarian la
+    // misma fila dos veces en sus totales aunque el dato en si ya este
+    // protegido por la condicion atomica del UPDATE real (ver defaultRecoverStaleClaimsDeps).
+    const updated = await deps.updateIfPublishing(row.id, updatePayload);
     if (!updated) continue; // otro recuperador concurrente ya la tomo primero
 
     if (updatePayload.status === "verification_required") movedToVerification++;
