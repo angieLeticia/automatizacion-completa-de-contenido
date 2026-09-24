@@ -12,6 +12,16 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Set-Location $RepoRoot
 
+# Fase 5.10-E - RUN_SCOPE/MATERIAL_ROOT explicitos para PRODUCCION. Se fijan
+# de forma INCONDICIONAL (nunca "si no esta ya definido") para que este
+# wrapper NUNCA dependa de variables heredadas de una sesion anterior de
+# PowerShell - Task Scheduler lanza este proceso limpio, pero se fija igual
+# por si alguna vez se ejecuta este archivo manualmente desde una sesion con
+# otras variables ya puestas. agent/run.mts exige RUN_SCOPE (Fase 5.10-B,
+# fail-closed) - sin esto el proceso se detendria de inmediato.
+$env:RUN_SCOPE = "PRODUCTION"
+$env:MATERIAL_ROOT = "D:\MATERIAL VIDEOS"
+
 $LogDir = Join-Path $RepoRoot "agent\logs"
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 $WrapperLog = Join-Path $LogDir "task-wrapper.log"
@@ -22,7 +32,7 @@ function Write-WrapperLog {
     Add-Content -Path $WrapperLog -Value $line
 }
 
-Write-WrapperLog "Tarea Programada iniciada - arrancando el watcher de la Fase 2 (solo deteccion/registro)."
+Write-WrapperLog "Tarea Programada iniciada - arrancando el watcher de la Fase 2 (solo deteccion/registro). RUN_SCOPE=$env:RUN_SCOPE, MATERIAL_ROOT configured."
 
 $TsxBin = Join-Path $RepoRoot "node_modules\.bin\tsx.cmd"
 if (-not (Test-Path $TsxBin)) {

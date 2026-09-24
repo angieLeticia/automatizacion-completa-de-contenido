@@ -15,7 +15,11 @@ import { log } from "./logger.mts";
 // Exige la forma exacta MATERIAL_ROOT/<Cuenta>/<Videos YouTube Completos|Clips>/archivo —
 // cualquier otra estructura (subcarpetas extra, archivos sueltos en la raíz de la
 // cuenta, etc.) se ignora en vez de adivinar qué es.
-function parseLocation(filePath: string): { folderName: string; folderType: FolderType } | null {
+// Fase 3.3 — exportada (sin cambiar su logica interna) para que
+// agent/run.mts pueda validar la estructura de AGENT1_FILE_PATH (modo
+// dirigido) ANTES de decidir si llama a processFile(), sin duplicar esta
+// funcion.
+export function parseLocation(filePath: string): { folderName: string; folderType: FolderType } | null {
   const rel = path.relative(MATERIAL_ROOT, filePath);
   const parts = rel.split(path.sep);
   if (parts.length !== 3) return null;
@@ -40,13 +44,19 @@ function extractEpisodeId(fileName: string): string | null {
   return match ? match[1] : null;
 }
 
-export async function processFile(filePath: string): Promise<void> {
+// Fase 5.10-B — allowedContentAccountIds es OBLIGATORIO, viene del scope
+// resuelto una sola vez al arrancar agent/run.mts (global o dirigido, ver
+// Decision K.6 - un AGENT1_FILE_PATH dirigido tambien pasa por aqui, y
+// getActiveContentAccounts() ya scoped es lo que le impide reconocer una
+// cuenta fuera del RUN_SCOPE del proceso, sin necesitar una comprobacion
+// separada).
+export async function processFile(filePath: string, allowedContentAccountIds: string[]): Promise<void> {
   const location = parseLocation(filePath);
   if (!location) return; // no es un vídeo en Videos YouTube Completos/Clips de ninguna cuenta
 
   const { folderName, folderType } = location;
 
-  const accounts = await getActiveContentAccounts();
+  const accounts = await getActiveContentAccounts(allowedContentAccountIds);
   const account = accounts.get(folderName);
   if (!account) {
     log.warn("Cuenta de contenido no reconocida — archivo ignorado, no se procesa", { filePath, folderName });

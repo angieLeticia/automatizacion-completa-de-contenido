@@ -12,6 +12,9 @@ export interface WorkItem {
   accountFolderName: string;
   accountStyle: AccountStyle;
   metadataRowId: string;
+  // content_files.episode_id (puede ser null) — solo para el alcance por
+  // episodio del glosario de transcripción (lib/transcriptGlossary.ts).
+  episodeId?: string | null;
   retryCountAtClaim: number;
   // Si un intento anterior ya obtuvo transcripcion (aunque fallara despues), se
   // reutiliza en el reintento en vez de correr Whisper de nuevo.
@@ -26,14 +29,39 @@ export interface WorkItem {
 // "colgada" en un estado no terminal. Pasado STALE_CLAIM_MINUTES sin actualizarse,
 // se recupera pasandola a 'error' (cuenta como intento fallido) para que un futuro
 // ciclo la pueda reintentar (si retry_count todavia lo permite).
-export async function recoverStaleClaims(): Promise<void> {
+// Fase 5.10-B — allowedContentAccountIds es OBLIGATORIO (scope resuelto una
+// sola vez en agent/analyze/run.mts::main()). content_metadata NO tiene
+// columna de cuenta propia — se resuelve primero el conjunto de
+// content_file_id permitidos (content_files.content_account_id) y se filtra
+// la busqueda de huerfanos con ese conjunto, nunca con un SELECT global
+// filtrado despues en memoria. Lista de cuentas vacia = nada que recuperar,
+// sin consultar Supabase (Decision K.2).
+export async function recoverStaleClaims(allowedContentAccountIds: string[]): Promise<void> {
+  if (allowedContentAccountIds.length === 0) {
+    log.info("Scope sin cuentas permitidas - sin reclamos huerfanos que recuperar.");
+    return;
+  }
+
+  const { data: scopedFiles, error: scopedFilesError } = await supabaseAdmin
+    .from("content_files")
+    .select("id")
+    .in("content_account_id", allowedContentAccountIds);
+
+  if (scopedFilesError) {
+    log.error("Error resolviendo content_files del scope para recuperar reclamos huerfanos", { error: scopedFilesError.message });
+    return;
+  }
+  const scopedFileIds = (scopedFiles ?? []).map((f) => f.id as string);
+  if (scopedFileIds.length === 0) return; // sin archivos en este scope - nada que recuperar, sin consultar content_metadata
+
   const staleThreshold = new Date(Date.now() - STALE_CLAIM_MINUTES * 60_000).toISOString();
 
   const { data: staleRows, error } = await supabaseAdmin
     .from("content_metadata")
     .select("id, status, retry_count")
     .in("status", ["transcribing", "sampling_frames", "generating_metadata"])
-    .lt("updated_at", staleThreshold);
+    .lt("updated_at", staleThreshold)
+    .in("content_file_id", scopedFileIds);
 
   if (error) {
     log.error("Error buscando reclamos colgados en content_metadata", { error: error.message });
@@ -61,7 +89,10 @@ export async function recoverStaleClaims(): Promise<void> {
   }
 }
 
-async function claimNewFile(contentFileId: string): Promise<string | null> {
+// Fase 3.3 — exportada (sin cambiar su logica) para que el modo dirigido de
+// agent/analyze/run.mts (CONTENT_FILE_ID) pueda reclamar exactamente UNA fila
+// con el mismo mecanismo atomico que ya usa findPendingWork(), sin duplicarlo.
+export async function claimNewFile(contentFileId: string): Promise<string | null> {
   const { data, error } = await supabaseAdmin
     .from("content_metadata")
     .upsert({ content_file_id: contentFileId, status: "transcribing" }, { onConflict: "content_file_id", ignoreDuplicates: true })
@@ -74,7 +105,8 @@ async function claimNewFile(contentFileId: string): Promise<string | null> {
   return data && data.length > 0 ? data[0].id : null;
 }
 
-async function claimRetry(metadataId: string): Promise<string | null> {
+// Fase 3.3 — exportada por el mismo motivo que claimNewFile() arriba.
+export async function claimRetry(metadataId: string): Promise<string | null> {
   const { data, error } = await supabaseAdmin
     .from("content_metadata")
     .update({ status: "transcribing", error_message: null })
@@ -90,11 +122,17 @@ async function claimRetry(metadataId: string): Promise<string | null> {
   return data && data.length > 0 ? data[0].id : null;
 }
 
-export async function findPendingWork(): Promise<WorkItem[]> {
+// Fase 5.10-B — allowedContentAccountIds es OBLIGATORIO. Lista vacia = sin
+// trabajo, sin consultar Supabase (Decision K.2) — nunca un fallback a
+// "todos los content_files en analyzing".
+export async function findPendingWork(allowedContentAccountIds: string[]): Promise<WorkItem[]> {
+  if (allowedContentAccountIds.length === 0) return [];
+
   const { data: analyzingFiles, error: filesError } = await supabaseAdmin
     .from("content_files")
-    .select("id, file_path, folder_type, content_account_id")
-    .eq("status", "analyzing");
+    .select("id, file_path, folder_type, content_account_id, episode_id")
+    .eq("status", "analyzing")
+    .in("content_account_id", allowedContentAccountIds);
 
   if (filesError) {
     log.error("Error listando content_files pendientes de analisis", { error: filesError.message });
@@ -153,6 +191,7 @@ export async function findPendingWork(): Promise<WorkItem[]> {
       accountFolderName: account.folder_name as string,
       accountStyle: (account.style ?? {}) as AccountStyle,
       metadataRowId,
+      episodeId: (file.episode_id as string | null) ?? null,
       retryCountAtClaim,
       cachedTranscript: (meta?.transcript as string | null) ?? null,
       cachedCanonicalRaw: (meta?.claude_raw_response as string | null) ?? null,

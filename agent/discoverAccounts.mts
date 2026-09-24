@@ -14,15 +14,28 @@ export interface ContentAccount {
 let cache: Map<string, ContentAccount> | null = null;
 let cachedAt = 0;
 
-export async function getActiveContentAccounts(forceRefresh = false): Promise<Map<string, ContentAccount>> {
+// Fase 5.10-B — allowedContentAccountIds es OBLIGATORIO (viene de
+// resolveRunScope(), resuelto UNA SOLA VEZ al arrancar el proceso — ver
+// agent/run.mts). Nunca hay modo "sin scope": quien quiera el
+// comportamiento global de antes ya no puede pedirlo por accidente.
+// Lista vacia (RUN_SCOPE=TEST sin cuentas TEST) devuelve un Map vacio SIN
+// consultar Supabase (Decision K.2 - nunca `.in("id", [])`).
+export async function getActiveContentAccounts(allowedContentAccountIds: string[], forceRefresh = false): Promise<Map<string, ContentAccount>> {
   if (!forceRefresh && cache && Date.now() - cachedAt < ACCOUNTS_CACHE_TTL_MS) {
+    return cache;
+  }
+
+  if (allowedContentAccountIds.length === 0) {
+    cache = new Map();
+    cachedAt = Date.now();
     return cache;
   }
 
   const { data, error } = await supabaseAdmin
     .from("content_accounts")
     .select("id, folder_name, timezone")
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .in("id", allowedContentAccountIds);
 
   if (error) {
     log.error("No se pudo cargar content_accounts desde Supabase", { error: error.message });

@@ -8,11 +8,20 @@ import { supabaseAdmin } from "./supabaseClient.mts";
 import { validateFile } from "./validateFile.mts";
 import { log } from "./logger.mts";
 
-export async function recoverPending(): Promise<void> {
+// Fase 5.10-B — allowedContentAccountIds es OBLIGATORIO (resuelto una sola
+// vez en agent/run.mts::main() vía resolveRunScope()). Lista vacia = nada
+// que recuperar, sin consultar Supabase (Decision K.2).
+export async function recoverPending(allowedContentAccountIds: string[]): Promise<void> {
+  if (allowedContentAccountIds.length === 0) {
+    log.info("Scope sin cuentas permitidas - nada que recuperar de una corrida anterior.");
+    return;
+  }
+
   const { data, error } = await supabaseAdmin
     .from("content_files")
     .select("id, file_path")
-    .in("status", ["detected", "validating"]);
+    .in("status", ["detected", "validating"])
+    .in("content_account_id", allowedContentAccountIds);
 
   if (error) {
     log.error("No se pudo consultar content_files pendientes al arrancar", { error: error.message });

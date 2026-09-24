@@ -32,6 +32,7 @@ import { getLlmProvider } from "./llm/index.mts";
 import { validateMetadata } from "./validateMetadata.mts";
 import { METADATA_SCHEMA_VERSION, OLLAMA_MODEL, MAX_RETRIES } from "./config.mts";
 import type { WorkItem } from "./claimWork.mts";
+import { applyTranscriptGlossary } from "../../lib/transcriptGlossary.ts";
 
 async function markFailed(item: WorkItem, reason: string, extra?: { transcript?: string }): Promise<void> {
   log.error("[ERROR] Analisis de contenido fallo - se registra como intento", {
@@ -94,7 +95,17 @@ async function runCanonicalAnalysis(item: WorkItem, transcript: string): Promise
     log.info(`[OLLAMA] modelo: ${OLLAMA_MODEL}`, { filePath: item.filePath });
     const result = await getLlmProvider().generateMetadata(prompt);
     rawResponse = result.content;
-    log.info("[OLLAMA] respuesta recibida", { filePath: item.filePath, caracteres: rawResponse.length });
+    // Fase 5.10-M — doneReason es solo una etiqueta ("length"/"stop"/ausente),
+    // nunca contenido generado - seguro de loguear junto a la longitud, que
+    // ya se logueaba desde antes. NUNCA se loguea rawResponse completo aqui
+    // ni en ningun otro punto de este archivo (solo su longitud).
+    log.info("[OLLAMA] respuesta recibida", { filePath: item.filePath, caracteres: rawResponse.length, doneReason: result.doneReason ?? "(no reportado)" });
+    if (result.doneReason === "length") {
+      log.warn("[OLLAMA] la respuesta se corto por alcanzar el limite de tokens de salida (options.num_predict) - posible JSON incompleto", {
+        filePath: item.filePath,
+        caracteres: rawResponse.length,
+      });
+    }
     if (result.thinkingDetected) {
       log.warn("[OLLAMA] se detecto contenido de 'thinking' en la respuesta (inesperado con think:false)", {
         filePath: item.filePath,
@@ -145,7 +156,7 @@ export async function processOne(item: WorkItem): Promise<void> {
     let hasSpeech = false;
 
     if (item.cachedTranscript) {
-      transcript = item.cachedTranscript;
+      transcript = applyTranscriptGlossary(item.cachedTranscript, item.accountFolderName, item.episodeId ?? undefined);
       hasSpeech = true;
       log.info("[WHISPER] transcripcion reutilizada de un intento anterior - se omite Whisper", {
         filePath: item.filePath,
@@ -157,7 +168,7 @@ export async function processOne(item: WorkItem): Promise<void> {
         const wavPath = extractAudioToWav(item.filePath, tmpDir);
         log.info("[WHISPER] iniciando", { filePath: item.filePath, modelo: process.env.WHISPER_MODEL || "medium" });
         const result = transcribeAudio(wavPath, tmpDir);
-        transcript = result.transcript;
+        transcript = applyTranscriptGlossary(result.transcript, item.accountFolderName, item.episodeId ?? undefined);
         hasSpeech = result.hasSpeech;
         log.info("[WHISPER] terminado", { filePath: item.filePath, hasSpeech });
         log.info(`[WHISPER] transcript length: ${transcript.length}`, { filePath: item.filePath });

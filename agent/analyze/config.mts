@@ -16,7 +16,25 @@ export const WHISPER_MODEL = process.env.WHISPER_MODEL || "medium";
 export const LLM_PROVIDER = process.env.LLM_PROVIDER || "local";
 export const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
 export const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "qwen2.5vl:3b";
-export const OLLAMA_MAX_OUTPUT_TOKENS = 1200;
+// Fase 5.10-U — timeout explicito para la llamada canonica a Ollama. El
+// cliente (fetch nativo de Node/undici) no tenia NINGUN timeout propio antes
+// de esta fase - dependia enteramente del default de undici (headersTimeout,
+// ~300s), sin AbortController propio. El fallo real diagnosticado en Fase
+// 5.10-T ocurrio a los ~304s, coincidiendo con ese default. Este valor
+// (600s = 10 min) es DELIBERADAMENTE mayor a ese default para que, de ahora
+// en adelante, sea NUESTRO AbortController el que corte la espera (con un
+// motivo identificable: timeout vs otro tipo de fallo de red), nunca el
+// limite generico y silencioso de undici. 10 minutos da margen de sobra
+// sobre el peor caso observado hasta ahora (~3:46 min con un transcript real
+// de 5317 caracteres) sin dejar un proceso colgado indefinidamente si Ollama
+// de verdad se queda sin responder.
+export const OLLAMA_REQUEST_TIMEOUT_MS = 600_000;
+// Fase 5.10-M — subido de 1200 a 2500. Diagnostico de Fase 5.10-L encontro
+// evidencia directa de que 1200 truncaba a mitad de string la respuesta JSON
+// del analisis canonico (num_predict corta la generacion sin importar si el
+// JSON quedo completo) - ver localOllamaClient.mts, done_reason="length".
+// Independiente de MAX_RETRIES (constante distinta, sin relacion).
+export const OLLAMA_MAX_OUTPUT_TOKENS = 2500;
 
 export const MAX_RETRIES = 3;
 export const POLL_INTERVAL_MS = 30_000;
