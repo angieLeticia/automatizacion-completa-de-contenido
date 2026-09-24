@@ -52,6 +52,14 @@ interface FakeRow {
   publisher_operation_ref: string | null;
   external_post_id: string | null;
   error_message: string | null;
+  // Fase 5.10-B — account_id es necesario ahora porque recoverStaleClaims()
+  // exige un scope (allowedAccountIds) y findStaleClaims() filtra por el.
+  // Todas las filas de este archivo usan la MISMA cuenta ("acct-1") y todos
+  // los llamados a recoverStaleClaims() pasan ["acct-1"] como scope - las
+  // pruebas de este archivo verifican la maquina de estados de recuperacion,
+  // NO el filtrado por scope (eso se prueba por separado en
+  // test-scope-isolation.mts).
+  account_id: string;
 }
 
 // Simula fielmente la semantica de Postgres UPDATE ... WHERE status='publishing':
@@ -70,16 +78,18 @@ function makeFakeDb(rows: FakeRow[]) {
     table,
     updateCalls,
     findCalls,
-    async findStaleClaims(cutoffIso: string) {
+    async findStaleClaims(cutoffIso: string, allowedAccountIds: string[]) {
       findCalls.push(cutoffIso);
       return table
-        .filter((r) => r.status === "publishing" && r.claimed_at !== null && r.claimed_at < cutoffIso)
+        .filter((r) => r.status === "publishing" && r.claimed_at !== null && r.claimed_at < cutoffIso && allowedAccountIds.includes(r.account_id))
         .map((r) => ({ id: r.id, retry_count: r.retry_count, publisher_operation_ref: r.publisher_operation_ref }));
     },
-    async updateIfPublishing(postId: string, payload: Record<string, unknown>) {
+    async updateIfPublishing(postId: string, payload: Record<string, unknown>, allowedAccountIds: string[]) {
       updateCalls.push({ postId, payload });
       const row = table.find((r) => r.id === postId);
-      if (!row || row.status !== "publishing") return false; // WHERE status='publishing' ya no coincide
+      // Endurecimiento (post-revision 5.10-B) — replica el `.in("account_id", allowedAccountIds)`
+      // que ahora tambien lleva el UPDATE real, no solo el SELECT previo.
+      if (!row || row.status !== "publishing" || !allowedAccountIds.includes(row.account_id)) return false;
       Object.assign(row, payload);
       return true;
     },
@@ -102,10 +112,10 @@ async function main() {
   // ==================================================
   {
     const db = makeFakeDb([
-      { id: "post-A1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: null, external_post_id: null, error_message: null },
-      { id: "post-A2", status: "publishing", claimed_at: staleTimestamp, retry_count: MAX_RETRIES - 1, publisher_operation_ref: null, external_post_id: "ext-existing-A2", error_message: null },
+      { id: "post-A1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: null, external_post_id: null, error_message: null, account_id: "acct-1" },
+      { id: "post-A2", status: "publishing", claimed_at: staleTimestamp, retry_count: MAX_RETRIES - 1, publisher_operation_ref: null, external_post_id: "ext-existing-A2", error_message: null, account_id: "acct-1" },
     ]);
-    const result = await recoverStaleClaims(db);
+    const result = await recoverStaleClaims(["acct-1"], db);
     const rowA1 = db.getRow("post-A1")!;
     const rowA2 = db.getRow("post-A2")!;
 
@@ -131,9 +141,9 @@ async function main() {
   // ==================================================
   {
     const db = makeFakeDb([
-      { id: "post-B1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: "pending:instagram", external_post_id: null, error_message: null },
+      { id: "post-B1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: "pending:instagram", external_post_id: null, error_message: null, account_id: "acct-1" },
     ]);
-    const result = await recoverStaleClaims(db);
+    const result = await recoverStaleClaims(["acct-1"], db);
     const row = db.getRow("post-B1")!;
 
     check("B. status='verification_required'", row.status === "verification_required");
@@ -150,9 +160,9 @@ async function main() {
   {
     const REAL_CREATION_ID = "123456789012345:creation";
     const db = makeFakeDb([
-      { id: "post-C1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: REAL_CREATION_ID, external_post_id: null, error_message: null },
+      { id: "post-C1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: REAL_CREATION_ID, external_post_id: null, error_message: null, account_id: "acct-1" },
     ]);
-    const result = await recoverStaleClaims(db);
+    const result = await recoverStaleClaims(["acct-1"], db);
     const row = db.getRow("post-C1")!;
 
     check("C. status='verification_required'", row.status === "verification_required");
@@ -167,9 +177,9 @@ async function main() {
   {
     const OTHER_PLATFORM_REF = "youtube:123456789";
     const db = makeFakeDb([
-      { id: "post-D1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: OTHER_PLATFORM_REF, external_post_id: null, error_message: null },
+      { id: "post-D1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: OTHER_PLATFORM_REF, external_post_id: null, error_message: null, account_id: "acct-1" },
     ]);
-    const result = await recoverStaleClaims(db);
+    const result = await recoverStaleClaims(["acct-1"], db);
     const row = db.getRow("post-D1")!;
 
     check("D. status='verification_required' (clasificacion NO distingue plataforma, solo null/no-null)", row.status === "verification_required");
@@ -182,9 +192,9 @@ async function main() {
   // ==================================================
   {
     const db = makeFakeDb([
-      { id: "post-E1", status: "publishing", claimed_at: freshTimestamp, retry_count: 0, publisher_operation_ref: null, external_post_id: null, error_message: null },
+      { id: "post-E1", status: "publishing", claimed_at: freshTimestamp, retry_count: 0, publisher_operation_ref: null, external_post_id: null, error_message: null, account_id: "acct-1" },
     ]);
-    const result = await recoverStaleClaims(db);
+    const result = await recoverStaleClaims(["acct-1"], db);
     const row = db.getRow("post-E1")!;
 
     check("E. fila reciente NUNCA aparece en el resultado de findStaleClaims (verificado indirectamente: 0 updates)", db.updateCalls.length === 0);
@@ -200,10 +210,10 @@ async function main() {
   // ==================================================
   {
     const db = makeFakeDb([
-      { id: "post-F1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: "555555555555555:creation", external_post_id: null, error_message: null },
+      { id: "post-F1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: "555555555555555:creation", external_post_id: null, error_message: null, account_id: "acct-1" },
     ]);
 
-    const [resultA, resultB] = await Promise.all([recoverStaleClaims(db), recoverStaleClaims(db)]);
+    const [resultA, resultB] = await Promise.all([recoverStaleClaims(["acct-1"], db), recoverStaleClaims(["acct-1"], db)]);
     const row = db.getRow("post-F1")!;
 
     const totalMoved = resultA.movedToVerification + resultB.movedToVerification;
@@ -218,11 +228,38 @@ async function main() {
   // ==================================================
   {
     const db = makeFakeDb([
-      { id: "post-G1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: "999999999999999:creation", external_post_id: "ig-external-post-id-should-not-change", error_message: null },
+      { id: "post-G1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: "999999999999999:creation", external_post_id: "ig-external-post-id-should-not-change", error_message: null, account_id: "acct-1" },
     ]);
-    await recoverStaleClaims(db);
+    await recoverStaleClaims(["acct-1"], db);
     const row = db.getRow("post-G1")!;
     check("G. external_post_id permanece EXACTAMENTE igual (rama verification_required nunca lo toca)", row.external_post_id === "ig-external-post-id-should-not-change");
+  }
+
+  // ==================================================
+  // Caso H — endurecimiento post-revision 5.10-B: defensa en profundidad del
+  // UPDATE de recuperacion. Aunque findStaleClaims() ya filtra por scope (y
+  // account_id es inmutable tras el INSERT), updateIfPublishing() debe
+  // rechazar por si mismo una fila de OTRA cuenta si alguna vez se le
+  // llamara con un id fuera del scope pasado - se prueba llamando
+  // directamente a updateIfPublishing() (sin pasar por findStaleClaims(),
+  // que en este escenario NO participa) con un scope que NO incluye la
+  // cuenta real del post.
+  // ==================================================
+  {
+    const db = makeFakeDb([
+      { id: "post-H1", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: null, external_post_id: null, error_message: null, account_id: "acct-otra-cuenta" },
+    ]);
+    const updated = await db.updateIfPublishing("post-H1", { status: "pending", claimed_at: null }, ["acct-1"]);
+    const row = db.getRow("post-H1")!;
+    check("H. updateIfPublishing() con scope que NO incluye la cuenta real del post -> devuelve false", updated === false);
+    check("H. la fila NUNCA se modifica (sigue exactamente en 'publishing', sin tocar)", row.status === "publishing" && row.claimed_at === staleTimestamp);
+  }
+  {
+    const db = makeFakeDb([
+      { id: "post-H2", status: "publishing", claimed_at: staleTimestamp, retry_count: 0, publisher_operation_ref: null, external_post_id: null, error_message: null, account_id: "acct-1" },
+    ]);
+    const updated = await db.updateIfPublishing("post-H2", { status: "pending", claimed_at: null }, []);
+    check("H2. updateIfPublishing() con scope vacio ([]) -> devuelve false sin tocar la fila (Decision K.2)", updated === false && db.getRow("post-H2")!.status === "publishing");
   }
 
   // ==================================================

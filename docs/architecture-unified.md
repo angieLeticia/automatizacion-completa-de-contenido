@@ -12,6 +12,25 @@
 > diagrama, la estructura de GitHub y la sección de storage de abajo quedan actualizados; el
 > resto (orquestador, modelo multicanal, seguridad, despliegue, costos) no cambia en su lógica,
 > solo en qué componente ocupa el primer lugar del flujo.
+>
+> **[ESTADO REAL — FASE 5.10-AC/AD/AH, verificado contra código y Supabase reales]** Este
+> documento sigue siendo DISEÑO de la Fase 2 y no se reescribió por completo (mucho de lo
+> descrito abajo ya se implementó desde entonces, otras partes no). Diferencias concretas ya
+> confirmadas con evidencia real, donde este documento diverge de la realidad actual:
+> - §3 (tabla de estados): `channel_status` SÍ está aplicado en producción (columna real, en uso
+>   por `agent/publish/channelAuthorization.mts`). Estado real hoy: SIN EXPLICACIÓN=`ACTIVE`
+>   (SÍ llegó a publicar — 4 publicaciones reales confirmadas), ENCIENDE EL
+>   CAOS/LUNA VERDE/OBJETOS MALDITOS=`HISTORICAL` (no `TEST`/`BLOCKED` como dice la tabla —
+>   decisión humana pendiente sobre si deben cambiar, ver auditoría FASE 5.10-AC).
+> - §4 (`ACCOUNTS`): ya resuelto — `scripts/pipeline/channelRegistry.mts::resolveScannableChannels()`
+>   + `content_accounts.channel_status` real, no el array hardcodeado que describe esta sección.
+> - `content_files.episode_id` y `social_posts.recovery_count`: SÍ están aplicados (ver
+>   `supabase/schema.sql`, corregido en la misma auditoría).
+> - §6 (`episode_log`)/`recalculateEpisodeStatus()`: siguen sin ninguna implementación real —
+>   esta parte del diseño no cambió, ver nota en `supabase/schema.sql` sección 9.
+> - `agent/ingestion/` (Inbox) sí está implementado, alineado con `docs/content-ingestion.md`.
+> - `agent/research/` (Agente 1 opcional) sigue sin ningún código — solo diseño, como ya decía
+>   este documento.
 
 ## 1. Orquestador — función delgada, no proceso ni mega-script
 

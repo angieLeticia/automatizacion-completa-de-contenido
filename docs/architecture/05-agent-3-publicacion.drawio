@@ -1,0 +1,105 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="05 — Agent 3: Publication Engine" id="agent3">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="2000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cnt_gates" value="GATES SECUENCIALES (todos deben pasar)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="36" y="234" width="428" height="970" as="geometry" /></mxCell>
+        <mxCell id="socialPost" value="social_post
+(status='pending', scheduled_at)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="40" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="targetSelection" value="TARGET SELECTION
+targetPostSelection.mts
+POST_ID + EXPECTED_PLATFORM +
+EXPECTED_CONTENT_FILE_ID (modo dirigido)
+o modo general (todos los due)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="140" width="380" height="100" as="geometry" /></mxCell>
+        <mxCell id="claim" value="CLAIM ATÓMICO
+claimPost.mts
+UPDATE ... WHERE status='pending'
+(exclusión mutua real, Postgres)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="280" width="380" height="90" as="geometry" /></mxCell>
+        <mxCell id="hashCheck" value="HASH VERIFICATION
+resolveContentFile.mts / verifyFileHash.mts
+SHA-256 real recalculado vs content_files.file_hash" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="410" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="fileStability" value="FILE STABILITY
+doble stat() separado por
+FILE_STABILITY_CHECK_DELAY_MS" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="530" width="380" height="70" as="geometry" /></mxCell>
+        <mxCell id="identityCheck" value="IDENTITY VERIFICATION (cuenta)
+resolveIdentity.mts
+content_account.channel_id === social_account.channel_id" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="640" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="channelStatusGate" value="CHANNEL STATUS
+channelAuthorization.mts
+ACTIVE autoriza real · BLOCKED/HISTORICAL bloquea" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="760" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="pubAuth" value="PUBLICATION AUTHORIZATION
+publicationAuthorization.mts
+publication_authorized_at/_by" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="880" width="380" height="70" as="geometry" /></mxCell>
+        <mxCell id="humanReview" value="HUMAN REVIEW
+humanReviewGate.mts — isPublicationAuthorized()
+POR POST, no por canal" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="990" width="380" height="70" as="geometry" /></mxCell>
+        <mxCell id="dryRun" value="DRY_RUN
+config.mts — DRY_RUN!=='false' por defecto
+(fail-safe: cualquier valor ausente/raro = true)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1100" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="youtubeIdentity" value="IDENTITY VERIFICATION (YouTube real)
+youtubeChannelIdentity.mts
+channels.list(mine=true) vs credentials.channel_id" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="1100" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="checkpoint" value="CHECKPOINT
+markPublishAttemptStarted()
+publisher_operation_ref = 'pending:&lt;platform&gt;'" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1220" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="publisher" value="PUBLISHER
+lib/social/{youtube,instagram,facebook}.ts
+YouTube 🟢 · Instagram/Facebook 🟡" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="1340" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="externalPlatform" value="EXTERNAL PLATFORM
+YouTube (real, piloto) / Instagram / Facebook" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="1340" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="externalId" value="EXTERNAL ID
+externalPostId (videoId real: PawU4OS5lbk)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="1460" width="340" height="70" as="geometry" /></mxCell>
+        <mxCell id="persist" value="PERSIST RESULT
+status='published', external_post_id,
+published_at, publisher_operation_ref=null" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1460" width="380" height="80" as="geometry" /></mxCell>
+        <mxCell id="uncertain" value="UNCERTAIN OUTCOME
+PublicationOutcomeUncertainError
+→ status='verification_required'" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="1580" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="reconciliation" value="RECONCILIATION (cuando corresponde)
+reconciliation.mts — YouTube/Instagram probado con
+mocks, Facebook CANNOT_VERIFY siempre" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1580" width="380" height="90" as="geometry" /></mxCell>
+        <mxCell id="retry" value="RETRY POLICY
+retryPolicy.mts — 400/401/403/404 permanente
+408/429/500/502/503/504 retryable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="1720" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="postIdBox" value="POST_ID
+aísla la ejecución a UN SOLO post — no consulta
+ni toca ningún otro social_post pendiente" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="940" y="140" width="340" height="100" as="geometry" /></mxCell>
+        <mxCell id="scheduledGate" value="scheduled_at futuro → BLOQUEADO
+(el modo dirigido respeta scheduling,
+sin bypass posible)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="940" y="260" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="legtitle_22" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="1340" y="40" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_23" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1340" y="70" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_24" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1340" y="112" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_25" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1340" y="154" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_26" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1340" y="196" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_27" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1340" y="238" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_28" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1340" y="280" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_29" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="1340" y="326" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="Orden real confirmado en agent/publish/run.mts::processPost(). DRY_RUN, CHANNEL STATUS y HUMAN REVIEW son UNA sola condición combinada (OR) — no 3 pasos independientes: cualquiera que falle detiene todo antes de tocar Google/Meta." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1340" y="400" width="330" height="140" as="geometry" /></mxCell>
+        <mxCell id="note2" value="Piloto real (Fase 5.20): social_post 413b541d-… publicado en YouTube como PRIVATE, videoId PawU4OS5lbk, canal SIN EXPLICACIÓN (UCHtU7U5zZ1gndN5o-C2eeFQ). Único caso con evidencia 🟢 de punta a punta." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1340" y="560" width="330" height="140" as="geometry" /></mxCell>
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="socialPost" target="targetSelection"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="targetSelection" target="claim"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="targetSelection" target="postIdBox"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="postIdBox" target="scheduledGate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="claim" target="hashCheck"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="hashCheck" target="fileStability"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="fileStability" target="identityCheck"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="identityCheck" target="channelStatusGate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="channelStatusGate" target="pubAuth"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="pubAuth" target="humanReview"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="humanReview" target="dryRun"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_12" value="solo YouTube" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="dryRun" target="youtubeIdentity"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="dryRun" target="checkpoint"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="youtubeIdentity" target="checkpoint"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="checkpoint" target="publisher"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="publisher" target="externalPlatform"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="externalPlatform" target="externalId"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="publisher" target="persist"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_19" value="resultado ambiguo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="externalId" target="uncertain"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_20" value="solo si verification_required" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="persist" target="reconciliation"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_21" value="NUNCA reintento ciego" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="uncertain" target="retry"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

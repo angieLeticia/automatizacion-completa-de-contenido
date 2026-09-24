@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="09 — Identidad y aislamiento de canales" id="identidad">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1550" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cnt_channels" value="9 CANALES REALES CONOCIDOS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="36" y="114" width="2278" height="160" as="geometry" /></mxCell>
+        <mxCell id="root" value="D:\MATERIAL VIDEOS\" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="40" width="260" height="60" as="geometry" /></mxCell>
+        <mxCell id="ch_sinexp" value="SIN EXPLICACIÓN
+ACTIVE — único con provider real" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_objmal" value="OBJETOS MALDITOS
+TEST — sin provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="310" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_lunaverde" value="LUNA VERDE
+TEST — sin provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="560" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_encienda" value="ENCIENDE EL CAOS
+BLOCKED — sin provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="810" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_alzavoz" value="ALZA LA VOZ
+BLOCKED — provider SÍ integrado
+(decisión humana pendiente)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1060" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_asmr" value="ASMR
+BLOCKED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1310" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_peliculas" value="PELICULAS
+BLOCKED (copyright)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1560" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_musica" value="MUSICA
+BLOCKED (copyright)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1810" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="ch_chismes" value="CHISMES
+HISTORICAL — excluido deliberado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="2060" y="160" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="channelConfig" value="channel configuration
+scripts/pipeline/channelRegistry.mts
+(fuente de verdad LOCAL, no lee Supabase todavía)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="300" width="420" height="80" as="geometry" /></mxCell>
+        <mxCell id="folderNameGate" value="El nombre de carpeta es la ÚNICA forma
+de reconocer una cuenta — si no está en
+discoverAccounts.mts, NUNCA se procesa" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="540" y="300" width="420" height="80" as="geometry" /></mxCell>
+        <mxCell id="contentAccount" value="content_account
+(Supabase) — folder_name UNIQUE
+channel_id UNIQUE FK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="440" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="socialChannel" value="social_channel
+(Supabase) — 1:1 con content_account" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="460" y="440" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="socialAccount" value="social_account
+channel_id FK, platform, credentials JSONB
+UNIQUE(channel_id, platform)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="580" width="400" height="80" as="geometry" /></mxCell>
+        <mxCell id="externalIdentity" value="EXTERNAL PLATFORM IDENTITY
+YouTube: channels.list(mine=true) real
+Instagram/Facebook: NO EXISTE verificación real" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="720" width="460" height="90" as="geometry" /></mxCell>
+        <mxCell id="match" value="MATCH
+credentials.channel_id === channel real
+(verifyYoutubeChannelIdentity)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="870" width="320" height="80" as="geometry" /></mxCell>
+        <mxCell id="mismatch" value="MISMATCH
+BLOQUEO inmediato, fail-closed
+(incidente real detectado y cerrado, Fase 5.18)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="420" y="870" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="credentialProvisioning" value="Aprovisionamiento por canal
+YOUTUBE_CLIENT_ID_&lt;CANAL&gt; / _SECRET_&lt;CANAL&gt;
+registro por nombre de variable, sin hardcode" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="900" y="580" width="400" height="90" as="geometry" /></mxCell>
+        <mxCell id="legtitle_19" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="60" y="1050" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_20" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="1080" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_21" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="1122" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_22" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="1164" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_23" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="1206" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_24" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="1248" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_25" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="1290" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_26" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="60" y="1336" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="PRINCIPIO: PHYSICAL PATH → CHANNEL → CONTENT ACCOUNT → SOCIAL ACCOUNT → EXTERNAL PLATFORM IDENTITY. Un canal NUNCA debe publicar usando las credenciales de otro — esto ya ocurrió una vez en la práctica (Enciende El Caos vs Sin Explicación, Fase 5.18) y fue detectado por el propio gate MISMATCH, no por inspección humana." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="500" y="1050" width="420" height="170" as="geometry" /></mxCell>
+        <mxCell id="note2" value="La verificación real MATCH/MISMATCH solo existe para YouTube. Instagram y Facebook dependen ÚNICAMENTE de la consistencia interna de Supabase (content_account.channel_id === social_account.channel_id) — nunca se confirma contra la cuenta externa real. Es la brecha de aislamiento más importante hoy." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="960" y="1050" width="420" height="170" as="geometry" /></mxCell>
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="root" target="ch_sinexp"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_objmal"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_lunaverde"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_encienda"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_alzavoz"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_asmr"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_peliculas"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_musica"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="root" target="ch_chismes"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="ch_sinexp" target="channelConfig"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="channelConfig" target="folderNameGate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="channelConfig" target="contentAccount"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="contentAccount" target="socialChannel"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="contentAccount" target="socialAccount"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="socialAccount" target="externalIdentity"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="socialAccount" target="credentialProvisioning"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="externalIdentity" target="match"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="externalIdentity" target="mismatch"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

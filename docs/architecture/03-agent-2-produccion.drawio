@@ -1,0 +1,106 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="03 — Agent 2: Producción" id="agent2">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cnt_result" value="RESULTADOS DEL PROYECTO (ProjectManifest.status)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="236" y="1214" width="688" height="130" as="geometry" /></mxCell>
+        <mxCell id="material" value="MATERIAL_ROOT/&lt;canal&gt;/&lt;episodio&gt;/
+(desde diagrama 02)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="40" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="scanner" value="materialScanner.mts
+scanEpisode() / listEpisodeFolders()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="460" y="40" width="300" height="60" as="geometry" /></mxCell>
+        <mxCell id="completeness" value="completenessChecker.mts
+checkCompleteness()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="840" y="40" width="280" height="60" as="geometry" /></mxCell>
+        <mxCell id="authGate" value="AUTHORIZATION (gate humano)
+scripts/pipeline/authorization.mts
+npm run pipeline:authorize" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="460" y="160" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="humanDecision" value="Humano decide
+autorizar / retener (HELD)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="840" y="160" width="280" height="80" as="geometry" /></mxCell>
+        <mxCell id="queue" value="QUEUE
+scripts/pipeline/queue.mts
+QUEUED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="300" width="240" height="70" as="geometry" /></mxCell>
+        <mxCell id="lock" value="agentLock.mts
+exclusión mutua del proceso" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="340" y="300" width="240" height="70" as="geometry" /></mxCell>
+        <mxCell id="watcher" value="Agent 2 watcher
+scripts/pipeline/agent.mts (chokidar)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="620" y="300" width="260" height="70" as="geometry" /></mxCell>
+        <mxCell id="processOne" value="processOne.mts
+PROCESSING — pipeline real de un episodio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="260" y="420" width="340" height="70" as="geometry" /></mxCell>
+        <mxCell id="renderRegistry" value="RenderProviderRegistry
+scripts/pipeline/renderProviderRegistry.mts
+canal → provider (errores tipados)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="260" y="540" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="docProvider" value="documentary-remotion
+SIN EXPLICACIÓN — ÚNICO canal
+con pipeline E2E real" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="120" y="660" width="320" height="90" as="geometry" /></mxCell>
+        <mxCell id="quoteProvider" value="quote-video-remotion
+ALZA LA VOZ — migrado y probado,
+canal permanece BLOCKED (decisión humana)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="660" width="340" height="90" as="geometry" /></mxCell>
+        <mxCell id="otherChannels" value="OBJETOS MALDITOS / LUNA VERDE (TEST, sin provider)
+ENCIENDE EL CAOS / ASMR / PELICULAS / MUSICA (BLOCKED)
+CHISMES (HISTORICAL) — NINGUNO produce hoy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="900" y="660" width="380" height="90" as="geometry" /></mxCell>
+        <mxCell id="machinebridge" value="MachineBridge
+(ver diagrama 04)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="260" y="790" width="340" height="60" as="geometry" /></mxCell>
+        <mxCell id="remotion" value="Remotion CLI
+(proceso hijo real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="890" width="220" height="60" as="geometry" /></mxCell>
+        <mxCell id="ffmpegaudio" value="FFmpeg / audio / Whisper
+(transcripción real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="320" y="890" width="260" height="60" as="geometry" /></mxCell>
+        <mxCell id="video" value="Video renderizado
+(main / clips)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="620" y="890" width="220" height="60" as="geometry" /></mxCell>
+        <mxCell id="qualityGate" value="QUALITY GATE
+scripts/pipeline/qualityChecker.mts
+ffprobe: streams/duración/tamaño real" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="260" y="1000" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="derived" value="DerivedContent (contrato)
+scripts/pipeline/derivedContent.mts
+CLIP / HIGHLIGHT / VERTICAL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1130" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="clips" value="clipSelector.mts
+VALIDADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="400" y="1130" width="200" height="80" as="geometry" /></mxCell>
+        <mxCell id="highlights" value="highlightSelector.mts
+VALIDADO pero NO integrado
+al render real todavía" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="630" y="1130" width="240" height="80" as="geometry" /></mxCell>
+        <mxCell id="vertical" value="verticalAsset.mts
+valida 1080x1920 real
+VALIDADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="900" y="1130" width="220" height="80" as="geometry" /></mxCell>
+        <mxCell id="completed" value="COMPLETED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="260" y="1260" width="180" height="60" as="geometry" /></mxCell>
+        <mxCell id="error" value="ERROR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="490" y="1260" width="180" height="60" as="geometry" /></mxCell>
+        <mxCell id="held" value="HELD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="720" y="1260" width="180" height="60" as="geometry" /></mxCell>
+        <mxCell id="legtitle_27" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="1620" y="40" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_28" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1620" y="70" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_29" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1620" y="112" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_30" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1620" y="154" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_31" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1620" y="196" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_32" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1620" y="238" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_33" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1620" y="280" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_34" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="1620" y="326" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="Estado real ProjectManifest.status (scripts/pipeline/projectManifest.mts):
+WAITING_FOR_MATERIAL → AUTHORIZED → QUEUED → PROCESSING → COMPLETED / ERROR
+(HELD es una rama lateral deliberada, nunca automática)." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1620" y="500" width="330" height="120" as="geometry" /></mxCell>
+        <mxCell id="note2" value="Solo SIN EXPLICACIÓN tiene un pipeline de producción end-to-end real y probado. ALZA LA VOZ tiene un provider real e integrado (render probado, Fase 5.1) pero el canal sigue BLOCKED por decisión humana explícita — técnicamente listo ≠ activado." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1620" y="650" width="330" height="140" as="geometry" /></mxCell>
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="material" target="scanner"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="scanner" target="completeness"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="scanner" target="authGate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="authGate" target="humanDecision"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="authGate" target="queue"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="queue" target="lock"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="lock" target="watcher"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="watcher" target="processOne"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="processOne" target="renderRegistry"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="renderRegistry" target="docProvider"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="renderRegistry" target="quoteProvider"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_12" value="resto de canales: sin provider o BLOCKED" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="quoteProvider" target="otherChannels"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="docProvider" target="machinebridge"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="quoteProvider" target="machinebridge"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="machinebridge" target="remotion"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="machinebridge" target="ffmpegaudio"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="remotion" target="video"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="ffmpegaudio" target="video"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="video" target="qualityGate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="qualityGate" target="derived"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="derived" target="clips"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="derived" target="highlights"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="derived" target="vertical"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="qualityGate" target="completed"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="qualityGate" target="error"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_26" value="retención manual" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="authGate" target="held"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

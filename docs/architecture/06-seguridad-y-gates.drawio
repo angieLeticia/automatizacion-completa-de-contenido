@@ -1,0 +1,93 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="06 — Seguridad y gates de publicación" id="seguridad">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2100" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cnt_cred" value="OAuth / CREDENCIALES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="476" y="-6" width="388" height="560" as="geometry" /></mxCell>
+        <mxCell id="cnt_resil" value="IDEMPOTENCIA / RETRIES / RECONCILIACIÓN" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="476" y="574" width="388" height="560" as="geometry" /></mxCell>
+        <mxCell id="content" value="CONTENT
+archivo físico en disco" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="40" width="340" height="70" as="geometry" /></mxCell>
+        <mxCell id="fileHash" value="FILE HASH
+SHA-256 real recalculado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="150" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="contentAccount" value="CONTENT ACCOUNT
+carpeta ↔ canal (1:1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="260" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="socialAccount" value="SOCIAL ACCOUNT
+credenciales por plataforma" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="370" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="channelIdentity" value="CHANNEL IDENTITY
+YouTube: verificado vs API real
+Instagram/Facebook: NO EXISTE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="480" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="channelStatus" value="CHANNEL STATUS
+ACTIVE autoriza real" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="590" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="pubAuth" value="PUBLICATION AUTHORIZATION
+timestamp + autor real" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="700" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="humanReview" value="HUMAN REVIEW
+por post, no por canal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="810" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="dryRun" value="DRY_RUN
+fail-safe: true por defecto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="920" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="targetPost" value="TARGET POST
+POST_ID aísla 1 solo post
++ scheduled_at obligatorio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1030" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="publisher" value="PUBLISHER
+lib/social/*.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1140" width="340" height="70" as="geometry" /></mxCell>
+        <mxCell id="externalApi" value="EXTERNAL API
+YouTube/Instagram/Facebook" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1250" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="oauth" value="OAuth
+Google (real) / Meta (sin identidad verificada)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="40" width="340" height="70" as="geometry" /></mxCell>
+        <mxCell id="credResolver" value="Credential Resolver
+youtubeCredentialResolver.mts
+registro por nombre de variable, sin hardcode" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="140" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="secrets" value="Secrets
+.env.local (gitignored) / Supabase service_role" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="250" width="340" height="70" as="geometry" /></mxCell>
+        <mxCell id="gitExclusion" value="Git exclusion
+.gitignore: .env*.local
+0 secretos trackeados (escaneo real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="350" width="340" height="70" as="geometry" /></mxCell>
+        <mxCell id="identityVerif" value="Identity Verification (YouTube)
+youtubeChannelIdentity.mts
+fail-closed: CHECK_FAILED nunca = VERIFIED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="450" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="atomicClaim" value="Atomic Claim
+UPDATE ... WHERE status='pending'
+exclusión mutua real (Postgres)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="620" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="idempotency" value="Idempotency
+UNIQUE(content_file_id, account_id)
++ status='published' nunca se reclama" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="720" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="retryPolicy" value="Retry Policy
+400/401/403/404 permanente
+408/429/5xx retryable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="820" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="uncertainOutcome" value="Uncertain Outcome
+PublicationOutcomeUncertainError
+YouTube/Instagram/Facebook — nunca retry ciego" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="920" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="reconciliationBox" value="Reconciliation
+YouTube/Instagram: lógica probada con mocks
+Facebook: CANNOT_VERIFY permanente (sin runner)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="500" y="1020" width="340" height="90" as="geometry" /></mxCell>
+        <mxCell id="legtitle_18" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="940" y="40" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_19" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="940" y="70" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_20" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="940" y="112" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_21" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="940" y="154" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_22" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="940" y="196" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_23" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="940" y="238" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_24" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="940" y="280" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_25" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="940" y="326" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="🟡 = barrera cubierta SOLO por tests con mocks, nunca ejercitada contra la plataforma real en producción (excepto YouTube, que sí tiene piloto real). channelIdentity para Instagram/Facebook es la brecha de seguridad más importante identificada: solo existe consistencia interna Supabase, nunca verificación contra la cuenta externa real." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="940" y="400" width="360" height="150" as="geometry" /></mxCell>
+        <mxCell id="note2" value="Ninguna barrera de esta cadena puede saltarse desde el modo dirigido (POST_ID): scheduled_at futuro bloquea igual que en modo general, y las demás barreras viven en processPost(), sin ninguna rama alternativa." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="940" y="1150" width="360" height="110" as="geometry" /></mxCell>
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="content" target="fileHash"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="fileHash" target="contentAccount"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="contentAccount" target="socialAccount"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="socialAccount" target="channelIdentity"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="channelIdentity" target="channelStatus"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="channelStatus" target="pubAuth"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="pubAuth" target="humanReview"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="humanReview" target="dryRun"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="dryRun" target="targetPost"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="targetPost" target="publisher"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="publisher" target="externalApi"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="credResolver" target="oauth"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="secrets" target="credResolver"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="identityVerif" target="oauth"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="atomicClaim" target="idempotency"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="retryPolicy" target="uncertainOutcome"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="uncertainOutcome" target="reconciliationBox"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

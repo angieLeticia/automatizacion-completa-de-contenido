@@ -115,12 +115,204 @@ async function main() {
   check("Control — sin autorización humana, aunque todo lo demás esté listo, SIGUE bloqueado", combinedGateBlocks(false, true, false) === true);
 
   // ==================================================
+  // A-E, RACE — corrección de concurrencia en authorizePublication()/
+  // revokePublicationAuthorization() (el UPDATE final ahora condiciona
+  // TAMBIÉN .eq("status", <status leído>), no solo .eq("id", postId)).
+  //
+  // Estas pruebas ejecutan las funciones REALES contra un `supabaseAdmin.from`
+  // MONKEY-PATCHEADO apuntando a una tabla en memoria - NUNCA contra Supabase
+  // real, NUNCA fabrican el post real de Instagram. Se restaura el `.from`
+  // original inmediatamente después de cada caso, antes de que el TEST 5 de
+  // más abajo (que sí toca Supabase real con un UUID inexistente) se ejecute.
+  //
+  // Por qué monkey-patch y no DI: authorizePublication()/revokePublicationAuthorization()
+  // NO tienen (ni esta fase les agrega) un parámetro de dependencias - su
+  // contrato público (postId, authorizedBy) / (postId) se mantiene EXACTO,
+  // tal como pidió esta fase ("mantén exactamente su contrato público"). El
+  // monkey-patch permite probar el código REAL sin tocar su firma.
+  // ==================================================
+  const { authorizePublication, revokePublicationAuthorization } = await import("./publicationAuthorization.mts");
+  const { supabaseAdmin } = await import("../supabaseClient.mts");
+
+  interface FakeSocialPost {
+    id: string;
+    status: string;
+    publication_authorized_at: string | null;
+    publication_authorized_by: string | null;
+  }
+
+  // Tabla fake de una sola fila + query builder que replica exactamente las
+  // cadenas usadas por publicationAuthorization.mts:
+  // .select(cols).eq(col,val)...maybeSingle() (lectura) y
+  // .update(payload).eq("id",x).eq("status",y).select(cols).maybeSingle() (escritura condicional).
+  // `onAfterNthRead(n, fn)` simula "otro proceso" mutando la fila justo
+  // DESPUÉS de que la lectura numero `n` se resuelva - exactamente la
+  // ventana descrita en el reporte del gap (lee status -> otro proceso
+  // cambia el estado -> la escritura tardía debe fallar).
+  function makeFakeSocialPostsTable(initial: FakeSocialPost) {
+    const row: FakeSocialPost = { ...initial };
+    let readCount = 0;
+    let afterNthRead: { n: number; fn: (r: FakeSocialPost) => void } | null = null;
+
+    const fakeFrom = (tableName: string) => {
+      if (tableName !== "social_posts") throw new Error(`fake supabaseAdmin solo soporta 'social_posts' en esta prueba, recibido: '${tableName}'`);
+      const conditions: Array<[string, unknown]> = [];
+      let selectCols: string[] | null = null;
+      let updatePayload: Record<string, unknown> | null = null;
+
+      const builder = {
+        select(cols: string) {
+          selectCols = cols.split(",").map((c) => c.trim());
+          return builder;
+        },
+        update(payload: Record<string, unknown>) {
+          updatePayload = payload;
+          return builder;
+        },
+        eq(col: string, val: unknown) {
+          conditions.push([col, val]);
+          return builder;
+        },
+        async maybeSingle() {
+          const matches = conditions.every(([c, v]) => (row as unknown as Record<string, unknown>)[c] === v);
+          if (updatePayload) {
+            if (!matches) return { data: null, error: null };
+            Object.assign(row, updatePayload);
+            const projected: Record<string, unknown> = {};
+            for (const c of selectCols ?? []) projected[c] = (row as unknown as Record<string, unknown>)[c];
+            return { data: projected, error: null };
+          }
+          // Lectura (nunca updatePayload): cuenta como una "lectura" a
+          // efectos de onAfterNthRead, independientemente de si matches.
+          readCount++;
+          if (!matches) return { data: null, error: null };
+          const projected: Record<string, unknown> = {};
+          for (const c of selectCols ?? []) projected[c] = (row as unknown as Record<string, unknown>)[c];
+          if (afterNthRead && readCount === afterNthRead.n) {
+            afterNthRead.fn(row);
+            afterNthRead = null;
+          }
+          return { data: projected, error: null };
+        },
+      };
+      return builder;
+    };
+
+    return {
+      row,
+      fakeFrom,
+      onAfterNthRead(n: number, fn: (r: FakeSocialPost) => void) {
+        afterNthRead = { n, fn };
+      },
+    };
+  }
+
+  async function withFakeSupabase<T>(initial: FakeSocialPost, setup: (t: ReturnType<typeof makeFakeSocialPostsTable>) => void, run: () => Promise<T>): Promise<{ result: T; row: FakeSocialPost }> {
+    const table = makeFakeSocialPostsTable(initial);
+    setup(table);
+    const originalFrom = (supabaseAdmin as unknown as { from: unknown }).from;
+    (supabaseAdmin as unknown as { from: unknown }).from = table.fakeFrom;
+    try {
+      const result = await run();
+      return { result, row: table.row };
+    } finally {
+      (supabaseAdmin as unknown as { from: unknown }).from = originalFrom;
+    }
+  }
+
+  // --- Caso A — autorización normal (status='verification_required') ---
+  {
+    const { result, row } = await withFakeSupabase(
+      { id: "post-A", status: "verification_required", publication_authorized_at: null, publication_authorized_by: null },
+      () => {},
+      () => authorizePublication("post-A", "operador-A@example.com")
+    );
+    check("A. autorización normal sobre 'verification_required' -> ok:true", result.ok === true);
+    if (result.ok) {
+      check("A. authorizedBy correcto", result.authorizedBy === "operador-A@example.com");
+      check("A. authorizedAt es un timestamp no vacío", typeof result.authorizedAt === "string" && result.authorizedAt.length > 0);
+    }
+    check("A. la fila quedó autorizada de verdad", row.publication_authorized_at !== null && row.publication_authorized_by === "operador-A@example.com");
+  }
+
+  // --- Caso B — CONFLICTO durante authorize: otro proceso cambia el status
+  // (ej. resolveVerificationRequired(..., "retry", ...)) justo después de la
+  // primera lectura. La autorización tardía NO debe aplicarse. ---
+  {
+    const { result, row } = await withFakeSupabase(
+      { id: "post-B", status: "verification_required", publication_authorized_at: null, publication_authorized_by: null },
+      (table) =>
+        table.onAfterNthRead(1, (r) => {
+          // Simula retry(): verification_required -> pending, autorización limpia.
+          r.status = "pending";
+        }),
+      () => authorizePublication("post-B", "operador-B@example.com")
+    );
+    check("B. conflicto de estado durante authorize -> ok:false", result.ok === false);
+    if (!result.ok) check("B. el motivo identifica el cambio de estado concurrente", /cambió|otro proceso/i.test(result.reason));
+    check("B. la autorización tardía NUNCA se aplicó (ambos campos siguen null)", row.publication_authorized_at === null && row.publication_authorized_by === null);
+    check("B. el status queda tal como lo dejó 'el otro proceso' (pending), sin que authorizePublication lo pisara", row.status === "pending");
+  }
+
+  // --- Caso C — revoke normal ---
+  {
+    const { result, row } = await withFakeSupabase(
+      { id: "post-C", status: "verification_required", publication_authorized_at: "2026-09-15T00:00:00.000Z", publication_authorized_by: "operador-previo@example.com" },
+      () => {},
+      () => revokePublicationAuthorization("post-C")
+    );
+    check("C. revoke normal -> ok:true", result.ok === true);
+    check("C. la fila quedó sin autorización", row.publication_authorized_at === null && row.publication_authorized_by === null);
+  }
+
+  // --- Caso D — CONFLICTO durante revoke: el post pasa a 'published' justo
+  // después de la lectura inicial (ej. otro proceso lo publicó). La
+  // revocación tardía NO debe aplicarse ni tocar ningún campo. ---
+  {
+    const { result, row } = await withFakeSupabase(
+      { id: "post-D", status: "verification_required", publication_authorized_at: "2026-09-15T00:00:00.000Z", publication_authorized_by: "operador-previo@example.com" },
+      (table) => table.onAfterNthRead(1, (r) => { r.status = "published"; }),
+      () => revokePublicationAuthorization("post-D")
+    );
+    check("D. conflicto de estado durante revoke -> ok:false", result.ok === false);
+    if (!result.ok) check("D. el motivo identifica el cambio de estado concurrente", /cambió|otro proceso/i.test(result.reason));
+    check("D. NINGÚN campo de autorización fue modificado por la revocación tardía", row.publication_authorized_at === "2026-09-15T00:00:00.000Z" && row.publication_authorized_by === "operador-previo@example.com");
+  }
+
+  // --- Caso E — 'published' sigue bloqueado, política SIN CAMBIOS ---
+  {
+    const { result: authResult } = await withFakeSupabase(
+      { id: "post-E1", status: "published", publication_authorized_at: null, publication_authorized_by: null },
+      () => {},
+      () => authorizePublication("post-E1", "operador-E@example.com")
+    );
+    check("E. authorizePublication() sobre status='published' -> ok:false (política intacta)", authResult.ok === false);
+
+    const { result: revokeResult } = await withFakeSupabase(
+      { id: "post-E2", status: "published", publication_authorized_at: "2026-09-15T00:00:00.000Z", publication_authorized_by: "alguien@example.com" },
+      () => {},
+      () => revokePublicationAuthorization("post-E2")
+    );
+    check("E. revokePublicationAuthorization() sobre status='published' -> ok:false (política intacta)", revokeResult.ok === false);
+  }
+
+  // --- RACE (test de carrera conceptual) — demuestra explícitamente que es
+  // el UPDATE condicionado por status (no una simple re-lectura) lo que
+  // evita la carrera: Caso B/D ya la ejecutan de extremo a extremo contra
+  // las funciones reales; este bloque lo resume como una única aserción de
+  // cierre para dejar constancia expresa del hallazgo corregido.
+  console.log(
+    "[INFO] RACE — demostrado por Caso B (authorize vs. cambio de estado concurrente) y Caso D (revoke vs. cambio de estado concurrente): " +
+      "el UPDATE final ahora incluye .eq('status', <status leído>) además de .eq('id', postId) - por eso, en ambos casos, la escritura tardía " +
+      "afecta 0 filas y se rechaza con ok:false, en vez de aplicarse silenciosamente sobre un estado que ya cambió."
+  );
+
+  // ==================================================
   // 5 — autorización de post inexistente -> error controlado, PROBADO
   // CONTRA SUPABASE REAL (solo SELECT de columnas ya existentes hoy -
   // id/status - no requiere la migración de Fase 5.14 para dar este
   // resultado correctamente).
   // ==================================================
-  const { authorizePublication } = await import("./publicationAuthorization.mts");
   const fakeId = randomUUID();
   const result = await authorizePublication(fakeId, "test-fase-5.14@example.com");
   check("5. authorizePublication() sobre un id inexistente -> ok:false, error controlado (no lanza)", result.ok === false);

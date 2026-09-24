@@ -1,0 +1,68 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="11 — Flujo del piloto real de publicación" id="piloto">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cnt_steps" value="PROCEDIMIENTO REAL — Fase 5.20 (piloto YouTube ejecutado)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="36" y="24" width="568" height="1460" as="geometry" /></mxCell>
+        <mxCell id="s1" value="POST_ID = 413b541d-…
+EXPECTED_PLATFORM=youtube
+EXPECTED_CONTENT_FILE_ID=b98f6ecd-…" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="70" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s2" value="PREFLIGHT (solo lectura)
+SHA-256 real, identidad OAuth real,
+Human Review, channel_status — todo verificado" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="200" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s3" value="AUTHORIZATION
+authorizePublication(postId, 'angie-…')
+SOLO ese post, ningún otro" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="330" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s4" value="channel_status: HISTORICAL → ACTIVE
+(temporal, WHERE channel_status='HISTORICAL')" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="460" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s5" value="DRY_RUN=false (temporal)
+solo como prefijo del proceso, .env.local intacto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="590" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s6" value="npm run agent:publish
+(un solo proceso, modo dirigido)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="720" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s7" value="PUBLISHER real → YouTube
+upload resumible, privacyStatus=private" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="850" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s8" value="VERIFICATION (solo lectura)
+videos.list: channelId, title, privacyStatus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="980" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s9" value="PERSIST external_post_id = PawU4OS5lbk
+status='published', published_at real" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1110" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s10" value="RESTORE channel_status: ACTIVE → HISTORICAL
+(WHERE channel_status='ACTIVE', 1 fila afectada)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1240" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="s11" value="FINAL AUDIT
+otros 3 posts intactos, DRY_RUN persistente=true,
+Visteapy sin cambios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="1370" width="520" height="90" as="geometry" /></mxCell>
+        <mxCell id="noTouch" value="NO TOCAR:
+· credenciales
+· otros social_posts
+· otros content_accounts
+· código de producción
+· .env.local permanente" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="660" y="300" width="320" height="160" as="geometry" /></mxCell>
+        <mxCell id="uncertainBranch" value="Si ocurre verification_required:
+DETENERSE. NO reintentar.
+NO republicar. Reportar y esperar." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="660" y="900" width="320" height="100" as="geometry" /></mxCell>
+        <mxCell id="legtitle_13" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="1080" y="40" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_14" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1080" y="70" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_15" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1080" y="112" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_16" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1080" y="154" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_17" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1080" y="196" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_18" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1080" y="238" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_19" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1080" y="280" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_20" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="1080" y="326" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="Este es el procedimiento REAL ejecutado (no un diseño teórico) — cada paso corresponde a una acción real registrada en esta sesión, con evidencia verificada antes/después de cada mutación (snapshot → mutación acotada con WHERE → verificación)." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1080" y="420" width="360" height="130" as="geometry" /></mxCell>
+        <mxCell id="note2" value="El paso 10 (restaurar channel_status a HISTORICAL) es OBLIGATORIO — el sistema debe terminar nuevamente bloqueado para publicación futura, exactamente como antes del piloto." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1080" y="580" width="360" height="110" as="geometry" /></mxCell>
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s4" target="s5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s5" target="s6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s6" target="s7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s7" target="s8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s8" target="s9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s9" target="s10"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="s10" target="s11"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="s4" target="noTouch"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_12" value="camino alternativo, NO ocurrió en el piloto real" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="s7" target="uncertainBranch"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

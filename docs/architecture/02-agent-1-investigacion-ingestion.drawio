@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="02 — Agent 1: Investigación e ingestión" id="agent1">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cnt_repo" value="DENTRO DE ESTE REPOSITORIO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="36" y="254" width="748" height="830" as="geometry" /></mxCell>
+        <mxCell id="cnt_ext" value="FUERA DE ESTE REPOSITORIO (histórico / manual)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;verticalAlign=top;align=left;fontStyle=1;fontSize=13;spacingLeft=12;spacingTop=8;dashed=1;" vertex="1" parent="1"><mxGeometry x="36" y="114" width="368" height="440" as="geometry" /></mxCell>
+        <mxCell id="persona" value="Persona / Request" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="40" width="200" height="60" as="geometry" /></mxCell>
+        <mxCell id="agent1motor" value="Agent 1 — motor original
+(_agente/, fuera de este repo)
+Investigación real vía Anthropic API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="160" width="300" height="90" as="geometry" /></mxCell>
+        <mxCell id="copyrightRules" value="Reglas de copyright por canal
+(docs/agente-1-motor.md §5)
+PELICULAS/MUSICA → BLOCKED" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="420" y="160" width="300" height="90" as="geometry" /></mxCell>
+        <mxCell id="researchRequest" value="ResearchRequest (contrato)
+scripts/pipeline/researchRequest.mts
+VALIDADO — contrato + tests reales" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="300" width="320" height="80" as="geometry" /></mxCell>
+        <mxCell id="channelRegistry" value="ChannelRegistry
+scripts/pipeline/channelRegistry.mts
+canal → status → provider → theme" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="420" y="300" width="320" height="80" as="geometry" /></mxCell>
+        <mxCell id="fuentes" value="Fuentes / verificación / deduplicación
+(interno al motor original — histórico/manual,
+sin código propio en este repo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;dashed=1;" vertex="1" parent="1"><mxGeometry x="60" y="440" width="320" height="90" as="geometry" /></mxCell>
+        <mxCell id="materialCrudo" value="Material crudo real
+D:\MATERIAL VIDEOS\&lt;canal&gt;\&lt;episodio&gt;\" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="590" width="320" height="70" as="geometry" /></mxCell>
+        <mxCell id="contentSubmission" value="ContentSubmission (manifest.json)
+agent/ingestion/types.mts
+contrato puro, sin lógica de negocio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="720" width="320" height="80" as="geometry" /></mxCell>
+        <mxCell id="channelGate" value="Canal determinado SOLO por
+nombre de carpeta — nunca inferido
+(agent/discoverAccounts.mts)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="420" y="720" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="fsInboxProvider" value="FsInboxContentProvider
+agent/ingestion/contentProvider.mts
+VALIDADO E2E real (Fase 5.1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="850" width="320" height="80" as="geometry" /></mxCell>
+        <mxCell id="episodeId" value="episode_id
+nextFreeEpisodeId() / manifest.episode_id
+(content_files.episode_id, Fase 2.1)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="420" y="850" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="materialRoot" value="MATERIAL_ROOT/&lt;canal&gt;/&lt;episodio&gt;/
+convención de carpetas real
+(Guion.md, Videos/, Imagenes/, Sonidos/)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="980" width="340" height="80" as="geometry" /></mxCell>
+        <mxCell id="nextStage" value="→ Agent 2 (diagrama 03)
+watcher chokidar detecta la carpeta sin
+ningún cambio de código adicional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="460" y="980" width="300" height="80" as="geometry" /></mxCell>
+        <mxCell id="legtitle_13" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="1560" y="40" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_14" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1560" y="70" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_15" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1560" y="112" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_16" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1560" y="154" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_17" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1560" y="196" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_18" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1560" y="238" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_19" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1560" y="280" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_20" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="1560" y="326" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="Aislamiento de canal: FsInboxContentProvider NUNCA recibe un materialRoot propio — usa siempre MATERIAL_ROOT global (scripts/pipeline/config.mts), y el nombre de carpeta del manifest es la ÚNICA fuente de verdad del canal. Un canal no listado en discoverAccounts.mts nunca se procesa (ver diagrama 09)." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1560" y="420" width="320" height="140" as="geometry" /></mxCell>
+        <mxCell id="note2" value="ResearchRequest existe y está probado (VALIDADO), pero la conexión automática Agent 1 → ResearchRequest todavía NO está implementada — el motor original sigue operando de forma histórica/manual fuera de este repo." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1560" y="580" width="320" height="120" as="geometry" /></mxCell>
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="persona" target="agent1motor"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="agent1motor" target="copyrightRules"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="agent1motor" target="fuentes"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="agent1motor" target="materialCrudo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" value="define BLOCKED" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="copyrightRules" target="channelRegistry"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_6" value="aún no conectado a Agent 1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="researchRequest" target="channelRegistry"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" value="manifest describe el material" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="materialCrudo" target="contentSubmission"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="contentSubmission" target="channelGate"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="channelGate" target="fsInboxProvider"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="fsInboxProvider" target="episodeId"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="episodeId" target="materialRoot"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="materialRoot" target="nextStage"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,124 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="07 — Modelo de datos Supabase" id="supabase">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2100" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="social_channels" value="social_channels
+─────────────────────
+id PK
+name
+is_active
+created_at" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="40" width="260" height="128" as="geometry" /></mxCell>
+        <mxCell id="social_accounts" value="social_accounts
+─────────────────────
+id PK
+channel_id FK → social_channels
+platform (youtube/instagram/facebook/tiktok)
+label
+credentials JSONB
+is_active
+UNIQUE(channel_id, platform)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="380" y="40" width="360" height="194" as="geometry" /></mxCell>
+        <mxCell id="content_accounts" value="content_accounts
+──────────────────────
+id PK
+folder_name UNIQUE
+channel_id UNIQUE FK → social_channels
+style JSONB
+timezone
+channel_status
+  (ACTIVE/READY/TEST/BLOCKED/HISTORICAL)
+is_active" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="260" width="340" height="216" as="geometry" /></mxCell>
+        <mxCell id="content_files" value="content_files
+───────────────────
+id PK
+content_account_id FK → content_accounts
+folder_type (completo/clip)
+file_path
+file_hash UNIQUE
+file_size
+status (detected/validating/invalid/
+  analyzing/scheduled/error/account_conflict)
+episode_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="480" width="360" height="238" as="geometry" /></mxCell>
+        <mxCell id="content_file_conflicts" value="content_file_conflicts
+────────────────────────────
+id PK
+file_hash
+original_content_file_id FK
+conflicting_account_id FK
+conflicting_file_path
+resolved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="460" y="480" width="340" height="172" as="geometry" /></mxCell>
+        <mxCell id="content_metadata" value="content_metadata
+──────────────────────
+id PK
+content_file_id UNIQUE FK → content_files
+status (pending/transcribing/
+  sampling_frames/generating_metadata/
+  ready/error)
+platform_metadata JSONB
+transcript, duration_seconds" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="460" y="760" width="340" height="194" as="geometry" /></mxCell>
+        <mxCell id="posting_schedule_rules" value="posting_schedule_rules
+────────────────────────────
+id PK
+content_account_id FK (NULL=regla global)
+platform
+day_of_week
+window_start/end
+max_posts_per_day" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="60" y="760" width="340" height="172" as="geometry" /></mxCell>
+        <mxCell id="social_posts" value="social_posts (tabla central Agente 2 ↔ 3)
+────────────────────────────
+id PK
+account_id FK → social_accounts
+content_file_id FK → content_files
+schedule_rule_id FK → posting_schedule_rules
+title, caption, hashtags TEXT[]
+scheduled_at
+status (pending/publishing/published/
+  error/verification_required)
+external_post_id, published_at
+claimed_at
+publication_authorized_at / _by
+publisher_operation_ref
+retry_count
+UNIQUE(content_file_id, account_id)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="900" y="260" width="400" height="348" as="geometry" /></mxCell>
+        <mxCell id="post_metrics" value="post_metrics
+──────────────────
+id PK
+post_id FK → social_posts
+metric_name
+metric_value NUMERIC
+collected_at
+UNIQUE(post_id, metric_name, collected_at)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="900" y="40" width="340" height="172" as="geometry" /></mxCell>
+        <mxCell id="episode_log" value="episode_log
+─────────────────
+id PK
+channel (texto, no FK)
+episode_id
+stage
+detail JSONB
+created_at" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="1360" y="40" width="320" height="172" as="geometry" /></mxCell>
+        <mxCell id="legtitle_11" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="1360" y="260" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_12" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1360" y="290" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_13" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1360" y="332" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_14" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1360" y="374" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_15" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1360" y="416" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_16" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1360" y="458" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_17" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="1360" y="500" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_18" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="1360" y="546" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="post_metrics y episode_log EXISTEN en producción real (confirmado por introspección PostgREST, Fase 1.1) pero ningún código los escribe/lee todavía (scheduleOptimization.mts está deliberadamente NOT_IMPLEMENTED). Se marcan PLANIFICADO, no probado." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1360" y="620" width="360" height="140" as="geometry" /></mxCell>
+        <mxCell id="note2" value="claimed_at existe en producción real pero NO estaba en schema.sql original (hallazgo Fase 1.1, ya corregido en el schema versionado). publication_authorized_at/_by y publisher_operation_ref SÍ están aplicados y verificados contra Supabase real (Fase 5.5/5.15)." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1360" y="780" width="360" height="150" as="geometry" /></mxCell>
+        <mxCell id="note3" value="Tablas de Visteapy (profiles, wishlist_items, email_logs) NO pertenecen a este proyecto — existen en la misma base de datos pero fuera del alcance de este repositorio, no se incluyen aquí." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="1360" y="950" width="360" height="110" as="geometry" /></mxCell>
+        <mxCell id="e_1" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="social_channels" target="social_accounts"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" value="1:1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="social_channels" target="content_accounts"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="content_accounts" target="content_files"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_4" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="content_files" target="content_file_conflicts"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_5" value="1:1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="content_files" target="content_metadata"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_6" value="1:N (nullable)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="content_accounts" target="posting_schedule_rules"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_7" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="social_accounts" target="social_posts"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_8" value="1:N (nullable)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="content_files" target="social_posts"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_9" value="1:N (nullable)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="posting_schedule_rules" target="social_posts"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_10" value="planificado, tabla vacía" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;dashed=1;" edge="1" parent="1" source="social_posts" target="post_metrics"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -34,36 +34,71 @@ async function withStubbedFetch<T>(handler: FetchHandler, fn: () => Promise<T>):
 async function main() {
   // ==================================================
   // YOUTUBE — reconcileYouTube()
+  // H3 (hardening) — el contrato AMPLIO: ahora devuelve
+  // { result, externalPostId? } en vez de un string plano. Todos los checks
+  // de este bloque ahora comparan `.result`. Los casos 1b/1c/1d son NUEVOS
+  // (hallazgo LOW: recuperacion de externalPostId desde el cuerpo de un 201).
   // ==================================================
   await withStubbedFetch(
-    () => new Response(null, { status: 201 }),
-    async () => check("1. YouTube — operación encontrada/completa (201) -> CONFIRMED_PUBLISHED", (await reconcileYouTube("https://upload.example.com/x", "1000")) === "CONFIRMED_PUBLISHED")
+    () => new Response(JSON.stringify({ id: "yt-video-real-123" }), { status: 201 }),
+    async () => {
+      const outcome = await reconcileYouTube("https://upload.example.com/x", "1000");
+      check("1. YouTube — operación encontrada/completa (201, body con id real) -> CONFIRMED_PUBLISHED", outcome.result === "CONFIRMED_PUBLISHED");
+      check("1b. YouTube — externalPostId recuperado exactamente del body real", outcome.externalPostId === "yt-video-real-123");
+    }
+  );
+
+  await withStubbedFetch(
+    () => new Response(JSON.stringify({ snippet: { title: "sin id" } }), { status: 201 }),
+    async () => {
+      const outcome = await reconcileYouTube("https://upload.example.com/x", "1000");
+      check("1c. YouTube — 201 con JSON válido pero SIN 'id' -> CANNOT_VERIFY (nunca 'publicado' sin evidencia recuperable)", outcome.result === "CANNOT_VERIFY");
+      check("1c-bis. sin externalPostId cuando no se pudo confirmar", outcome.externalPostId === undefined);
+    }
+  );
+
+  await withStubbedFetch(
+    () => new Response("esto-no-es-json-valido{{{", { status: 201 }),
+    async () => {
+      const outcome = await reconcileYouTube("https://upload.example.com/x", "1000");
+      check("1d. YouTube — 201 con cuerpo JSON inválido -> CANNOT_VERIFY, no lanza", outcome.result === "CANNOT_VERIFY");
+    }
+  );
+
+  await withStubbedFetch(
+    () => new Response(null, { status: 308 }),
+    async () => {
+      const outcome = await reconcileYouTube("https://upload.example.com/x", "1000");
+      check("2. YouTube — HTTP 308 (incompleta) -> CONFIRMED_NOT_PUBLISHED", outcome.result === "CONFIRMED_NOT_PUBLISHED");
+    }
   );
 
   await withStubbedFetch(
     () => new Response(null, { status: 404 }),
-    async () =>
+    async () => {
+      const outcome = await reconcileYouTube("https://upload.example.com/x", "1000");
       check(
         "3. YouTube — HTTP 404 (sesión expirada, AMBIGUO) -> CANNOT_VERIFY, NUNCA CONFIRMED_NOT_PUBLISHED",
-        (await reconcileYouTube("https://upload.example.com/x", "1000")) === "CANNOT_VERIFY"
-      )
+        outcome.result === "CANNOT_VERIFY"
+      );
+    }
   );
 
   await withStubbedFetch(
     () => new Response(null, { status: 429 }),
-    async () => check("4. YouTube — HTTP 429 -> CANNOT_VERIFY (UNKNOWN)", (await reconcileYouTube("https://upload.example.com/x", "1000")) === "CANNOT_VERIFY")
+    async () => check("4. YouTube — HTTP 429 -> CANNOT_VERIFY (UNKNOWN)", (await reconcileYouTube("https://upload.example.com/x", "1000")).result === "CANNOT_VERIFY")
   );
 
   await withStubbedFetch(
     () => new Response(null, { status: 500 }),
-    async () => check("5. YouTube — HTTP 500 -> CANNOT_VERIFY (UNKNOWN)", (await reconcileYouTube("https://upload.example.com/x", "1000")) === "CANNOT_VERIFY")
+    async () => check("5. YouTube — HTTP 500 -> CANNOT_VERIFY (UNKNOWN)", (await reconcileYouTube("https://upload.example.com/x", "1000")).result === "CANNOT_VERIFY")
   );
 
   await withStubbedFetch(
     () => {
       throw new Error("simulated: ETIMEDOUT antes de cualquier respuesta");
     },
-    async () => check("6. YouTube — timeout/fallo de red antes de respuesta -> CANNOT_VERIFY (UNKNOWN), no lanza", (await reconcileYouTube("https://upload.example.com/x", "1000")) === "CANNOT_VERIFY")
+    async () => check("6. YouTube — timeout/fallo de red antes de respuesta -> CANNOT_VERIFY (UNKNOWN), no lanza", (await reconcileYouTube("https://upload.example.com/x", "1000")).result === "CANNOT_VERIFY")
   );
 
   // ==================================================
@@ -147,10 +182,13 @@ async function main() {
   );
 
   await withStubbedFetch(
-    () => new Response(null, { status: 201 }),
+    // H3 (hardening) — el body ahora debe traer un 'id' real para que se
+    // clasifique CONFIRMED_PUBLISHED (antes de esta fase, un 201 sin cuerpo
+    // ya bastaba - ver reconciliation.mts::reconcileYouTube).
+    () => new Response(JSON.stringify({ id: "yt-video-real-dispatcher" }), { status: 201 }),
     async () =>
       check(
-        "12. Dispatcher — YouTube con ref real + contentLength -> SÍ reconcilia de verdad (llega a reconcileYouTube real)",
+        "12. Dispatcher — YouTube con ref real + contentLength -> SÍ reconcilia de verdad (llega a reconcileYouTube real), preserva su contrato de string plano",
         (await reconcileUnknownPublication("youtube", "https://upload.example.com/x", {}, { youtubeContentLength: "1000" })) === "CONFIRMED_PUBLISHED"
       )
   );

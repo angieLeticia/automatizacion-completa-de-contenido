@@ -1,0 +1,45 @@
+<mxfile host="app.diagrams.net" modified="2026-09-12T00:00:00.000Z" agent="claude-code" version="24.0.0">
+  <diagram name="15 — Roadmap técnico" id="roadmap">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="completado" value="COMPLETADO
+
+· Phase A/B (hashtags, retry policy,
+  uncertain outcome, scheduled_at gate)
+· YouTube controlled pilot
+  (videoId PawU4OS5lbk, real, privado)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="80" width="400" height="220" as="geometry" /></mxCell>
+        <mxCell id="siguiente" value="SIGUIENTE
+
+· Instagram identity verification
+· Instagram controlled pilot
+· Facebook identity verification
+· Facebook controlled pilot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="500" y="80" width="400" height="220" as="geometry" /></mxCell>
+        <mxCell id="despues" value="DESPUÉS
+
+· TikTok (sujeto a aprobación externa)
+· Reconciliation runner real
+· Semiautomático (main() sin
+  supervisión post-por-post)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="940" y="80" width="400" height="220" as="geometry" /></mxCell>
+        <mxCell id="futuro" value="FUTURO
+
+· Automático (scheduler con cron)
+· scheduleOptimization.mts
+  (post_metrics real)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1380" y="80" width="400" height="220" as="geometry" /></mxCell>
+        <mxCell id="legtitle_4" value="Leyenda de estado (evidencia real)" style="text;fontStyle=1;fontSize=14;align=left;" vertex="1" parent="1"><mxGeometry x="60" y="360" width="320" height="24" as="geometry" /></mxCell>
+        <mxCell id="leg_5" value="🟢 IMPLEMENTADO Y PROBADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="390" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_6" value="🔵 IMPLEMENTADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="432" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_7" value="🟡 IMPLEMENTADO PERO NO PROBADO EN PRODUCCIÓN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="474" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_8" value="🟠 PLANIFICADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="516" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_9" value="🔴 BLOQUEADO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="558" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="leg_10" value="⚫ RETIRADO / LEGACY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e6e6;strokeColor=#666666;fontSize=11;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="60" y="600" width="300" height="34" as="geometry" /></mxCell>
+        <mxCell id="legshape1_11" value="Forma: rombo = gate/decisión de seguridad · óvalo = acción humana · contenedor punteado = agrupador (Local PC / Supabase / GitHub / APIs externas / Agente)" style="text;fontSize=10;align=left;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="60" y="646" width="320" height="60" as="geometry" /></mxCell>
+        <mxCell id="note1" value="Sin fechas — orden estrictamente de dependencia técnica: Instagram/Facebook necesitan identity verification ANTES de cualquier piloto real (mismo principio que ya protegió a YouTube); semiautomático necesita las 4 plataformas activas con reconciliación real ANTES de reducir supervisión humana." style="shape=note;size=14;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;align=left;verticalAlign=top;spacingLeft=6;spacingTop=6;" vertex="1" parent="1"><mxGeometry x="500" y="360" width="700" height="110" as="geometry" /></mxCell>
+        <mxCell id="e_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="completado" target="siguiente"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="siguiente" target="despues"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;jettySize=auto;orthogonalLoop=1;" edge="1" parent="1" source="despues" target="futuro"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

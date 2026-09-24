@@ -48,7 +48,14 @@ async function main() {
   check("RenderProvider — expone renderMain/renderClip reales (funciones)", typeof provider.renderMain === "function" && typeof provider.renderClip === "function");
 
   // ---- Canales BLOCKED/HISTORICAL: nunca deben resolver un provider, sin importar si tienen uno declarado ----
-  const blockedOrHistorical = ["ENCIENDE EL CAOS", "ALZA LA VOZ", "ASMR", "PELICULAS", "MUSICA", "CHISMES"];
+  // FASE 5.10-AD/AH — OBJETOS MALDITOS y LUNA VERDE se movieron aquí desde el
+  // grupo "TEST sin provider" de abajo: channelRegistry.mts tenía
+  // channelStatus="TEST" hardcodeado para ambos, pero la auditoría confirmó
+  // (verificado directamente contra Supabase real) que su channel_status real
+  // es "HISTORICAL" — se corrigió el registro local para que coincida, así
+  // que ahora entran por esta rama (ChannelNotProducibleError), no por la de
+  // ChannelProviderNotFoundError.
+  const blockedOrHistorical = ["ENCIENDE EL CAOS", "OBJETOS MALDITOS", "LUNA VERDE", "ALZA LA VOZ", "ASMR", "PELICULAS", "MUSICA", "CHISMES"];
   for (const channel of blockedOrHistorical) {
     let threwCorrectly = false;
     try {
@@ -59,16 +66,17 @@ async function main() {
     check(`resolveRenderProvider("${channel}") — BLOCKED/HISTORICAL, lanza ChannelNotProducibleError (nunca produce, aunque declare provider)`, threwCorrectly);
   }
 
-  // ---- Canales TEST sin provider todavía: error específico, no genérico ----
-  for (const channel of ["OBJETOS MALDITOS", "LUNA VERDE"]) {
-    let threwCorrectly = false;
-    try {
-      resolveRenderProvider(channel);
-    } catch (err) {
-      threwCorrectly = err instanceof ChannelProviderNotFoundError;
-    }
-    check(`resolveRenderProvider("${channel}") — TEST sin provider, lanza ChannelProviderNotFoundError (no "Cannot read undefined")`, threwCorrectly);
-  }
+  // ---- ChannelProviderNotFoundError (canal TEST/READY/ACTIVE sin provider) ----
+  // FASE 5.10-AD/AH — ya no hay ningún canal real con channelStatus="TEST" en
+  // el registro (los últimos dos, OBJETOS MALDITOS/LUNA VERDE, se corrigieron
+  // arriba a "HISTORICAL" para coincidir con Supabase real). Este error ya no
+  // se puede ejercitar contra datos reales del registro — se prueba la clase
+  // directamente en vez de inventar un canal falso en CHANNEL_REGISTRY solo
+  // para forzar esta rama.
+  check(
+    "ChannelProviderNotFoundError — mensaje incluye el nombre del canal (misma forma que los demás errores tipados de este archivo)",
+    new ChannelProviderNotFoundError("CANAL_SIN_PROVIDER").message.includes("CANAL_SIN_PROVIDER")
+  );
 
   // ---- Fase 5.1: ALZA LA VOZ ya tiene provider REAL e integrado
   // ("quote-video-remotion", migrado del repositorio externo) — pero sigue

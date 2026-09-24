@@ -194,9 +194,10 @@ insertar en estado `NOT_YET_AUTHORIZED` (o dejar `publication_authorized_at IS N
 humano explícito (botón en `/admin/social`, ya existe la superficie de UI) libera el
 `scheduled_at` real. Esto es nuevo — hoy no existe ese gate.
 
-**[ACTUALIZADO — Fase 5.14]** El campo terminó implementándose (propuesto, no aplicado aún en
-producción — ver `supabase/schema.sql`) en **`social_posts.publication_authorized_at`/
-`publication_authorized_by`**, no en `content_metadata` como proponía este párrafo — autorización
+**[ACTUALIZADO — Fase 5.15, APLICADO y verificado contra Supabase real (ver
+`supabase/schema.sql` y auditoría FASE 5.10-AC)]** El campo terminó implementándose en
+**`social_posts.publication_authorized_at`/`publication_authorized_by`**, no en `content_metadata`
+como proponía este párrafo — autorización
 POR PUBLICACIÓN/PLATAFORMA (más granular que por episodio+canal), consistente con que un mismo
 episodio puede tener varias `social_posts` (una por plataforma) con calendarios/autorizaciones
 independientes. `scheduleContent.mts` **sigue insertando directamente** en `social_posts` (no se

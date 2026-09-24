@@ -56,7 +56,15 @@ function main() {
   check("TEST 1 — UPDATE que devuelve {error}: mensaje NO menciona pending/reintento", !/pending|reintent/i.test(fromReturnedError.message));
   check("TEST 1 — meta.postId correcto", fromReturnedError.meta.postId === "post-1");
   check("TEST 1 — meta.platform correcto", fromReturnedError.meta.platform === "youtube");
-  check("TEST 1 — meta.operationRef conservado", fromReturnedError.meta.operationRef === "https://upload.example.com/resumable/xyz");
+  // H4-A.2 (verificación de seguridad, eliminación de duplicación de
+  // referencias sensibles en logs) — buildUncertainOutcomePersistFailureLog()
+  // ya NO incluye el valor crudo de operationRef en su meta (puede ser una
+  // uploadUrl de YouTube con un identificador de sesión sensible); ahora
+  // expone únicamente presencia/longitud, mismo criterio que el resto de los
+  // logs de este flujo (ver run.mts).
+  check("TEST 1 — meta.operationRef crudo YA NO existe (eliminado por seguridad)", !("operationRef" in fromReturnedError.meta));
+  check("TEST 1 — meta.operationRefPresent=true (había una referencia real)", fromReturnedError.meta.operationRefPresent === true);
+  check("TEST 1 — meta.operationRefLength conserva la longitud sin exponer el valor", fromReturnedError.meta.operationRefLength === "https://upload.example.com/resumable/xyz".length);
   check("TEST 1 — meta.persistFailureCause conserva la causa real devuelta por Supabase", fromReturnedError.meta.persistFailureCause === "duplicate key value violates unique constraint");
 
   const fromThrown = buildUncertainOutcomePersistFailureLog("post-2", fakeErr, "fetch failed: ECONNRESET");
