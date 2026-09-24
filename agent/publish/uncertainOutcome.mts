@@ -6,6 +6,7 @@
 // lógica pura sin conexión real.
 import { PublicationOutcomeUncertainError } from "../../lib/social/types.ts";
 import type { SocialPlatform } from "../../lib/social/types.ts";
+import { isRealOperationRef } from "./staleClaimClassification.mts";
 
 // Construye el payload SIN incluir claimed_at ni publisher_operation_ref a
 // propósito: a diferencia de revertToPending()/finishWithFailure() (que
@@ -52,6 +53,13 @@ export function buildPersistenceFailureError(
 // esta función solo hace observable el fallo. causeMessage describe CÓMO
 // falló (error de Postgres devuelto, fila no encontrada, o excepción/red) -
 // no cambia el resultado, solo el detalle registrado.
+// H4-A.2 (verificación de seguridad) — el meta de este log NUNCA incluye
+// err.operationRef crudo (mismo criterio ya establecido en run.mts para el
+// log "Resultado incierto..."/"Evidencia REAL...": solo presencia/longitud,
+// nunca el valor - puede ser una uploadUrl de YouTube con un identificador
+// de sesión sensible). El valor real, si llegó a persistirse, ya vive en
+// publisher_operation_ref (columna de la fila) - este log solo necesita
+// dejar constancia de que había una referencia y su forma, no reproducirla.
 export function buildUncertainOutcomePersistFailureLog(
   postId: string,
   err: PublicationOutcomeUncertainError,
@@ -63,7 +71,8 @@ export function buildUncertainOutcomePersistFailureLog(
     meta: {
       postId,
       platform: err.platform,
-      operationRef: err.operationRef,
+      operationRefPresent: isRealOperationRef(err.operationRef ?? null),
+      operationRefLength: typeof err.operationRef === "string" ? err.operationRef.length : 0,
       httpStatus: err.httpStatus,
       originalReason: err.message,
       persistFailureCause: causeMessage,

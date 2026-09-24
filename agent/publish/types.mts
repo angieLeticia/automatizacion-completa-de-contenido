@@ -45,6 +45,17 @@ export interface SocialPostRow {
   // "no autorizado" es siempre el default seguro, con o sin la migración.
   publication_authorized_at?: string | null;
   publication_authorized_by?: string | null;
+  // H4-C.1 — contador de recoveries MANUALES (error -> pending), la columna
+  // todavía NO existe en producción real (ver supabase/schema.sql) - opcional
+  // por el mismo motivo que claimed_at/publisher_operation_ref/
+  // publication_authorized_at/_by arriba: una fila obtenida vía `SELECT *`
+  // antes de aplicar la migración simplemente no trae esta clave
+  // (undefined, no un error). agent/publish/errorRecovery.mts la lee con una
+  // consulta DEDICADA y separada (mismo patrón que publicationAuthorization.mts
+  // para publication_authorized_at/_by), nunca vía este `SocialPostRow`
+  // completo - este campo existe aquí solo para que el tipo sea honesto
+  // sobre lo que `claimPost()`'s `SELECT *` puede o no traer.
+  recovery_count?: number;
 }
 
 export interface SocialAccountRow {

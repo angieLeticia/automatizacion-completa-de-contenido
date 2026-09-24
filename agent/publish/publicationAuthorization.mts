@@ -75,11 +75,23 @@ export async function authorizePublication(postId: string, authorizedBy: string)
     };
   }
 
+  // UPDATE atomico condicionado al status EXACTO leido en el Paso 1 (no un
+  // valor hardcodeado): evaluateAuthorizationEligibility() acepta varios
+  // estados (todos salvo 'published'), asi que la condicion correcta no es
+  // "WHERE status='verification_required'" fijo, sino "WHERE status sigue
+  // siendo el mismo que se valido" - cubre TODA la ventana desde la lectura
+  // inicial (Paso 1) hasta esta escritura, incluida la lectura intermedia
+  // del Paso 2. Si CUALQUIER otro proceso cambio el status mientras tanto
+  // (ej. resolveVerificationRequired(..., "retry", ...) moviendo el post a
+  // 'pending' y limpiando la autorizacion en el mismo instante), este UPDATE
+  // no afecta ninguna fila y la autorizacion tardia queda rechazada - mismo
+  // patron atomico que claimPost()/resolveVerificationRequired()/recoverStaleClaims().
   const authorizedAt = new Date().toISOString();
   const { data: updated, error: updateError } = await supabaseAdmin
     .from("social_posts")
     .update({ publication_authorized_at: authorizedAt, publication_authorized_by: authorizedBy })
     .eq("id", postId)
+    .eq("status", post.status)
     .select("publication_authorized_at, publication_authorized_by")
     .maybeSingle();
 
@@ -87,7 +99,10 @@ export async function authorizePublication(postId: string, authorizedBy: string)
     return { ok: false, reason: `Error persistiendo la autorización: ${updateError.message}` };
   }
   if (!updated) {
-    return { ok: false, reason: `El post ${postId} desapareció entre la lectura y la escritura (condición de carrera extremadamente improbable) - no se pudo confirmar la autorización.` };
+    return {
+      ok: false,
+      reason: `El estado del post ${postId} cambió (ya no es '${post.status}') entre la lectura inicial y la escritura - otro proceso lo modificó primero. No se aplicó esta autorización.`,
+    };
   }
 
   return {
@@ -113,10 +128,23 @@ export async function revokePublicationAuthorization(postId: string): Promise<Re
     return { ok: false, reason: eligibility.reason! };
   }
 
-  const { error: updateError } = await supabaseAdmin
+  // Mismo principio atomico que authorizePublication(): condicionar al
+  // status EXACTO leido arriba, no solo al id, para que un cambio de estado
+  // concurrente (por cualquier otro proceso) impida una revocacion tardia
+  // sobre un post que ya paso a otro estado.
+  const { data: updated, error: updateError } = await supabaseAdmin
     .from("social_posts")
     .update({ publication_authorized_at: null, publication_authorized_by: null })
-    .eq("id", postId);
+    .eq("id", postId)
+    .eq("status", post.status)
+    .select("id")
+    .maybeSingle();
   if (updateError) return { ok: false, reason: `Error revocando la autorización: ${updateError.message}` };
+  if (!updated) {
+    return {
+      ok: false,
+      reason: `El estado del post ${postId} cambió (ya no es '${post.status}') entre la lectura inicial y la escritura - otro proceso lo modificó primero. No se aplicó esta revocación.`,
+    };
+  }
   return { ok: true };
 }

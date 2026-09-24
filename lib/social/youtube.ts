@@ -144,7 +144,29 @@ export async function publishToYouTube(
     );
   }
   if (!uploadRes.ok) {
-    throw new Error(`Falló la subida del vídeo a YouTube: ${uploadRes.status} ${await uploadRes.text()}`);
+    // H2 (auditoria post-publicacion) — a diferencia del rechazo HTTP de la
+    // llamada de INICIO (arriba, ANTES de que exista ninguna sesion/subida),
+    // este PUT es la FINALIZACION de la subida resumible: YouTube ya pudo
+    // haber recibido/procesado todos los bytes antes de responder con un
+    // error (ej. un timeout de proxy tras un ingest exitoso del lado del
+    // servidor) - el codigo no puede demostrar que un HTTP no-OK aqui
+    // signifique "no se creo ningun video". Unica excepcion con semantica
+    // clara: 401/403 (credencial invalida/permiso insuficiente) - ese
+    // rechazo ocurre por autenticacion, independiente de los bytes ya
+    // transmitidos, asi que se mantiene como fallo permanente normal (NUNCA
+    // reintentable automaticamente, ver retryPolicy.mts). Cualquier otro
+    // codigo (400/404/408/429/5xx/desconocido) se trata como incierto: exige
+    // verification_required en vez de un reintento automatico que crearia
+    // una SEGUNDA sesion de subida completa (publishToYouTube siempre inicia
+    // una sesion nueva, nunca reanuda la anterior) - riesgo real de video
+    // duplicado que esta auditoria cierra.
+    if (uploadRes.status === 401 || uploadRes.status === 403) {
+      throw new Error(`Falló la subida del vídeo a YouTube: ${uploadRes.status} ${await uploadRes.text()}`);
+    }
+    throw new PublicationOutcomeUncertainError(
+      `YouTube respondió HTTP ${uploadRes.status} al finalizar la subida resumible - no se puede demostrar que el video no se haya creado/procesado (esta llamada ocurre después de transmitir los bytes). Cuerpo: ${await uploadRes.text()}`,
+      { platform: "youtube", operationRef: uploadUrl, httpStatus: uploadRes.status }
+    );
   }
   // Fase 5.4.1 — a partir de aquí, uploadRes.ok=true significa que YouTube YA
   // recibió y aceptó todos los bytes del video (la acción irreversible/pública

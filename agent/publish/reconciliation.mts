@@ -29,6 +29,35 @@ export function mapYouTubeResumableStatus(httpStatus: number): ReconciliationRes
   return "CANNOT_VERIFY"; // cualquier otro código: no se adivina, no hay evidencia suficiente
 }
 
+// H3 (hardening, hallazgo LOW) — el cuerpo de una respuesta 201 a la consulta
+// de estado de una sesión resumible ya completada trae, segun la
+// documentacion oficial ya citada arriba, el recurso del video real recien
+// creado (incluido su `id`). Pura y separada para poder testear la
+// extraccion sin red real. FAIL-CLOSED: cualquier forma inesperada del
+// cuerpo (no es objeto, `id` ausente, `id` vacio, `id` no-string) devuelve
+// null - NUNCA se asume un id valido a partir de un 201 por si solo.
+export function extractYouTubeVideoId(body: unknown): string | null {
+  if (body && typeof body === "object" && "id" in body) {
+    const id = (body as { id?: unknown }).id;
+    if (typeof id === "string" && id.length > 0) return id;
+  }
+  return null;
+}
+
+// H3 (hardening) — el contrato de reconcileYouTube() se AMPLIA (nunca se
+// reduce): antes devolvia unicamente el string de clasificacion; ahora
+// devuelve un objeto que SIEMPRE incluye `result` (misma semantica y mismos
+// 3 valores que antes) y, solo cuando corresponde, `externalPostId`. Todo
+// llamador que comparaba el valor de retorno como string debe ahora
+// comparar `.result` - ver reconcileUnknownPublication() mas abajo, que
+// preserva su propio contrato de string plano sin cambios, desenvolviendo
+// `.result` internamente (ningun llamador de reconcileUnknownPublication()
+// necesita cambiar).
+export interface YouTubeReconciliationOutcome {
+  result: ReconciliationResult;
+  externalPostId?: string;
+}
+
 // Fase 5.10 — envuelto en try/catch a propósito: un fallo de red (timeout,
 // DNS, conexión rechazada) o cualquier otra excepción durante el fetch NO
 // debe propagarse sin control - la única conclusión segura ante "no pudimos
@@ -38,15 +67,32 @@ export function mapYouTubeResumableStatus(httpStatus: number): ReconciliationRes
 // que ya devolvía CANNOT_VERIFY (404/500/etc. via mapYouTubeResumableStatus)
 // - solo cubre el caso, antes no manejado, en que el fetch mismo nunca
 // resuelve con una respuesta.
-export async function reconcileYouTube(uploadUrl: string, contentLength: string): Promise<ReconciliationResult> {
+export async function reconcileYouTube(uploadUrl: string, contentLength: string): Promise<YouTubeReconciliationOutcome> {
   try {
     const res = await fetch(uploadUrl, {
       method: "PUT",
       headers: { "Content-Range": `bytes */${contentLength}` },
     });
-    return mapYouTubeResumableStatus(res.status);
+    const classification = mapYouTubeResumableStatus(res.status);
+    if (classification !== "CONFIRMED_PUBLISHED") {
+      return { result: classification };
+    }
+    // H3 — HTTP 201: antes de afirmar "publicado" se exige recuperar un id
+    // real del cuerpo. Si el cuerpo no es JSON valido, o no trae un `id`
+    // utilizable, NO se reporta CONFIRMED_PUBLISHED sin evidencia - se
+    // degrada a CANNOT_VERIFY (mismo principio fail-closed que el resto de
+    // este archivo, nunca se asume por el solo codigo HTTP).
+    let body: unknown;
+    try {
+      body = await res.json();
+    } catch {
+      return { result: "CANNOT_VERIFY" };
+    }
+    const videoId = extractYouTubeVideoId(body);
+    if (!videoId) return { result: "CANNOT_VERIFY" };
+    return { result: "CONFIRMED_PUBLISHED", externalPostId: videoId };
   } catch {
-    return "CANNOT_VERIFY";
+    return { result: "CANNOT_VERIFY" };
   }
 }
 
@@ -123,7 +169,13 @@ export async function reconcileUnknownPublication(
   switch (platform) {
     case "youtube": {
       if (!context.youtubeContentLength) return "CANNOT_VERIFY"; // no se puede consultar sin el tamaño original del archivo
-      return reconcileYouTube(operationRef as string, context.youtubeContentLength);
+      // H3 — reconcileUnknownPublication() preserva su propio contrato de
+      // string plano (sin cambios): desenvuelve `.result` aqui mismo. Quien
+      // necesite el externalPostId real debe llamar a reconcileYouTube()
+      // directamente (ver youtubeReconciliation.mts) - este dispatcher
+      // generico nunca lo expuso ni antes ni ahora.
+      const outcome = await reconcileYouTube(operationRef as string, context.youtubeContentLength);
+      return outcome.result;
     }
     case "instagram":
       return reconcileInstagram(operationRef as string, credentials.access_token);

@@ -63,6 +63,17 @@
   button:hover { background: #004591; }
   .status-ok { color: #146c2e; font-weight: bold; }
   .status-empty { color: #444; font-weight: bold; }
+  .status-error { color: #a12622; font-weight: bold; }
+  .error-box {
+    word-break: break-word;
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 13px;
+    margin: 15px 0;
+  }
   .copy-feedback { margin-left: 10px; font-size: 14px; color: #146c2e; }
   .hint { color: #555; font-size: 14px; }
 </style>
@@ -113,15 +124,41 @@
         return result;
       }
 
-      var params = parseFragmentParams(window.location.hash);
-      var accessToken = params["access_token"] || null;
-      var state = params["state"] || null;
+      var fragmentParams = parseFragmentParams(window.location.hash);
+      var accessToken = fragmentParams["access_token"] || null;
+      var fragmentState = fragmentParams["state"] || null;
 
-      // Limpieza INMEDIATA del fragmento de la URL/historial - antes de
-      // construir cualquier interfaz, para minimizar el tiempo que el token
-      // permanece visible en la barra de direcciones/historial del navegador.
-      if (window.location.hash) {
-        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      // El authorization `code` de Meta llega por QUERY STRING (?code=...),
+      // no por el fragmento - a diferencia del access_token del flujo
+      // implícito. URLSearchParams sobre location.search es correcto y
+      // seguro aquí precisamente porque esto es lo que de verdad esperamos
+      // recibir en este parámetro (a diferencia del token, que nunca debe
+      // buscarse en la query string).
+      var searchParams = new URLSearchParams(window.location.search);
+      var authCode = searchParams.get("code");
+      var queryState = searchParams.get("state");
+      var state = fragmentState || queryState;
+
+      // Fase 5.4.1 — Meta devuelve estos 4 parámetros (ninguno es sensible:
+      // son códigos/descripciones de error públicos, no credenciales) cuando
+      // el usuario deniega el permiso o hay un problema de configuración,
+      // en vez de "code"/"access_token". Antes de este cambio, ese caso se
+      // mostraba exactamente igual que "no se recibió nada", sin decir por
+      // qué. Se revisan AMBAS fuentes (query string Y fragmento), igual que
+      // ya se hace para code/access_token, porque Meta no siempre usa la
+      // misma que el flujo esperado ante un error.
+      var errorCode = searchParams.get("error") || fragmentParams["error"] || null;
+      var errorReason = searchParams.get("error_reason") || fragmentParams["error_reason"] || null;
+      var errorDescription = searchParams.get("error_description") || fragmentParams["error_description"] || null;
+      var errorCodeNumeric = searchParams.get("error_code") || fragmentParams["error_code"] || null;
+
+      // Limpieza INMEDIATA de fragmento Y query string de la URL/historial -
+      // antes de construir cualquier interfaz, para minimizar el tiempo que
+      // el token/code permanecen visibles en la barra de direcciones o en el
+      // historial del navegador. Se limpia TODO (no solo el hash) porque
+      // ahora también puede haber datos sensibles en la query string.
+      if (window.location.hash || window.location.search) {
+        window.history.replaceState(null, "", window.location.pathname);
       }
 
       var section = document.getElementById("result-section");
@@ -147,25 +184,21 @@
 
       section.innerHTML = "";
 
-      if (accessToken) {
-        var statusP = el("p", { class: "status-ok", text: "Token recibido correctamente." });
-        section.appendChild(statusP);
-
-        var warning = el("p", {
-          class: "warning",
-          text: "Este token es sensible. No lo compartas públicamente ni lo pegues en chats. Esta página no lo almacena ni lo envía a ningún servidor.",
-        });
-        section.appendChild(warning);
-
-        var tokenBox = el("div", { class: "token-box", id: "token-box", text: accessToken });
-        section.appendChild(tokenBox);
-
-        if (state) {
-          section.appendChild(el("p", { class: "hint", text: "state recibido: " + state }));
-        }
+      // Reutilizable para access_token (fragmento) y code (query string) -
+      // misma interfaz de advertencia + caja copiable + botón, sin duplicar
+      // lógica. NUNCA hace red, NUNCA guarda nada - solo muestra en pantalla.
+      function renderSensitiveValue(statusText, value, buttonLabel) {
+        section.appendChild(el("p", { class: "status-ok", text: statusText }));
+        section.appendChild(
+          el("p", {
+            class: "warning",
+            text: "Este valor es sensible. No lo compartas públicamente ni lo pegues en chats. Esta página no lo almacena ni lo envía a ningún servidor.",
+          })
+        );
+        section.appendChild(el("div", { class: "token-box", text: value }));
 
         var copyRow = el("div", {});
-        var copyBtn = el("button", { type: "button", text: "Copiar token" });
+        var copyBtn = el("button", { type: "button", text: buttonLabel });
         var feedback = el("span", { class: "copy-feedback" });
         copyRow.appendChild(copyBtn);
         copyRow.appendChild(feedback);
@@ -173,7 +206,7 @@
 
         copyBtn.addEventListener("click", function () {
           if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(accessToken).then(
+            navigator.clipboard.writeText(value).then(
               function () {
                 feedback.textContent = "Copiado.";
               },
@@ -187,8 +220,45 @@
         });
 
         section.appendChild(el("p", { class: "hint", text: "Después de copiarlo, guárdalo localmente fuera del repositorio." }));
-      } else {
-        section.appendChild(el("p", { class: "status-empty", text: "No se recibió ningún access_token." }));
+      }
+
+      var somethingReceived = false;
+
+      // Fase 5.4.1 — rama de error, ANTES de code/access_token: si Meta
+      // devolvió un error, se muestra claramente en vez de (o además de)
+      // cualquier otra cosa. Solo texto NO sensible (error/error_reason/
+      // error_description/error_code son códigos y descripciones públicas
+      // de Meta, nunca credenciales) - sin caja "copiable sensible", sin
+      // guardar nada en localStorage/sessionStorage/cookies/backend.
+      if (errorCode) {
+        somethingReceived = true;
+        section.appendChild(el("p", { class: "status-error", text: "Meta devolvió un error - no se recibió ningún code." }));
+        var errorLines = ["error: " + errorCode];
+        if (errorReason) errorLines.push("error_reason: " + errorReason);
+        if (errorCodeNumeric) errorLines.push("error_code: " + errorCodeNumeric);
+        if (errorDescription) errorLines.push("error_description: " + errorDescription);
+        section.appendChild(el("div", { class: "error-box", text: errorLines.join("\n") }));
+        section.appendChild(
+          el("p", { class: "hint", text: "Esto no es un secreto - es la respuesta pública de Meta explicando por qué no se emitió un code (ej. permiso denegado, configuración de la app)." })
+        );
+      }
+
+      if (authCode) {
+        somethingReceived = true;
+        renderSensitiveValue("Código de autorización recibido correctamente.", authCode, "Copiar code");
+      }
+
+      if (accessToken) {
+        somethingReceived = true;
+        renderSensitiveValue("Token recibido correctamente.", accessToken, "Copiar token");
+      }
+
+      if (state) {
+        section.appendChild(el("p", { class: "hint", text: "state recibido: " + state }));
+      }
+
+      if (!somethingReceived) {
+        section.appendChild(el("p", { class: "status-empty", text: "No se recibió ningún access_token ni código de autorización." }));
       }
     })();
   </script>

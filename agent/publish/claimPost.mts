@@ -6,7 +6,7 @@
 import { supabaseAdmin } from "../supabaseClient.mts";
 import { CLAIMED_AT_MIGRATION_APPLIED, STALE_CLAIM_MINUTES, MAX_RETRIES } from "./config.mts";
 import { decideRetry } from "./retryPolicy.mts";
-import { classifyStaleClaim, publishAttemptPlaceholder } from "./staleClaimClassification.mts";
+import { classifyStaleClaim, publishAttemptPlaceholder, isRealOperationRef } from "./staleClaimClassification.mts";
 import { buildUncertainOutcomeUpdatePayload, buildUncertainOutcomePersistFailureLog } from "./uncertainOutcome.mts";
 import { log } from "../logger.mts";
 import type { PublicationOutcomeUncertainError } from "../../lib/social/types.ts";
@@ -20,7 +20,19 @@ import type { SocialPostRow } from "./types.mts";
 // que incluirla incondicionalmente rompería este claim (que SI funciona hoy sin
 // ella) con un error de Postgres "column does not exist". Una vez aprobada y
 // ejecutada la migracion propuesta, basta con activar la bandera de entorno.
-export async function claimPost(postId: string): Promise<SocialPostRow | null> {
+// Fase 5.10-B — allowedAccountIds es OBLIGATORIO (Decision K.6: incluso el
+// modo dirigido POST_ID debe pasar por aqui con su scope resuelto). El
+// filtro de scope vive DENTRO del mismo UPDATE condicional (mismo `.eq`
+// chain que ya garantiza el CAS atomico de status='pending') - nunca un
+// SELECT previo para decidir si el post esta en scope (eso abriria la
+// ventana de carrera que Fase 5.10 explicitamente prohibe). Lista vacia
+// (Decision K.2, K.5) nunca ejecuta `.in("account_id", [])`: se retorna
+// null directamente, exactamente el mismo resultado que "perdio el claim" -
+// el llamador (run.mts) ya trata null de forma segura sin distinguir el
+// motivo.
+export async function claimPost(postId: string, allowedAccountIds: string[]): Promise<SocialPostRow | null> {
+  if (allowedAccountIds.length === 0) return null;
+
   const updatePayload: Record<string, unknown> = { status: "publishing" };
   if (CLAIMED_AT_MIGRATION_APPLIED) {
     updatePayload.claimed_at = new Date().toISOString();
@@ -31,6 +43,7 @@ export async function claimPost(postId: string): Promise<SocialPostRow | null> {
     .update(updatePayload)
     .eq("id", postId)
     .eq("status", "pending")
+    .in("account_id", allowedAccountIds)
     .select("*")
     .maybeSingle();
 
@@ -80,11 +93,27 @@ export async function markPublishAttemptStarted(postId: string, platform: string
   if (!data) throw new Error(`No se pudo marcar el intento de publicación para ${postId}: la fila ya no está en 'publishing' (¿perdió el claim?) - no es seguro continuar sin el checkpoint.`);
 }
 
-// Fase 5.4 — llamado por el publisher (vía el callback onOperationRef) en
-// cuanto obtiene una referencia real de la plataforma (uploadUrl de YouTube,
-// creationId de Instagram), sobreescribiendo el placeholder de arriba.
-export async function persistOperationRef(postId: string, ref: string): Promise<void> {
-  if (!CLAIMED_AT_MIGRATION_APPLIED) return;
+// H4-B (correccion del hallazgo #11 de la auditoria final de seguridad) —
+// ANTES esta funcion lanzaba (Promise<void>) si el UPDATE fallaba o afectaba
+// 0 filas. Eso obligaba a quien la invocara a decidir entre "propagar la
+// excepcion" (aborta el intento, aunque el publisher ya haya obtenido una
+// referencia real) o "envolverla en try/catch y perder la referencia" (el
+// escenario exacto que #11 encontro: la excepcion se propagaba como Error
+// PLANO, indistinguible de un fallo pre-operacion, y el valor real de `ref`
+// se perdia para siempre en cuanto la funcion terminaba). Ahora devuelve un
+// resultado ESTRUCTURADO: quien llama decide que hacer con el fallo, y - de
+// forma critica - `ref` (el valor recibido como parametro) sigue disponible
+// en el AMBITO DE QUIEN LLAMA independientemente de si la persistencia tuvo
+// exito, porque nunca dependio de que esta funcion lo devolviera. Este
+// cambio, por si solo, no resuelve #11 - lo que lo resuelve es que run.mts
+// (unico llamador real) ahora conserva `ref` el mismo antes de invocar esto,
+// nunca solo dentro de aqui.
+export type PersistOperationRefResult =
+  | { ok: true }
+  | { ok: false; reason: "migration_inactive" | "supabase_error" | "not_publishing"; detail?: string };
+
+export async function persistOperationRef(postId: string, ref: string): Promise<PersistOperationRefResult> {
+  if (!CLAIMED_AT_MIGRATION_APPLIED) return { ok: true }; // inerte - mismo comportamiento previo (no habia nada seguro que escribir)
   const { data, error } = await supabaseAdmin
     .from("social_posts")
     .update({ publisher_operation_ref: ref })
@@ -92,8 +121,18 @@ export async function persistOperationRef(postId: string, ref: string): Promise<
     .eq("status", "publishing")
     .select("id")
     .maybeSingle();
-  if (error) throw new Error(`Error persistiendo publisher_operation_ref para ${postId}: ${error.message}`);
-  if (!data) throw new Error(`No se pudo persistir publisher_operation_ref para ${postId}: la fila ya no está en 'publishing'.`);
+  if (error) return { ok: false, reason: "supabase_error", detail: error.message };
+  // 0 filas afectadas: el WHERE status='publishing' ya no coincidio. Bajo el
+  // diseno de claim exclusivo de este proyecto, la unica forma normal de que
+  // esto ocurra es que ESTE MISMO post ya haya sido movido por otro camino
+  // (ej. recoverStaleClaims(), tras STALE_CLAIM_MINUTES) - NUNCA significa
+  // "otro proceso publico este post" (nadie mas puede tener el claim
+  // mientras siga en 'publishing'). No se hace ningun UPDATE incondicional
+  // de respaldo: si la fila ya cambio de estado, ese estado se respeta tal
+  // cual - la responsabilidad de conservar la evidencia recae en quien llama
+  // (ver run.mts), nunca en un segundo intento de escritura aqui.
+  if (!data) return { ok: false, reason: "not_publishing" };
+  return { ok: true };
 }
 
 // Fase 5.4.1 — reemplaza, para este caso específico, al camino de
@@ -121,8 +160,22 @@ export async function persistOperationRef(postId: string, ref: string): Promise<
 // obligacion real es dejar el fallo OBSERVABLE - por eso se loguea con
 // log.error (persistido en agent/logs/, no solo consola) en vez de
 // silenciarlo.
-export async function finishWithUncertainOutcome(postId: string, err: PublicationOutcomeUncertainError): Promise<void> {
+// H4-B — `capturedOperationRef` es OPCIONAL y aditivo: cuando se omite (todo
+// llamador anterior a esta fase), el comportamiento es IDENTICO al de antes
+// - el payload nunca incluye publisher_operation_ref, se preserva tal cual
+// ya estuviera en la fila. Se usa UNICAMENTE para el caso #11: el publisher
+// obtuvo una referencia real pero persistOperationRef() no logro escribirla
+// -  aqui, en la MISMA transaccion atomica que transiciona a
+// verification_required (misma condicion `WHERE status='publishing'`, sin
+// ningun mecanismo de lock nuevo), se le da una segunda oportunidad de
+// quedar persistida. Fail-closed: solo se incluye si
+// isRealOperationRef(capturedOperationRef) es verdadero - nunca se escribe
+// un placeholder ni un valor vacio en esta columna por este camino.
+export async function finishWithUncertainOutcome(postId: string, err: PublicationOutcomeUncertainError, capturedOperationRef?: string | null): Promise<void> {
   const updatePayload = buildUncertainOutcomeUpdatePayload(err);
+  if (isRealOperationRef(capturedOperationRef)) {
+    updatePayload.publisher_operation_ref = capturedOperationRef;
+  }
   try {
     const { data, error } = await supabaseAdmin
       .from("social_posts")
@@ -185,37 +238,68 @@ export async function finishWithUncertainOutcome(postId: string, err: Publicatio
 // invocandola igual). Esto permite probar la funcion REAL (no una copia) con
 // una base de datos en memoria, sin tocar Supabase real ni inventar una
 // segunda implementacion de la logica de recuperacion.
+// Fase 5.10-B — findStaleClaims() ahora recibe allowedAccountIds ademas del
+// cutoff: el mismo scope que ya protege claimPost() debe proteger tambien la
+// recuperacion de reclamos huerfanos, para que un worker en un RUN_SCOPE no
+// pueda "rescatar" (y por tanto tocar) un post que quedo colgado bajo otro
+// scope.
 export interface RecoverStaleClaimsDeps {
-  findStaleClaims: (cutoffIso: string) => Promise<Array<{ id: string; retry_count: number; publisher_operation_ref: string | null }>>;
-  updateIfPublishing: (postId: string, payload: Record<string, unknown>) => Promise<boolean>; // true = esta llamada gano el UPDATE condicional
+  findStaleClaims: (
+    cutoffIso: string,
+    allowedAccountIds: string[]
+  ) => Promise<Array<{ id: string; retry_count: number; publisher_operation_ref: string | null }>>;
+  // Fase 5.10 (endurecimiento post-revision de 5.10-B) — allowedAccountIds
+  // ahora tambien viaja hasta aqui: aunque findStaleClaims() ya filtra por
+  // scope (y account_id es inmutable tras el INSERT, asi que no habia una
+  // ventana de carrera real), el UPDATE de recuperacion debe llevar el MISMO
+  // filtro que claimPost() por consistencia estructural - "scope dentro del
+  // mismo CAS", nunca un UPDATE por id a secas confiando en que el SELECT
+  // previo alcanza.
+  updateIfPublishing: (postId: string, payload: Record<string, unknown>, allowedAccountIds: string[]) => Promise<boolean>; // true = esta llamada gano el UPDATE condicional
 }
 
 const defaultRecoverStaleClaimsDeps: RecoverStaleClaimsDeps = {
-  async findStaleClaims(cutoffIso) {
+  async findStaleClaims(cutoffIso, allowedAccountIds) {
+    if (allowedAccountIds.length === 0) return []; // Decision K.2 - nunca `.in("account_id", [])`
     const { data, error } = await supabaseAdmin
       .from("social_posts")
       .select("id, retry_count, publisher_operation_ref")
       .eq("status", "publishing")
-      .lt("claimed_at", cutoffIso);
+      .lt("claimed_at", cutoffIso)
+      .in("account_id", allowedAccountIds);
     if (error) throw new Error(`Error buscando claims huerfanos: ${error.message}`);
     return (data ?? []) as Array<{ id: string; retry_count: number; publisher_operation_ref: string | null }>;
   },
-  async updateIfPublishing(postId, payload) {
-    const { data, error } = await supabaseAdmin.from("social_posts").update(payload).eq("id", postId).eq("status", "publishing").select("id").maybeSingle();
+  async updateIfPublishing(postId, payload, allowedAccountIds) {
+    if (allowedAccountIds.length === 0) return false; // Decision K.2 - nunca `.in("account_id", [])`
+    const { data, error } = await supabaseAdmin
+      .from("social_posts")
+      .update(payload)
+      .eq("id", postId)
+      .eq("status", "publishing")
+      .in("account_id", allowedAccountIds)
+      .select("id")
+      .maybeSingle();
     if (error) throw new Error(`Error recuperando claim huerfano ${postId}: ${error.message}`);
     return !!data;
   },
 };
 
+// Fase 5.10-B — allowedAccountIds es OBLIGATORIO (Decision K.6). Lista
+// vacia = nada que recuperar, sin llamar a deps.findStaleClaims (Decision K.2).
 export async function recoverStaleClaims(
+  allowedAccountIds: string[],
   deps: RecoverStaleClaimsDeps = defaultRecoverStaleClaimsDeps
 ): Promise<{ recoveredToPending: number; movedToVerification: number; movedToError: number }> {
   if (!CLAIMED_AT_MIGRATION_APPLIED) {
     return { recoveredToPending: 0, movedToVerification: 0, movedToError: 0 };
   }
+  if (allowedAccountIds.length === 0) {
+    return { recoveredToPending: 0, movedToVerification: 0, movedToError: 0 };
+  }
 
   const cutoff = new Date(Date.now() - STALE_CLAIM_MINUTES * 60_000).toISOString();
-  const stale = await deps.findStaleClaims(cutoff);
+  const stale = await deps.findStaleClaims(cutoff, allowedAccountIds);
 
   let recoveredToPending = 0;
   let movedToVerification = 0;
@@ -248,7 +332,7 @@ export async function recoverStaleClaims(
     // ya no coincide) - sin esto, dos recuperadores simultaneos contarian la
     // misma fila dos veces en sus totales aunque el dato en si ya este
     // protegido por la condicion atomica del UPDATE real (ver defaultRecoverStaleClaimsDeps).
-    const updated = await deps.updateIfPublishing(row.id, updatePayload);
+    const updated = await deps.updateIfPublishing(row.id, updatePayload, allowedAccountIds);
     if (!updated) continue; // otro recuperador concurrente ya la tomo primero
 
     if (updatePayload.status === "verification_required") movedToVerification++;

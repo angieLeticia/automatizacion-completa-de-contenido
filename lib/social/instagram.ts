@@ -2,9 +2,15 @@ import { PublicationOutcomeUncertainError } from "./types";
 import { composeCaptionWithHashtags } from "./captionComposition";
 import type { PublishResult, SocialPost } from "./types";
 
-const GRAPH_VERSION = "v19.0";
-const POLL_INTERVAL_MS = 5000;
-const POLL_TIMEOUT_MS = 5 * 60 * 1000; // Instagram puede tardar varios minutos en procesar el vídeo
+// Exportado (Fase 17) para que instagramAccountIdentity.mts use EXACTAMENTE
+// la misma version de la Graph API que el publisher real - mismo motivo que
+// GRAPH_VERSION de lib/social/facebook.ts (Fase 5.21).
+export const GRAPH_VERSION = "v19.0";
+// Configurables via env SOLO para tests (ver test-uncertain-classification.mts,
+// H2 de la auditoria post-publicacion) - en producción estas variables nunca
+// se definen, así que el valor real es idéntico al de siempre.
+const POLL_INTERVAL_MS = Number(process.env.INSTAGRAM_POLL_INTERVAL_MS) || 5000;
+const POLL_TIMEOUT_MS = Number(process.env.INSTAGRAM_POLL_TIMEOUT_MS) || 5 * 60 * 1000; // Instagram puede tardar varios minutos en procesar el vídeo
 
 export interface InstagramCredentials {
   ig_user_id: string;
@@ -58,7 +64,20 @@ export async function publishToInstagram(
     statusCode = statusData.status_code;
   }
   if (statusCode !== "FINISHED") {
-    throw new Error(`El contenedor de Instagram no terminó de procesar a tiempo (estado: ${statusCode}).`);
+    // H2 (auditoria post-publicacion) — el contenedor YA fue creado en Meta
+    // (creationId ya persistido via onOperationRef, arriba) y puede seguir
+    // vivo del lado de Meta aunque dejemos de sondearlo aqui. Antes: Error
+    // generico, clasificable como "retryable" por retryPolicy.mts -> un
+    // reintento crearia un SEGUNDO contenedor sobre el mismo video, con
+    // riesgo real de contenedores huerfanos/duplicados si el primero
+    // terminara publicandose mas tarde. Ahora: incierto - exige
+    // reconciliacion (ver reconcile-instagram.mts) o revision humana
+    // explicita (verification_required), nunca un reintento automatico
+    // ciego.
+    throw new PublicationOutcomeUncertainError(
+      `El contenedor de Instagram no terminó de procesar a tiempo (último estado conocido: ${statusCode}) - el contenedor ya existe en Meta y no se puede determinar su resultado final desde aquí; no es seguro asumir que crear un segundo contenedor no duplicaría la publicación.`,
+      { platform: "instagram", operationRef: creationId }
+    );
   }
 
   // Fase 5.20 (Phase A2) — a partir de aquí creationId YA está persistido

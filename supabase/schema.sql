@@ -49,7 +49,11 @@ CREATE TABLE IF NOT EXISTS public.content_accounts (
   style        JSONB       NOT NULL DEFAULT '{}'::jsonb, -- tono, temas, hashtags_base, palabras_prohibidas
   timezone     TEXT        NOT NULL DEFAULT 'America/Bogota',
   is_active    BOOLEAN     NOT NULL DEFAULT TRUE,
-  -- [NUEVO — Fase 2.1/4.1, no aplicado aún en producción]
+  -- [APLICADO — verificado Fase 5.10-AH directamente contra Supabase real:
+  -- columna consultable, en uso real por agent/publish/channelAuthorization.mts
+  -- y agent/publish/resolveIdentity.mts. Valores reales hoy: SIN EXPLICACIÓN=
+  -- ACTIVE, ENCIENDE EL CAOS/LUNA VERDE/OBJETOS MALDITOS=HISTORICAL (decisión
+  -- humana pendiente sobre estos 3, ver docs/architecture-unified.md §3).]
   -- Reemplaza conceptualmente el ACCOUNTS hardcodeado de scripts/pipeline/config.mts.
   -- Default HISTORICAL a propósito: agregar esta columna nunca debe activar un canal
   -- por sí solo (ver docs/architecture-unified.md §3).
@@ -73,10 +77,17 @@ CREATE TABLE IF NOT EXISTS public.content_files (
   status             TEXT        NOT NULL DEFAULT 'detected'
                         CHECK (status IN ('detected', 'validating', 'invalid', 'analyzing', 'scheduled', 'error', 'account_conflict')),
   error_message      TEXT,
-  -- [NUEVO — Fase 2.1/4.1, no aplicado aún en producción]
+  -- [APLICADO — verificado Fase 5.10-AH directamente contra Supabase real:
+  -- columna consultable, poblada por el watcher de Agente 1 (agent/processFile.mts).
   -- Identidad de agrupación de episodio, decidida en Fase 2.1 para NO crear una
   -- tabla `episodes` separada (ver docs/system-contracts.md §1). Nullable porque
-  -- no todo content_file histórico tendrá este dato retroactivamente.
+  -- no todo content_file histórico tendrá este dato retroactivamente. NO es
+  -- único global (a diferencia de file_hash) — dos canales distintos pueden
+  -- tener legítimamente el mismo episode_id (ej. "001"): la fila se distingue
+  -- por content_account_id, no por episode_id solo. Ver FASE 5.10-AC/5.10-AD:
+  -- este mismo valor SÍ es una clave global sin partición de canal en la capa
+  -- de producción de Agente 2 (remotion/lib/episodes.ts, remotion/data/,
+  -- public/assets/) — ahí es donde existe el riesgo real de colisión, no aquí.
   episode_id         TEXT
 );
 ALTER TABLE public.content_files ENABLE ROW LEVEL SECURITY;
@@ -187,7 +198,29 @@ CREATE TABLE IF NOT EXISTS public.social_posts (
   -- persistOperationRef()/recoverStaleClaims() ya leen y escriben esta
   -- columna en producción real. DRY_RUN sigue true y channel_status sigue
   -- HISTORICAL en las 3 cuentas reales — publicación real sigue bloqueada.
-  publisher_operation_ref TEXT
+  publisher_operation_ref TEXT,
+  -- [APLICADO — verificado Fase 5.10-AH directamente contra Supabase real:
+  -- columna consultable. El ALTER TABLE de abajo ya fue ejecutado contra
+  -- producción (fecha exacta no registrada en este archivo — corregido aquí
+  -- porque el comentario anterior afirmaba lo contrario, ver auditoría FASE
+  -- 5.10-AC/5.10-AD).
+  -- Contador de recuperaciones MANUALES (error -> pending vía
+  -- agent/publish/errorRecovery.mts), DISTINTO e INDEPENDIENTE de
+  -- retry_count (que sigue contando exclusivamente fallos AUTOMATICOS
+  -- retryable, sin cambios en esta fase - ver retryPolicy.mts). Monotónico,
+  -- nunca se decrementa, nunca se resetea automáticamente. Límite aplicado
+  -- en código vía MAX_RECOVERIES (agent/publish/config.mts) - ver
+  -- ERROR RECOVERY CONTRACT v2 (informes H4-B/H4-B.1) para el diseño
+  -- completo. Mismo criterio ya usado para publication_authorized_at/_by
+  -- (Fase 5.15): sin bandera de "migración aplicada" (a diferencia de
+  -- claimed_at/publisher_operation_ref/CLAIMED_AT_MIGRATION_APPLIED) - si se
+  -- llama contra Supabase real sin esta columna aplicada, Postgres devuelve
+  -- un error claro ("column does not exist") en la lectura DEDICADA de
+  -- recovery_count (agent/publish/errorRecovery.mts::fetchRecoveryCount),
+  -- nunca se silencia ni se confunde con "post no encontrado"). ALTER TABLE
+  -- real ya ejecutado:
+  --   ALTER TABLE public.social_posts ADD COLUMN recovery_count SMALLINT NOT NULL DEFAULT 0;
+  recovery_count SMALLINT NOT NULL DEFAULT 0
 );
 ALTER TABLE public.social_posts ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Solo sistema gestiona social_posts" ON public.social_posts;
@@ -243,7 +276,16 @@ CREATE TRIGGER set_content_metadata_updated_at BEFORE UPDATE ON public.content_m
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- 9. EPISODE LOG (bitácora insert-only — NO es tabla de estado, NO es bus de eventos)
--- [NUEVO — Fase 2.1/4.1, no aplicado aún en producción]
+-- [DISEÑADO, NO IMPLEMENTADO — verificado FASE 5.10-AD/5.10-AH: la tabla NO
+-- existe en Supabase real ("Could not find the table 'public.episode_log'"),
+-- y CERO archivos .mts/.ts del repositorio la leen o escriben. La función
+-- recalculateEpisodeStatus() que la consumiría (ver docs/architecture-unified.md
+-- §1 y docs/system-contracts.md §6) tampoco tiene ninguna implementación real
+-- — solo existe en la documentación. Es deuda documental/arquitectónica, no
+-- una migración pendiente de ejecutar: NO se creó esta tabla en esta
+-- auditoría porque no hay ninguna dependencia real que la necesite hoy. Si en
+-- el futuro se decide implementar recalculateEpisodeStatus(), este DDL sigue
+-- siendo válido como punto de partida.]
 -- Decidido en Fase 2.1: reemplaza la idea de un "episode_events" tipo bus de
 -- eventos por algo mucho más simple. Cada agente inserta una fila al terminar
 -- su paso; recalculateEpisodeStatus() (función, no proceso) la lee para

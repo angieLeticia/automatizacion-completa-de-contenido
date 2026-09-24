@@ -20,8 +20,18 @@
 //   npm run social:youtube-token -- SIN_EXPLICACION
 //   npm run social:youtube-token -- SIN_EXPLICACION UCHtU7U5zZ1gndN5o-C2eeFQ
 import { createServer } from "node:http";
+import path from "node:path";
 import { resolveYoutubeChannelCredentials, resolveExpectedChannelId, decideProvisioningIdentityOutcome } from "./youtubeCredentialResolver.mts";
 import { evaluateChannelIdentityMatch } from "../agent/publish/youtubeChannelIdentity.mts";
+
+// Mismo mecanismo nativo ya usado en agent/publish/config.mts - este script
+// vive en scripts/ (un solo nivel bajo la raíz del repo, a diferencia de
+// agent/publish/), así que solo necesita un ".." para llegar a .env.local.
+try {
+  process.loadEnvFile(path.join(import.meta.dirname, "..", ".env.local"));
+} catch {
+  // .env.local no existe o ya está cargado por el shell - seguimos sin frenar.
+}
 
 const PORT = 8787;
 const REDIRECT_URI = `http://localhost:${PORT}`;
