@@ -13,6 +13,12 @@ const PUBLIC_AUDIO = path.join(REPO_ROOT, "public", "assets", "audio");
 
 const ensureDir = (dir: string) => mkdirSync(dir, { recursive: true });
 
+// Fase 1.5.3 — `publicAssetsRoot`/`dataRoot` opcionales: SIN pasarlos
+// (producción real, todos los llamadores existentes), el default es
+// EXACTAMENTE PUBLIC_VIDEO/PUBLIC_IMAGES/PUBLIC_AUDIO/DATA_DIR reales, mismas
+// constantes de siempre, mismas subcarpetas (video/images/audio) — la
+// estructura relativa nunca cambia, solo la raíz sobre la que se resuelve.
+
 // Copia el material elegido a public/assets/{video,images}/{id}/ y la
 // narración a public/assets/audio/narracion-{id}.mp3, siguiendo exactamente
 // la convención que ya usan los episodios existentes (ver episodes.ts).
@@ -20,42 +26,53 @@ export const copyEpisodeAssets = (
   episodeId: string,
   videoFiles: string[],
   imageFiles: string[],
-  narrationFile: string
+  narrationFile: string,
+  publicAssetsRoot?: string
 ): { narrationRelPath: string } => {
-  const videoDir = path.join(PUBLIC_VIDEO, episodeId);
-  const imageDir = path.join(PUBLIC_IMAGES, episodeId);
+  const publicVideo = publicAssetsRoot ? path.join(publicAssetsRoot, "video") : PUBLIC_VIDEO;
+  const publicImages = publicAssetsRoot ? path.join(publicAssetsRoot, "images") : PUBLIC_IMAGES;
+  const publicAudio = publicAssetsRoot ? path.join(publicAssetsRoot, "audio") : PUBLIC_AUDIO;
+
+  const videoDir = path.join(publicVideo, episodeId);
+  const imageDir = path.join(publicImages, episodeId);
   ensureDir(videoDir);
   ensureDir(imageDir);
-  ensureDir(PUBLIC_AUDIO);
+  ensureDir(publicAudio);
 
   for (const v of videoFiles) copyFileSync(v, path.join(videoDir, path.basename(v)));
   for (const im of imageFiles) copyFileSync(im, path.join(imageDir, path.basename(im)));
 
   const narrationRelPath = `narracion-${episodeId}.mp3`;
-  copyFileSync(narrationFile, path.join(PUBLIC_AUDIO, narrationRelPath));
+  copyFileSync(narrationFile, path.join(publicAudio, narrationRelPath));
 
   return { narrationRelPath };
 };
 
-export const writeCaptions = (episodeId: string, captions: Caption[]) => {
-  ensureDir(DATA_DIR);
-  writeFileSync(path.join(DATA_DIR, `captions-${episodeId}.json`), JSON.stringify(captions, null, 2) + "\n");
+export const writeCaptions = (episodeId: string, captions: Caption[], dataRoot?: string) => {
+  const dir = dataRoot ?? DATA_DIR;
+  ensureDir(dir);
+  writeFileSync(path.join(dir, `captions-${episodeId}.json`), JSON.stringify(captions, null, 2) + "\n");
 };
 
 // clips-{id}.json debe existir (aunque vacío) antes del primer render del
 // video largo, porque episodes.ts lo importa estáticamente como JSON.
-export const ensureEmptyClips = (episodeId: string) => {
-  const p = path.join(DATA_DIR, `clips-${episodeId}.json`);
+export const ensureEmptyClips = (episodeId: string, dataRoot?: string) => {
+  const dir = dataRoot ?? DATA_DIR;
+  ensureDir(dir);
+  const p = path.join(dir, `clips-${episodeId}.json`);
   if (!existsSync(p)) writeFileSync(p, "[]\n");
 };
 
-export const writeClips = (episodeId: string, clips: unknown[]) => {
-  writeFileSync(path.join(DATA_DIR, `clips-${episodeId}.json`), JSON.stringify(clips, null, 2) + "\n");
+export const writeClips = (episodeId: string, clips: unknown[], dataRoot?: string) => {
+  const dir = dataRoot ?? DATA_DIR;
+  ensureDir(dir);
+  writeFileSync(path.join(dir, `clips-${episodeId}.json`), JSON.stringify(clips, null, 2) + "\n");
 };
 
-export const writeShots = (episodeId: string, shots: Shot[]) => {
-  ensureDir(DATA_DIR);
-  writeFileSync(path.join(DATA_DIR, `shots-${episodeId}.json`), JSON.stringify(shots, null, 2) + "\n");
+export const writeShots = (episodeId: string, shots: Shot[], dataRoot?: string) => {
+  const dir = dataRoot ?? DATA_DIR;
+  ensureDir(dir);
+  writeFileSync(path.join(dir, `shots-${episodeId}.json`), JSON.stringify(shots, null, 2) + "\n");
 };
 
 const IMPORT_ANCHOR_RE = /(import rawClips\d+ from "\.\.\/data\/clips-\d+\.json";\r?\n)(?!import rawClips)/;

@@ -56,11 +56,22 @@ export interface MediaBridge {
 
 // --- render: IMPLEMENTADO (Fase 4.5, ver renderBridge.mts) — envuelve
 // scripts/pipeline/renderer.mts (que a su vez ya envuelve `npx remotion render`) ---
+// Fase 1.5.3 — `opts.context` (PipelineExecutionContext, opcional) agregado
+// a la misma bolsa de opciones que ya traía `reuseIfExists`/`timeoutMs` desde
+// Fase 4.5 — sin él, renderBridge.mts usa exactamente sus rutas reales.
 export interface RenderBridge {
   renderComposition(
     compositionId: string,
     outputPath: string,
-    opts?: { reuseIfExists?: boolean; timeoutMs?: number }
+    // Fase 6.5 — `props` opcional, reenviado tal cual hasta renderer.mts (ver
+    // ese archivo para la serialización real a --props). Sin él, ningún
+    // comportamiento cambia.
+    opts?: {
+      reuseIfExists?: boolean;
+      timeoutMs?: number;
+      context?: import("../../scripts/pipeline/pipelineExecutionContext.mts").PipelineExecutionContext;
+      props?: unknown;
+    }
   ): Promise<{ path: string; hash: string; reused: boolean }>;
 }
 

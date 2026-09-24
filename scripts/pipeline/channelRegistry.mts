@@ -25,6 +25,38 @@ export type ChannelStyle = {
   palabrasProhibidas?: string[];
 };
 
+// FASE 5.10-AI — configuración de voz ElevenLabs POR CANAL. Antes de esta
+// fase, voiceGenerator.mts tenía un único patrón hardcodeado
+// (NARRATOR_VOICE_PATTERN, "kate|velvet.?midnight") usado para CUALQUIER
+// canal, sin parámetro — auditado (FASE 5.10-AC/AI) y confirmado: solo SIN
+// EXPLICACIÓN tiene una voz real documentada en el proyecto; ENCIENDE EL
+// CAOS/LUNA VERDE/OBJETOS MALDITOS no tienen ninguna voz definida en ningún
+// archivo, variable de entorno, ni comentario (ver informe de auditoría
+// FASE 5.10-AI, Parte A) — así que NO se les asigna ninguna aquí, ni
+// siquiera la de SIN EXPLICACIÓN (eso sería "heredar por accidente" la voz
+// de otro canal, exactamente lo que esta fase debe evitar). `voice` queda
+// `undefined` para los 3 hasta que una persona provea el patrón/nombre real.
+export type ChannelVoiceConfig = {
+  // Regex contra el nombre de la voz en la cuenta ElevenLabs real (mismo
+  // mecanismo que ya usa findVoiceByName() en elevenLabsClient.mts — nunca
+  // un voice_id fijo, para no depender de un ID que puede diferir entre
+  // cuentas).
+  narratorVoicePattern: RegExp;
+  // Opcionales — si se omiten, generateNarration() sigue usando
+  // DEFAULT_VOICE_SETTINGS/DEFAULT_MODEL_ID de elevenLabsClient.mts (sin
+  // cambio de comportamiento para SIN EXPLICACIÓN).
+  voiceSettings?: import("./elevenLabsClient.mts").VoiceSettings;
+  modelId?: string;
+};
+
+// FASE 5.10-AI — igual que `voice`, pero para identidad visual Remotion
+// (colores/fuentes/logo/intro/outro). "PENDING" es un marcador EXPLÍCITO
+// (nunca `undefined` silencioso) de que el canal todavía no tiene ninguna
+// identidad visual real definida — ver remotion/theme.ts (tipo
+// ChannelVisualTheme) para el contrato que una futura identidad real debe
+// cumplir. Ningún canal recibe la identidad de SIN EXPLICACIÓN por defecto.
+export type ChannelVisualIdentityStatus = "PENDING" | "CONFIGURED";
+
 export type ChannelConfig = {
   folderName: string;
   channelStatus: ChannelStatus;
@@ -37,6 +69,8 @@ export type ChannelConfig = {
   theme?: string;
   style?: ChannelStyle;
   platforms?: readonly string[];
+  voice?: ChannelVoiceConfig;
+  visualIdentityStatus: ChannelVisualIdentityStatus;
 };
 
 const CHANNEL_REGISTRY: Record<string, ChannelConfig> = {
@@ -54,37 +88,88 @@ const CHANNEL_REGISTRY: Record<string, ChannelConfig> = {
     // sin credenciales de Supabase en este worktree — no se fabrican acá.
     language: "es",
     theme: "misterios reales sin resolver — desapariciones, casos paranormales e históricos sin explicación oficial",
+    // FASE 5.10-AI — patrón EXACTO ya hardcodeado antes en
+    // voiceGenerator.mts::NARRATOR_VOICE_PATTERN (movido aquí, mismo valor,
+    // cero cambio de comportamiento) — "Kate — Velvet Midnight Narrator",
+    // ver Prompt de Voz - ElevenLabs.md citado en voiceGenerator.mts.
+    voice: { narratorVoicePattern: /kate|velvet.?midnight/i },
+    // theme.ts (remotion/) es la identidad visual real y completa de este canal.
+    visualIdentityStatus: "CONFIGURED",
   },
   "OBJETOS MALDITOS": {
     folderName: "OBJETOS MALDITOS",
-    channelStatus: "TEST",
-    renderProviderId: null,
-    notes: "content_accounts existe (Fase 1.2), sin social_accounts ni render provider — no producible todavía.",
+    // FASE 5.10-AD/AH — corregido de "TEST" a "HISTORICAL": verificado
+    // directamente contra Supabase real, channel_status='HISTORICAL' hoy (no
+    // 'TEST' como asumía este archivo). Ver test-channel-registry-drift.mts,
+    // que falla si este valor vuelve a desincronizarse de Supabase sin que
+    // nadie lo note — mismo problema que causó esta corrección.
+    channelStatus: "HISTORICAL",
+    // FASE 9 — mismo criterio exacto que LUNA VERDE arriba.
+    renderProviderId: "objetos-malditos-remotion",
+    notes: "content_accounts existe (Fase 1.2) con social_accounts reales (facebook/instagram/youtube, credenciales OK). channel_status real en Supabase es HISTORICAL, no TEST. FASE 9: provider técnico 'objetos-malditos-remotion' registrado (arquitectura documental genérica, identidad placeholder) — canal sigue sin activar operativamente (sin voz/logo/identidad visual real).",
     // Evidencia directa (Fase 5.0, auditoría física real):
     // D:\MATERIAL VIDEOS\OBJETOS MALDITOS\001\Guion - Annabelle.md — Annabelle
     // es un objeto maldito real del folclore de terror. Confirma el nombre del
     // canal, no es una suposición.
     language: "es",
     theme: "objetos malditos — historias reales de objetos con reputación de estar embrujados/maldecidos",
+    // Post-Fase 11 — voz real provista por el usuario: renombró la voz en su
+    // cuenta de ElevenLabs a exactamente "OBJETOS MALDITOS" para poder
+    // identificarla por canal (no se conoce ni se necesita el nombre
+    // original). Coincidencia EXACTA y case-insensitive (^...$) — nunca un
+    // substring suelto, para no matchear por accidente ninguna otra voz.
+    voice: { narratorVoicePattern: /^OBJETOS MALDITOS$/i },
+    visualIdentityStatus: "PENDING",
   },
   "LUNA VERDE": {
     folderName: "LUNA VERDE",
-    channelStatus: "TEST",
-    renderProviderId: null,
-    notes: "content_accounts existe, style parcialmente poblado (Fase 2.1) — sin render provider.",
+    // FASE 5.10-AD/AH — corregido de "TEST" a "HISTORICAL" (ver nota idéntica
+    // en OBJETOS MALDITOS arriba).
+    channelStatus: "HISTORICAL",
+    // FASE 9 — igual que ENCIENDE EL CAOS (Fase 5.10-AR): renderProviderId
+    // técnico registrado (lunaVerdeRemotionProvider.mts, arquitectura
+    // documental genérica provisional). channelStatus se mantiene
+    // EXACTAMENTE en "HISTORICAL" a propósito — esto NO activa el canal
+    // (resolveScannableChannels() sigue excluyéndolo, verificado en tests).
+    renderProviderId: "luna-verde-remotion",
+    notes: "content_accounts existe, style parcialmente poblado (Fase 2.1), social_accounts reales (facebook/instagram/youtube, credenciales OK). channel_status real en Supabase es HISTORICAL, no TEST. FASE 9: provider técnico 'luna-verde-remotion' registrado (arquitectura documental genérica, identidad placeholder) — canal sigue sin activar operativamente (sin voz/logo/identidad visual real).",
     // [SIN CONFIRMAR] Único dato real visto: "Guion - El Bosque de Luna Verde.md"
     // (Fase 5.0) — sugiere temática de naturaleza/atmósfera, pero no alcanza
     // para confirmar "espiritualidad/energía/conexión" (ejemplo ilustrativo del
     // encargo, no evidencia verificada). theme queda sin configurar a propósito.
+    // Post-Fase 11 — voz real provista por el usuario (mismo criterio que
+    // OBJETOS MALDITOS arriba): voz renombrada en ElevenLabs a exactamente
+    // "LUNA VERDE".
+    voice: { narratorVoicePattern: /^LUNA VERDE$/i },
+    visualIdentityStatus: "PENDING",
   },
   "ENCIENDE EL CAOS": {
     folderName: "ENCIENDE EL CAOS",
-    channelStatus: "BLOCKED",
-    renderProviderId: null,
-    notes: "RENDER_PROVIDER=UNKNOWN (Fase 1.2/2) — sin ningún archivo final renderizado verificado en disco.",
+    // FASE 5.10-AD/AH — corregido de "BLOCKED" a "HISTORICAL" (ver nota
+    // idéntica en OBJETOS MALDITOS arriba). RENDER_PROVIDER=UNKNOWN seguía
+    // siendo cierto (sin provider), pero el channelStatus asumido no
+    // coincidía con Supabase real tampoco.
+    //
+    // Cambio explícito autorizado por el usuario para habilitar UNA prueba
+    // real controlada de Agent 2 (episodio 009, narración real vía
+    // ElevenLabs) — "HISTORICAL" -> "TEST", nunca "ACTIVE". "TEST" desbloquea
+    // resolveRenderProvider() (que solo rechaza BLOCKED/HISTORICAL) y hace
+    // escaneable el canal, pero NUNCA autoriza publicación real:
+    // evaluateChannelAuthorization() (agent/publish/channelAuthorization.mts)
+    // trata "TEST" igual que antes — authorizedForRealPublication=false,
+    // independientemente de DRY_RUN. Revertir a "HISTORICAL" cuando la
+    // prueba termine si no se decide activar el canal de verdad.
+    channelStatus: "TEST",
+    renderProviderId: "chaos-news-remotion",
+    notes: "RENDER_PROVIDER=UNKNOWN (Fase 1.2/2) — sin ningún archivo final renderizado verificado en disco. social_accounts reales existen (facebook/instagram/youtube, credenciales OK, verificado FASE 5.10-AC). channel_status real en Supabase es HISTORICAL, no BLOCKED. FASE 5.10-AR: provider técnico 'chaos-news-remotion' registrado (ChaosNewsMain/ChaosNewsClip) — canal sigue sin activar operativamente (channel_status HISTORICAL, sin voz/logo/watermark reales).",
     // [SIN CONFIRMAR] No se leyó ningún guion/script real de este canal en
     // ninguna fase — solo se vio Audios/+Sonidos/ genéricos (Fase 5.0). "chismes"
     // es el ejemplo ilustrativo del encargo, no evidencia verificada. Sin theme.
+    // Post-Fase 11 — voz real provista por el usuario (mismo criterio que
+    // OBJETOS MALDITOS/LUNA VERDE arriba): voz renombrada en ElevenLabs a
+    // exactamente "ENCIENDE EL CAOS".
+    voice: { narratorVoicePattern: /^ENCIENDE EL CAOS$/i },
+    visualIdentityStatus: "PENDING",
   },
   "ALZA LA VOZ": {
     folderName: "ALZA LA VOZ",
@@ -97,6 +182,11 @@ const CHANNEL_REGISTRY: Record<string, ChannelConfig> = {
       "Provider real, integrado y probado con render exitoso (ver informe de Fase 5.1) — canal " +
       "permanece BLOCKED de todos modos: técnicamente PRODUCTION-READY no implica activación " +
       "automática, requiere decisión humana explícita para pasar a ACTIVE/TEST.",
+    // No usa narración (formato de cita/texto, sin voz), y su identidad
+    // visual (QuoteVideo.tsx + channels/alza-la-voz/videos.ts) ya es real y
+    // parametrizada por video (accentColor, etc. — ver auditoría FASE 5.10-AI
+    // Parte B, patrón a imitar para futuros canales).
+    visualIdentityStatus: "CONFIGURED",
   },
   ASMR: {
     folderName: "ASMR",
@@ -107,24 +197,30 @@ const CHANNEL_REGISTRY: Record<string, ChannelConfig> = {
     // Lluvia_en_la_Ventana, Nieve_en_Silencio, etc. — contenido ASMR genuino, no supuesto.
     language: "es",
     theme: "ASMR — sonidos ambientales relajantes (fuego, agua, lluvia, naturaleza) sin narración",
+    // Sin narración hablada (por diseño del formato) y sin identidad visual
+    // Remotion propia todavía.
+    visualIdentityStatus: "PENDING",
   },
   PELICULAS: {
     folderName: "PELICULAS",
     channelStatus: "BLOCKED",
     renderProviderId: null,
     notes: "Bloqueo de copyright ya documentado (docs/agente-1-motor.md §5) — no debe automatizarse.",
+    visualIdentityStatus: "PENDING",
   },
   MUSICA: {
     folderName: "MUSICA",
     channelStatus: "BLOCKED",
     renderProviderId: null,
     notes: "Bloqueo de copyright ya documentado (docs/agente-1-motor.md §5) — no debe automatizarse.",
+    visualIdentityStatus: "PENDING",
   },
   CHISMES: {
     folderName: "CHISMES",
     channelStatus: "HISTORICAL",
     renderProviderId: null,
     notes: "gestionado_por_radar_central=false — exclusión deliberada, gestión manual.",
+    visualIdentityStatus: "PENDING",
   },
 };
 

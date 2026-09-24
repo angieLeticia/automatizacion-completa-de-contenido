@@ -34,7 +34,12 @@ export const stateFilePath = (...segments: string[]): string => path.join(STATE_
 export const projectFilePath = (account: string, episodeId: string): string =>
   path.join(PROJECTS_DIR, `${sanitizeForFilename(account)}__${episodeId}.json`);
 
-const sanitizeForFilename = (name: string): string =>
+// FASE 5.10-AI — exportada (antes privada) para que episodeNamespace.mts
+// reutilice exactamente esta misma sanitización (nunca duplicarla) al armar
+// el namespace de episodios particionado por canal en la capa de Remotion.
+// Mismo patrón ya probado en producción real para los nombres de archivo de
+// scripts/pipeline/state/projects/ (ej. "SIN_EXPLICACION__001.json").
+export const sanitizeForFilename = (name: string): string =>
   name
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")

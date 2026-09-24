@@ -15,6 +15,15 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
 Set-Location $RepoRoot
 
+# Fase 5.10-E - RUN_SCOPE/MATERIAL_ROOT explicitos para PRODUCCION, fijados
+# de forma INCONDICIONAL (ver nota identica en agent/windows/start-agent.ps1)
+# - nunca depende de variables heredadas de una sesion anterior de
+# PowerShell. scripts/pipeline/agent.mts exige RUN_SCOPE (Fase 5.10-B,
+# fail-closed via resolveAgentTwoScope() en main()) - PRODUCTION escanea
+# unicamente la interseccion con las 4 cuentas reales (Decision K.1).
+$env:RUN_SCOPE = "PRODUCTION"
+$env:MATERIAL_ROOT = "D:\MATERIAL VIDEOS"
+
 # logs\ es la misma carpeta que ya usa scripts/pipeline/logger.mts (logs
 # diarios pipeline-YYYY-MM-DD.log) - el wrapper usa un nombre de archivo
 # distinto ahi mismo, no un sistema de logging nuevo.
@@ -28,7 +37,7 @@ function Write-WrapperLog {
     Add-Content -Path $WrapperLog -Value $line
 }
 
-Write-WrapperLog "Tarea Programada iniciada - arrancando el agente de produccion (scripts/pipeline/agent.mts)."
+Write-WrapperLog "Tarea Programada iniciada - arrancando el agente de produccion (scripts/pipeline/agent.mts). RUN_SCOPE=$env:RUN_SCOPE, MATERIAL_ROOT configured."
 
 $TsxBin = Join-Path $RepoRoot "node_modules\.bin\tsx.cmd"
 if (-not (Test-Path $TsxBin)) {

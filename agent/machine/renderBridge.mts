@@ -12,6 +12,7 @@ import { hashFile as hashFileImpl } from "./hashFile.mts";
 import { renderComposition as renderCompositionImpl } from "../../scripts/pipeline/renderer.mts";
 import type { RenderBridge } from "./types.mts";
 import { PathViolationError } from "./machineBridge.mts";
+import type { PipelineExecutionContext } from "../../scripts/pipeline/pipelineExecutionContext.mts";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..");
 const RENDER_OUTPUT_ROOT = path.join(REPO_ROOT, "out");
@@ -22,9 +23,16 @@ export class UnknownCompositionError extends Error {
   }
 }
 
-function requireSafeOutputPath(outputPath: string): string {
-  const resolved = resolveSafePath(RENDER_OUTPUT_ROOT, outputPath);
-  if (!resolved) throw new PathViolationError(RENDER_OUTPUT_ROOT, outputPath);
+// Fase 1.5.3 — `outputRoot` opcional: SIN contexto (producción real), la
+// única raíz válida sigue siendo RENDER_OUTPUT_ROOT (out/ real), exactamente
+// como antes — nunca se convierte en una allowlist genérica. CON contexto, se
+// valida contra `outputRoot` (context.outputRoot) EN VEZ DE RENDER_OUTPUT_ROOT
+// (no además de — un solo root válido por llamada, fail-closed: una ruta que
+// intente escapar del root activo con "../" sigue siendo rechazada por
+// resolveSafeSubmissionPath, sin cambios en esa función).
+function requireSafeOutputPath(outputPath: string, outputRoot: string = RENDER_OUTPUT_ROOT): string {
+  const resolved = resolveSafePath(outputRoot, outputPath);
+  if (!resolved) throw new PathViolationError(outputRoot, outputPath);
   return resolved;
 }
 
@@ -34,7 +42,29 @@ function requireSafeOutputPath(outputPath: string): string {
 // Cualquier otro id (incluidos Intro/Chapter-N/ClosingCTA, que no forman
 // parte del flujo automático de Agente 2) se rechaza: MachineBridge.render
 // no es un `remotion render <lo-que-sea>` genérico.
-async function assertCompositionExists(compositionId: string): Promise<void> {
+// Fase 1.5.3 — `context` opcional: SIN él (producción real), valida contra
+// remotion/lib/episodes.ts y remotion/data/clips-{id}.json REALES, exactamente
+// como antes. CON él, valida contra context.episodesFile/context.dataRoot —
+// nunca contra ambos a la vez, nunca "además de" el catálogo real (fail-closed:
+// un compositionId sandbox no puede colarse validándose contra el catálogo real).
+// FASE 5.10-AR (Fase 5 — provider de ENCIENDE EL CAOS) — composiciones de ID
+// FIJO, nunca per-episodio (ver Fase 4: ChaosNewsMain/ChaosNewsClip se
+// registran UNA sola vez en Root.tsx, sin episode_id embebido — a
+// diferencia de MainDocumentary/Short/Quote-alza-la-voz, que sí varían por
+// episodio/video real y necesitan validarse contra un catálogo). No
+// requieren ningún catálogo externo: si el id coincide exactamente con uno
+// de estos dos, SIEMPRE existe (están registrados incondicionalmente en
+// Root.tsx, confirmado con `npx remotion compositions` en Fase 4). Cambio
+// puramente aditivo — ningún patrón/rama existente se modificó.
+// FASE 9 — LunaVerdeMain/LunaVerdeClip/ObjetosMalditosMain/ObjetosMalditosClip
+// agregados por el MISMO motivo exacto que ChaosNewsMain/ChaosNewsClip
+// (Fase 5.10-AR): id fijo, registrado una sola vez en Root.tsx, sin
+// episode_id embebido — cambio puramente aditivo.
+const FIXED_COMPOSITION_IDS = new Set(["ChaosNewsMain", "ChaosNewsClip", "LunaVerdeMain", "LunaVerdeClip", "ObjetosMalditosMain", "ObjetosMalditosClip"]);
+
+async function assertCompositionExists(compositionId: string, context?: PipelineExecutionContext): Promise<void> {
+  if (FIXED_COMPOSITION_IDS.has(compositionId)) return;
+
   const mainMatch = compositionId.match(/^MainDocumentary-(.+)$/);
   const shortMatch = compositionId.match(/^Short-(.+)-(\d+)$/);
   // Fase 5.1 — patrón nuevo para el template QuoteVideo (migrado del
@@ -45,7 +75,7 @@ async function assertCompositionExists(compositionId: string): Promise<void> {
   if (!mainMatch && !shortMatch && !quoteMatch) {
     throw new UnknownCompositionError(
       compositionId,
-      'no coincide con ningún patrón soportado ("MainDocumentary-<id>" | "Short-<id>-<n>" | "Quote-alza-la-voz-<videoId>-<vertical|square>")'
+      'no coincide con ningún patrón soportado ("MainDocumentary-<id>" | "Short-<id>-<n>" | "Quote-alza-la-voz-<videoId>-<vertical|square>" | "ChaosNewsMain" | "ChaosNewsClip")'
     );
   }
   if (quoteMatch) {
@@ -66,18 +96,36 @@ async function assertCompositionExists(compositionId: string): Promise<void> {
   // por llamada garantiza leer el archivo real tal cual está en disco ahora.
   // No cambia nada para episodios ya registrados antes del proceso (ahí la
   // versión cacheada y la real ya coincidían).
-  const mod = await import(`../../remotion/lib/episodes.ts?t=${Date.now()}`);
+  //
+  // Fase 1.5.5 — para el catálogo SANDBOX (context.episodesFile) se evita
+  // import() por completo: tsx no logra aplicar su hook ESM/TS a un archivo
+  // fuera del proyecto cuando se usa cache-busting "?t=" (falla con
+  // MODULE_NOT_FOUND, sea el specifier relativo o absoluto — limitación real
+  // de tsx, no de este código). Se comprueba la existencia leyendo el archivo
+  // como TEXTO (mismo mecanismo que episodeRegistrar.mts::registerEpisode()
+  // ya usa para su propio chequeo "¿ya registrado?") — nunca hace falta
+  // cache-busting acá porque leer texto siempre da el contenido real en
+  // disco. Producción (sin contexto) sigue usando EXACTAMENTE el import()
+  // original, sin cambios.
+  const episodeExistsInCatalog = async (episodeId: string): Promise<boolean> => {
+    if (context?.episodesFile) {
+      const src = readFileSync(context.episodesFile, "utf-8");
+      return src.includes(`id: "${episodeId}"`);
+    }
+    const mod = await import(`../../remotion/lib/episodes.ts?t=${Date.now()}`);
+    return mod.episodes.some((e: { id: string }) => e.id === episodeId);
+  };
+
   if (mainMatch) {
     const episodeId = mainMatch[1];
-    if (!mod.episodes.some((e: { id: string }) => e.id === episodeId)) {
+    if (!(await episodeExistsInCatalog(episodeId))) {
       throw new UnknownCompositionError(compositionId, `no existe ningún episodio registrado con id="${episodeId}"`);
     }
     return;
   }
   const episodeId = shortMatch![1];
   const clipIndex = Number(shortMatch![2]);
-  const episode = mod.episodes.find((e: { id: string }) => e.id === episodeId);
-  if (!episode) {
+  if (!(await episodeExistsInCatalog(episodeId))) {
     throw new UnknownCompositionError(compositionId, `no existe ningún episodio registrado con id="${episodeId}"`);
   }
   // Fase 5.1 — NO usar episode.clips acá: ese array llega de un import()
@@ -91,15 +139,30 @@ async function assertCompositionExists(compositionId: string): Promise<void> {
   // el JSON directo del disco (sin ningún import, sin cache posible) es la
   // única forma de ver el valor real. No se duplica el TIPO (ClipMark), solo
   // se lee su longitud real.
-  const clipsJsonPath = path.join(REPO_ROOT, "remotion", "data", `clips-${episodeId}.json`);
-  let realClipCount = Array.isArray(episode.clips) ? episode.clips.length : 0;
+  const clipsJsonPath = context?.dataRoot
+    ? path.join(context.dataRoot, `clips-${episodeId}.json`)
+    : path.join(REPO_ROOT, "remotion", "data", `clips-${episodeId}.json`);
+  // Fase 1.5.5 — el fallback (si clipsJsonPath no existiera todavía) solo
+  // puede venir de episode.clips en producción (requiere el import() real);
+  // en sandbox, dado que episodeExistsInCatalog() ya confirmó por texto que
+  // el episodio existe, y ensureEmptyClips()/writeClips() SIEMPRE escriben
+  // clips-{id}.json antes de llegar a este punto real del pipeline, el
+  // fallback nunca debería ejercitarse — se usa 0 en vez de requerir un
+  // import() adicional que fallaría por el mismo motivo ya documentado arriba.
+  let realClipCount = 0;
+  if (!context?.episodesFile) {
+    const mod = await import(`../../remotion/lib/episodes.ts?t=${Date.now()}`);
+    const episode = mod.episodes.find((e: { id: string }) => e.id === episodeId);
+    realClipCount = Array.isArray(episode?.clips) ? episode.clips.length : 0;
+  }
   if (existsSync(clipsJsonPath)) {
     try {
       const realClips = JSON.parse(readFileSync(clipsJsonPath, "utf-8"));
       if (Array.isArray(realClips)) realClipCount = realClips.length;
     } catch {
-      // Si el JSON está corrupto/a medio escribir, se cae al valor de episode.clips
-      // (comportamiento anterior) en vez de fallar de forma ambigua acá.
+      // Si el JSON está corrupto/a medio escribir, se cae al valor ya
+      // calculado arriba (comportamiento anterior) en vez de fallar de forma
+      // ambigua acá.
     }
   }
   if (clipIndex >= realClipCount) {
@@ -123,8 +186,21 @@ async function existingValidRender(absPath: string): Promise<string | null> {
 
 export const renderBridge: RenderBridge = {
   async renderComposition(compositionId, outputPath, opts) {
-    await assertCompositionExists(compositionId);
-    const safeOutputPath = requireSafeOutputPath(outputPath);
+    await assertCompositionExists(compositionId, opts?.context);
+    // Fase 1.5.3 — dos roots distintos, a propósito, igual que la lógica
+    // original: `containmentRoot` es contra qué se valida que `outputPath` no
+    // escape (RENDER_OUTPUT_ROOT=REPO_ROOT/out en producción, sin cambios).
+    // `relativeBase` es la raíz contra la que se calcula el path RELATIVO que
+    // se le pasa a renderer.mts — en producción es REPO_ROOT (bare, SIN "/out"),
+    // precisamente para que el prefijo "out/" sobreviva en ese relativo, tal
+    // como renderer.mts::renderMain/renderShort ya lo esperan (unen ese
+    // relativo contra REPO_ROOT de nuevo). En sandbox, renderer.mts une el
+    // relativo directamente contra context.outputRoot (ver Bloque C) — no hay
+    // una carpeta "out" anidada dentro del sandbox más que la que el propio
+    // TEST_ROOT/out ya representa, así que ambos roots coinciden.
+    const containmentRoot = opts?.context?.outputRoot ?? RENDER_OUTPUT_ROOT;
+    const relativeBase = opts?.context?.outputRoot ?? REPO_ROOT;
+    const safeOutputPath = requireSafeOutputPath(outputPath, containmentRoot);
 
     if (opts?.reuseIfExists) {
       const existingHash = await existingValidRender(safeOutputPath);
@@ -133,8 +209,8 @@ export const renderBridge: RenderBridge = {
       }
     }
 
-    const outRelPath = path.relative(REPO_ROOT, safeOutputPath);
-    renderCompositionImpl(compositionId, outRelPath, { timeoutMs: opts?.timeoutMs });
+    const outRelPath = path.relative(relativeBase, safeOutputPath);
+    renderCompositionImpl(compositionId, outRelPath, { timeoutMs: opts?.timeoutMs, context: opts?.context, props: opts?.props });
     if (!existsSync(safeOutputPath)) {
       throw new Error(`El render terminó sin errores pero no se encontró el archivo esperado: ${safeOutputPath}`);
     }

@@ -19,6 +19,7 @@ import { exportClip } from "./exportManager.mts";
 import { CLIP_MAX_SECONDS, CLIP_MIN_SECONDS } from "./config.mts";
 import { FPS } from "../../remotion/theme.ts";
 import type { RawSegment } from "./transcriber.mts";
+import { namespacedEpisodeId } from "./episodeNamespace.mts"; // FASE 5.10-AI — ver processOne.mts para el detalle completo
 
 const log = (msg: string) => console.log(`[${new Date().toISOString().slice(11, 19)}] ${msg}`);
 
@@ -31,8 +32,9 @@ async function main() {
 
   const ep = scanEpisode(account, episodeId);
   const script = analyzeScript(ep.scriptFile!);
+  const compositionEpisodeId = namespacedEpisodeId(account, episodeId);
 
-  const captionsPath = path.join(import.meta.dirname, "..", "..", "remotion", "data", `captions-${episodeId}.json`);
+  const captionsPath = path.join(import.meta.dirname, "..", "..", "remotion", "data", `captions-${compositionEpisodeId}.json`);
   const cached = JSON.parse(readFileSync(captionsPath, "utf-8")) as { start: number; end: number; text: string }[];
   const segments: RawSegment[] = cached.map((c) => ({ start: c.start, end: c.end, text: c.text }));
 
@@ -49,7 +51,7 @@ async function main() {
   const sequential = selectClipsSequential(captions, silences, narrationDurationSeconds);
   const clips = [...editorial, ...sequential];
   log(`${editorial.length} clips editoriales (mejores momentos) + ${sequential.length} partes secuenciales`);
-  writeClips(episodeId, clips);
+  writeClips(compositionEpisodeId, clips);
 
   const exportedClips: string[] = [];
   for (let i = 0; i < clips.length; i++) {
@@ -57,7 +59,7 @@ async function main() {
     const label = isSequential ? "Parte" : "Clip";
     const localIndex = isSequential ? i - editorial.length : i;
     log(`Renderizando ${label} ${localIndex + 1} (${i + 1}/${clips.length})...`);
-    const clipOut = renderShort(episodeId, i);
+    const clipOut = renderShort(compositionEpisodeId, i);
     const clipDurationSec = (clips[i].endFrame - clips[i].startFrame) / FPS;
     const clipQa = checkClip(clipOut, CLIP_MIN_SECONDS, CLIP_MAX_SECONDS);
     if (!clipQa.ok) {

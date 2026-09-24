@@ -3,12 +3,17 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import type { TtsChapter } from "./scriptAnalyzer.mts";
-import { DEFAULT_MODEL_ID, DEFAULT_VOICE_SETTINGS, findVoiceByName, textToSpeech } from "./elevenLabsClient.mts";
+import { DEFAULT_MODEL_ID, DEFAULT_VOICE_SETTINGS, findVoiceByName, textToSpeech, type VoiceSettings } from "./elevenLabsClient.mts";
 
-// "Kate — Velvet Midnight Narrator" — ver Prompt de Voz - ElevenLabs.md, la
-// voz que ya usa el canal. Si cambia de nombre en la cuenta de ElevenLabs,
-// ajustar este patrón.
-const NARRATOR_VOICE_PATTERN = /kate|velvet.?midnight/i;
+// FASE 5.10-AI — el patrón de voz YA NO vive hardcodeado aquí (antes:
+// `NARRATOR_VOICE_PATTERN = /kate|velvet.?midnight/i` fijo, usado para
+// CUALQUIER canal sin distinción). Ahora es un parámetro OBLIGATORIO de
+// generateNarration() — cada canal declara el suyo en
+// channelRegistry.mts::ChannelConfig.voice.narratorVoicePattern (SIN
+// EXPLICACIÓN conserva EXACTAMENTE este mismo valor, cero cambio de
+// comportamiento). Un canal sin voz configurada nunca debe poder generar
+// narración con la voz de otro canal por accidente — el llamador
+// (processOne.mts) es quien decide fail-closed si el canal no tiene una.
 
 // El endpoint de TTS tiene límite de caracteres por request — partimos por
 // capítulo primero (nunca a mitad de frase) y, si un capítulo solo se pasa,
@@ -37,16 +42,20 @@ const splitLongChapter = (text: string, maxChars: number): string[] => {
   return chunks;
 };
 
-// Genera la narración completa del episodio en ElevenLabs (voz + ajustes ya
-// documentados por la usuaria para este canal) y la deja como un único mp3 en
-// `outputPath`. Gasta créditos reales de ElevenLabs — se loggea el total de
-// caracteres antes de arrancar para que quede visible en los logs del agente.
+// Genera la narración completa del episodio en ElevenLabs (voz + ajustes del
+// CANAL que la llama, ver channelRegistry.mts::ChannelConfig.voice) y la deja
+// como un único mp3 en `outputPath`. Gasta créditos reales de ElevenLabs — se
+// loggea el total de caracteres antes de arrancar para que quede visible en
+// los logs del agente.
 export const generateNarration = async (
   chapters: TtsChapter[],
   outputPath: string,
+  narratorVoicePattern: RegExp,
+  voiceSettings: VoiceSettings = DEFAULT_VOICE_SETTINGS,
+  modelId: string = DEFAULT_MODEL_ID,
   onProgress?: (msg: string) => void
 ): Promise<void> => {
-  const voice = await findVoiceByName(NARRATOR_VOICE_PATTERN);
+  const voice = await findVoiceByName(narratorVoicePattern);
   onProgress?.(`Voz: "${voice.name}" (${voice.voice_id})`);
 
   const textChunks = chapters.flatMap((ch) => splitLongChapter(ch.text, MAX_CHUNK_CHARS));
@@ -60,7 +69,7 @@ export const generateNarration = async (
       onProgress?.(`  fragmento ${i + 1}/${textChunks.length} (${textChunks[i].length} caracteres)...`);
       const previousText = i > 0 ? textChunks[i - 1].slice(-CONTEXT_CHARS) : undefined;
       const nextText = i < textChunks.length - 1 ? textChunks[i + 1].slice(0, CONTEXT_CHARS) : undefined;
-      const audio = await textToSpeech(voice.voice_id, textChunks[i], DEFAULT_VOICE_SETTINGS, DEFAULT_MODEL_ID, {
+      const audio = await textToSpeech(voice.voice_id, textChunks[i], voiceSettings, modelId, {
         previousText,
         nextText,
       });

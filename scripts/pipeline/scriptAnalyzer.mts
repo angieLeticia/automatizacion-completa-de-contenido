@@ -3,7 +3,13 @@ import type { ScriptAnalysis, ScriptChapter, ScriptSentence } from "./types.mts"
 
 const BREAK_RE = /<break\s+time="([\d.]+)s?"\s*\/>/i;
 const HEADING_RE = /^(#{1,3})\s+(.*)$/;
-const CHAPTER_HEADING_RE = /^cap[ií]tulo\s+\d+/i;
+// Bloque 4 — generalización ADITIVA: además de "CAPÍTULO N" (SIN EXPLICACIÓN/
+// ENCIENDE EL CAOS, sin cambios), reconoce "N PARTE" (LUNA VERDE — sus 7
+// guiones reales usan "PRIMERA PARTE"/"SEGUNDA PARTE"/... de forma consistente
+// en vez de capítulos numerados, ver D:\MATERIAL VIDEOS\LUNA VERDE\*\Guion*.md).
+// Verificado que ningún guion real de SIN EXPLICACIÓN usa este patrón antes de
+// agregarlo — cero cambio de comportamiento para esos guiones.
+const CHAPTER_HEADING_RE = /^(cap[ií]tulo\s+\d+|(primera|segunda|tercera|cuarta|quinta|sexta|s[eé]ptima|octava|novena|d[eé]cima)\s+parte)/i;
 const FINAL_HEADING_RE = /^final$/i;
 
 // Convierte el guion (markdown con tags SSML de ElevenLabs) en una lista de

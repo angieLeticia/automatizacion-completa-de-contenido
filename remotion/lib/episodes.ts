@@ -5,6 +5,9 @@ import type { ClipMark } from "./clips";
 import type { ReelOptions, Shot, SourceImage, SourceVideo } from "./broll";
 import rawCaptions002 from "../data/captions-002.json";
 import rawClips002 from "../data/clips-002.json";
+import rawCaptionsENCIENDEELCAOS009 from "../data/captions-ENCIENDEELCAOS009.json";
+import rawClipsENCIENDEELCAOS009 from "../data/clips-ENCIENDEELCAOS009.json";
+import rawShotsENCIENDEELCAOS009 from "../data/shots-ENCIENDEELCAOS009.json";
 import rawCaptions014 from "../data/captions-014.json";
 import rawClips014 from "../data/clips-014.json";
 import rawShots014 from "../data/shots-014.json";
@@ -293,7 +296,25 @@ const episode014: EpisodeConfig = {
 };
 
 
-export const episodes: EpisodeConfig[] = [episode002, episode003, episode004, episode008, episode010, episode012, episode011, episode013, episode014];
+
+const episodeENCIENDEELCAOS009: EpisodeConfig = {
+  id: "ENCIENDEELCAOS009",
+  chapterNumber: 7,
+  narrationFile: "narracion-ENCIENDEELCAOS009.mp3",
+  narrationDurationSeconds: 279.365079,
+  captions: normalizeCaptions(rawCaptionsENCIENDEELCAOS009 as Caption[]),
+  clips: rawClipsENCIENDEELCAOS009 as ClipMark[],
+  videoPool: [],
+  imagePool: [
+    { kind: "image", file: "ENCIENDEELCAOS009/01_celular_instagram_story.jpg", width: 1280, height: 1920 },
+    { kind: "image", file: "ENCIENDEELCAOS009/02_cancha_baloncesto_interior.jpg", width: 1280, height: 853 },
+    { kind: "image", file: "ENCIENDEELCAOS009/03_cancha_baloncesto_aros.jpg", width: 1280, height: 854 },
+  ],
+  reelOptions: { imagesPerVideo: 3 },
+  shots: rawShotsENCIENDEELCAOS009 as Shot[],
+};
+
+export const episodes: EpisodeConfig[] = [episode002, episode003, episode004, episode008, episode010, episode012, episode011, episode013, episode014, episodeENCIENDEELCAOS009];
 
 export const getEpisode = (id: string): EpisodeConfig => {
   const ep = episodes.find((e) => e.id === id);

@@ -15,6 +15,21 @@ import { layout, FPS } from "./theme";
 // parametrizado por VideoDef, sin ningún dato de canal hardcodeado.
 import { QuoteVideo } from "./QuoteVideo";
 import { videos as alzaLaVozVideos, durationInFrames as quoteDurationInFrames } from "../channels/alza-la-voz/videos";
+// FASE 5.10-AQ (Fase 4 — composiciones de ENCIENDE EL CAOS) — registro
+// ADITIVO, ver esas dos secciones más abajo para el detalle completo.
+import { ChaosNewsMain } from "./ChaosNewsMain";
+import { ChaosNewsClip } from "./ChaosNewsClip";
+import { chaosMainDurationInFrames, chaosClipDurationInFrames, type ChaosEpisodeConfig, type ChaosClipConfig } from "./lib/chaosEpisode";
+import { chaosMainFixture, chaosClipFixture } from "./lib/chaosFixture";
+// FASE 9 — arquitectura documental GENÉRICA provisional (LUNA VERDE/OBJETOS
+// MALDITOS), ver informe de fase para el detalle completo. Un solo par de
+// componentes, registrados dos veces (una por canal) con fixture/tema
+// propios — mismo patrón que QuoteVideo.tsx + alzaLaVozVideos.map.
+import { GenericDocumentaryMain } from "./GenericDocumentaryMain";
+import { GenericDocumentaryClip } from "./GenericDocumentaryClip";
+import { documentaryMainDurationInFrames, documentaryClipDurationInFrames, type DocumentaryEpisodeConfig, type DocumentaryClipConfig } from "./lib/documentaryEpisode";
+import { lunaVerdeMainFixture, lunaVerdeClipFixture } from "./lib/lunaVerdeFixture";
+import { objetosMalditosMainFixture, objetosMalditosClipFixture } from "./lib/objetosMalditosFixture";
 
 const QUOTE_FORMATS = [
   { id: "vertical", width: 1080, height: 1920 },
@@ -117,6 +132,104 @@ export const RemotionRoot: React.FC = () => {
           />
         )),
       )}
+
+      {/* FASE 5.10-AQ (Fase 4) — ENCIENDE EL CAOS. A diferencia de
+          MainDocumentary/Short-{id}-{n} (un <Composition> por episodio YA
+          conocido, leído de remotion/lib/episodes.ts), estas dos
+          composiciones se registran UNA SOLA VEZ cada una, con id fijo y
+          puramente alfanumérico (sin episode_id embebido — el namespace de
+          episodios de Fase 5.10-AI sigue existiendo y aplicará a los
+          archivos/assets que un futuro RenderProvider genere por episodio
+          real, pero no a este id de composición, que nunca varía). Los
+          datos reales de un episodio llegan vía props (defaultProps aquí,
+          --props en un render real futuro — mismo mecanismo que Remotion ya
+          soporta) — `calculateMetadata` recalcula durationInFrames a partir
+          de esos props, igual que ya hace Short-{id}-{n} más arriba.
+          `defaultProps` usa el FIXTURE técnico (chaosFixture.ts, sin
+          contenido real) solo para que la composición tenga algo válido que
+          mostrar en el Studio/al listar composiciones — un render real
+          (Fase 5+) SIEMPRE pasará datos reales via --props, nunca depende
+          de este fixture. */}
+      <Composition
+        id="ChaosNewsMain"
+        component={ChaosNewsMain}
+        fps={FPS}
+        width={layout.main.width}
+        height={layout.main.height}
+        durationInFrames={chaosMainDurationInFrames(chaosMainFixture)}
+        defaultProps={{ config: chaosMainFixture }}
+        calculateMetadata={async ({ props }) => ({
+          durationInFrames: chaosMainDurationInFrames((props as { config: ChaosEpisodeConfig }).config),
+        })}
+      />
+
+      <Composition
+        id="ChaosNewsClip"
+        component={ChaosNewsClip}
+        fps={FPS}
+        width={layout.short.width}
+        height={layout.short.height}
+        durationInFrames={chaosClipDurationInFrames(chaosClipFixture)}
+        defaultProps={{ config: chaosClipFixture }}
+        calculateMetadata={async ({ props }) => ({
+          durationInFrames: chaosClipDurationInFrames((props as { config: ChaosClipConfig }).config),
+        })}
+      />
+
+      {/* FASE 9 — LUNA VERDE y OBJETOS MALDITOS, arquitectura documental
+          genérica PROVISIONAL (nunca la decisión editorial final). Mismo
+          criterio que ChaosNewsMain/ChaosNewsClip arriba: id fijo
+          alfanumérico, defaultProps = fixture técnico, datos reales llegan
+          vía --props en un render real (chaosNewsRemotionProvider ya probó
+          este mecanismo en Fase 6.5/Bloque 1). */}
+      <Composition
+        id="LunaVerdeMain"
+        component={GenericDocumentaryMain}
+        fps={FPS}
+        width={layout.main.width}
+        height={layout.main.height}
+        durationInFrames={documentaryMainDurationInFrames(lunaVerdeMainFixture)}
+        defaultProps={{ config: lunaVerdeMainFixture }}
+        calculateMetadata={async ({ props }) => ({
+          durationInFrames: documentaryMainDurationInFrames((props as { config: DocumentaryEpisodeConfig }).config),
+        })}
+      />
+      <Composition
+        id="LunaVerdeClip"
+        component={GenericDocumentaryClip}
+        fps={FPS}
+        width={layout.short.width}
+        height={layout.short.height}
+        durationInFrames={documentaryClipDurationInFrames(lunaVerdeClipFixture)}
+        defaultProps={{ config: lunaVerdeClipFixture }}
+        calculateMetadata={async ({ props }) => ({
+          durationInFrames: documentaryClipDurationInFrames((props as { config: DocumentaryClipConfig }).config),
+        })}
+      />
+      <Composition
+        id="ObjetosMalditosMain"
+        component={GenericDocumentaryMain}
+        fps={FPS}
+        width={layout.main.width}
+        height={layout.main.height}
+        durationInFrames={documentaryMainDurationInFrames(objetosMalditosMainFixture)}
+        defaultProps={{ config: objetosMalditosMainFixture }}
+        calculateMetadata={async ({ props }) => ({
+          durationInFrames: documentaryMainDurationInFrames((props as { config: DocumentaryEpisodeConfig }).config),
+        })}
+      />
+      <Composition
+        id="ObjetosMalditosClip"
+        component={GenericDocumentaryClip}
+        fps={FPS}
+        width={layout.short.width}
+        height={layout.short.height}
+        durationInFrames={documentaryClipDurationInFrames(objetosMalditosClipFixture)}
+        defaultProps={{ config: objetosMalditosClipFixture }}
+        calculateMetadata={async ({ props }) => ({
+          durationInFrames: documentaryClipDurationInFrames((props as { config: DocumentaryClipConfig }).config),
+        })}
+      />
     </>
   );
 };

@@ -43,11 +43,30 @@ export const listEpisodeFolders = (account: string): string[] =>
 const byExt = (files: string[], allowed: Set<string>) =>
   files.filter((f) => allowed.has(path.extname(f).toLowerCase()));
 
+// FASE 9/10 — tolerancia GENÉRICA y segura de nombre de carpeta: algunos
+// episodios reales (ej. ENCIENDE EL CAOS/003, verificado con lectura real)
+// organizan el guion dentro de una subcarpeta "Voz y Guion/" en vez de la
+// raíz del episodio — mismo archivo real, misma convención de nombre
+// (SCRIPT_FILE_RE), solo un nivel más profundo. Se busca ahí SOLO si no se
+// encontró nada en la raíz (nunca "además de" — si algún día dos guiones
+// coexistieran, la raíz sigue ganando, sin ambigüedad). Nunca afecta a SIN
+// EXPLICACIÓN (sus guiones reales están siempre en la raíz, confirmado).
+//
+// NOTA: se evaluó y se descartó una tolerancia equivalente para
+// "Videos_Referencia/" (vista en varios episodios de ENCIENDE EL CAOS/
+// OBJETOS MALDITOS) — evidencia real (fuentes-material.md de esos mismos
+// episodios) confirma que esa carpeta contiene enlaces/inspiración de tono,
+// EXPLÍCITAMENTE "no descargado", nunca b-roll real utilizable. Tratarla
+// como equivalente a "Videos/" habría sido un error, no una generalización
+// segura — se documenta la decisión, no se implementa.
+const SCRIPT_SUBFOLDER = "Voz y Guion";
+
 export const scanEpisode = (account: string, episodeId: string): EpisodeFiles => {
   const folder = path.join(MATERIAL_ROOT, account, episodeId);
   const rootFiles = listFiles(folder);
 
-  const scriptFile = rootFiles.find((f) => SCRIPT_FILE_RE.test(path.basename(f)) && path.extname(f) === ".md") ?? null;
+  const findScript = (files: string[]) => files.find((f) => SCRIPT_FILE_RE.test(path.basename(f)) && path.extname(f) === ".md");
+  const scriptFile = findScript(rootFiles) ?? findScript(listFiles(path.join(folder, SCRIPT_SUBFOLDER))) ?? null;
   const narrationFile =
     rootFiles.find((f) => NARRATION_FILE_RE.test(path.basename(f)) && AUDIO_EXT.has(path.extname(f).toLowerCase())) ??
     null;
