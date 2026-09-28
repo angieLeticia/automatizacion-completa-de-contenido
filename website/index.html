@@ -25,6 +25,20 @@
         <section class="links">
             <a href="terms.html">Términos de Servicio</a>
             <a href="privacy.html">Política de Privacidad</a>
+            <a href="contact.html">Contacto</a>
+        </section>
+
+        <section>
+            <h2>Conectar una cuenta</h2>
+            <p>
+                Autoriza tu cuenta de TikTok para que Automatizacion Contenido
+                pueda identificarla. Este primer paso solo lee tu información
+                básica de perfil (nombre de usuario/avatar) para confirmar qué
+                cuenta quedó conectada — no publica ni modifica nada todavía.
+            </p>
+            <p class="links">
+                <a id="connect-tiktok" href="#">Connect TikTok</a>
+            </p>
         </section>
     </main>
 
@@ -34,7 +48,80 @@
             <a href="terms.html">Términos de Servicio</a>
             |
             <a href="privacy.html">Política de Privacidad</a>
+            |
+            <a href="contact.html">Contacto</a>
         </p>
     </footer>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ATENCIÓN — dos placeholders deliberados, NO inventados:
+            //
+            // 1) TIKTOK_AUTHORIZE_URL_PLACEHOLDER: el endpoint real de
+            //    autorización de TikTok Login Kit (authorization code flow)
+            //    NO está citado en ningún documento de este repositorio
+            //    (docs/phase-5.12-tiktok-audit.md solo documenta el Content
+            //    Posting API — init/upload/status en open.tiktokapis.com —
+            //    nunca el endpoint de /auth/authorize). Por instrucción
+            //    explícita, se deja como placeholder en vez de asumirlo desde
+            //    conocimiento general — reemplazar por la URL exacta que
+            //    indique la documentación oficial vigente de TikTok Login Kit
+            //    en el momento de implementar esto de verdad.
+            //
+            // 2) TIKTOK_CLIENT_KEY_PLACEHOLDER: no existe ningún client_key
+            //    de TikTok en este repositorio (confirmado — no hay ninguna
+            //    app de TikTok dada de alta todavía). Se reemplaza por el
+            //    Client Key real una vez creada la app en TikTok Developer
+            //    Portal.
+            var AUTHORIZE_BASE_URL = "TIKTOK_AUTHORIZE_URL_PLACEHOLDER";
+            var CLIENT_KEY = "TIKTOK_CLIENT_KEY_PLACEHOLDER";
+            var REDIRECT_URI = "https://angieleticia.github.io/automatizacion-completa-de-contenido/oauth/tiktok-callback.html";
+            var SCOPE = "user.info.basic";
+
+            // `state` generado en el momento, solo para esta autorización —
+            // nunca se guarda (ni en localStorage ni en ningún backend), tal
+            // como pide la política de este sitio (ver oauth/tiktok-callback.html).
+            function randomState() {
+                if (window.crypto && window.crypto.getRandomValues) {
+                    var bytes = new Uint8Array(16);
+                    window.crypto.getRandomValues(bytes);
+                    return Array.prototype.map.call(bytes, function (b) {
+                        return b.toString(16).padStart(2, "0");
+                    }).join("");
+                }
+                return Math.random().toString(36).slice(2) + Date.now().toString(36);
+            }
+
+            function buildAuthorizeUrl() {
+                var params = new URLSearchParams();
+                params.set("client_key", CLIENT_KEY);
+                params.set("redirect_uri", REDIRECT_URI);
+                params.set("scope", SCOPE);
+                params.set("response_type", "code");
+                params.set("state", randomState());
+                // NUNCA client_secret aquí — un client_secret no debe existir en el frontend.
+                return AUTHORIZE_BASE_URL + "?" + params.toString();
+            }
+
+            var link = document.getElementById("connect-tiktok");
+            if (link) {
+                // El href se recalcula (state nuevo) cada vez que se hace click,
+                // así nunca queda un `state` viejo visible/reutilizable en el DOM.
+                link.addEventListener("click", function (ev) {
+                    if (AUTHORIZE_BASE_URL.indexOf("PLACEHOLDER") !== -1 || CLIENT_KEY.indexOf("PLACEHOLDER") !== -1) {
+                        ev.preventDefault();
+                        window.alert("Falta configurar TIKTOK_AUTHORIZE_URL_PLACEHOLDER y/o TIKTOK_CLIENT_KEY_PLACEHOLDER en este archivo antes de poder conectar TikTok de verdad.");
+                        return;
+                    }
+                    link.href = buildAuthorizeUrl();
+                });
+                // También se deja precalculada al cargar, para que el link sea
+                // inspeccionable (hover / "copiar enlace") sin necesidad de click.
+                link.href = buildAuthorizeUrl();
+            }
+        })();
+    </script>
 </body>
 </html>
