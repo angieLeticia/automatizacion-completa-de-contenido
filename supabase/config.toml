@@ -1,0 +1,15 @@
+# Config de Supabase CLI para este repo. Antes de esta fase no existía
+# ninguna función ni config.toml — este archivo se crea desde cero.
+#
+# `project_id` NO se incluye acá a propósito: no está confirmado en ningún
+# archivo de este repositorio (no se inventa). Vincular el proyecto real con:
+#   supabase link --project-ref <tu-project-ref>
+# (o agregar `project_id = "<tu-project-ref>"` manualmente una vez confirmado).
+
+[functions.tiktok-oauth-exchange]
+# GitHub Pages (sitio estático) llama a esta función SIN sesión de Supabase
+# Auth — no hay JWT de usuario que verificar. Esto es DELIBERADO para
+# Sandbox/demo (ver docs/tiktok-oauth-edge-function.md, sección "Antes de
+# producción"): antes de un uso real hay que endurecerlo con verificación de
+# `state` del lado del servidor o autenticación propia.
+verify_jwt = false

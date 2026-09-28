@@ -32,37 +32,8 @@
     margin-bottom: 20px;
     border-radius: 10px;
   }
-  .warning {
-    background: #fff3cd;
-    border: 1px solid #ffe69c;
-    color: #664d03;
-    padding: 15px;
-    border-radius: 8px;
-    font-weight: bold;
-  }
-  .token-box {
-    word-break: break-all;
-    background: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 13px;
-    user-select: all;
-    margin: 15px 0;
-  }
-  button {
-    background: #0057b8;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-size: 15px;
-    cursor: pointer;
-  }
-  button:hover { background: #004591; }
   .status-ok { color: #146c2e; font-weight: bold; }
-  .status-empty { color: #444; font-weight: bold; }
+  .status-pending { color: #444; font-weight: bold; }
   .status-error { color: #a12622; font-weight: bold; }
   .error-box {
     word-break: break-word;
@@ -74,19 +45,19 @@
     font-size: 13px;
     margin: 15px 0;
   }
-  .copy-feedback { margin-left: 10px; font-size: 14px; color: #146c2e; }
   .hint { color: #555; font-size: 14px; }
+  a { color: #0057b8; }
 </style>
 </head>
 <body>
   <header>
     <h1>TikTok OAuth callback</h1>
-    <p>Shows the authorization code for server-side exchange.</p>
+    <p>Intercambia el authorization code por un token del lado del servidor.</p>
   </header>
 
   <main>
     <section id="result-section">
-      <p id="status-line">Procesando respuesta...</p>
+      <p id="status-line" class="status-pending">Procesando respuesta...</p>
     </section>
   </main>
 
@@ -94,11 +65,18 @@
     (function () {
       "use strict";
 
-      // Extraccion de parametros del FRAGMENT — TikTok no usa flujo implicito
-      // (siempre devuelve el authorization code por query string, nunca un
-      // access_token por el fragmento), pero se conserva el mismo parseo
-      // defensivo que callback.html (Meta) por si algún día hiciera falta —
-      // inofensivo si nunca hay nada que leer aquí.
+      // Base de las Edge Functions de Supabase. URL pública del proyecto
+      // (no es un secreto) — se deja como constante configurable, sin
+      // project ref inventado: reemplazar por
+      // "https://<tu-project-ref>.supabase.co/functions/v1" una vez conocido.
+      var SUPABASE_FUNCTIONS_BASE_URL = "SUPABASE_FUNCTIONS_BASE_URL_PLACEHOLDER";
+
+      // Sandbox/demo: el canal está fijo a "SIN EXPLICACIÓN" por ahora — no
+      // hay todavía un selector de canal en la web (website/index.html no se
+      // tocó en esta fase). Antes de soportar múltiples canales desde la web,
+      // este valor debe volverse dinámico (ver docs/tiktok-oauth-edge-function.md).
+      var CHANNEL_NAME = "SIN EXPLICACIÓN";
+
       function parseFragmentParams(hash) {
         var result = {};
         var raw = hash.indexOf("#") === 0 ? hash.slice(1) : hash;
@@ -128,131 +106,105 @@
       }
 
       var fragmentParams = parseFragmentParams(window.location.hash);
-      var accessToken = fragmentParams["access_token"] || null;
-      var fragmentState = fragmentParams["state"] || null;
-
-      // El authorization `code` de TikTok llega por QUERY STRING (?code=...),
-      // igual que Meta — mismo parseo, sin cambios de lógica.
       var searchParams = new URLSearchParams(window.location.search);
       var authCode = searchParams.get("code");
-      var queryState = searchParams.get("state");
-      var state = fragmentState || queryState;
+      var state = searchParams.get("state") || fragmentParams["state"] || null;
 
-      // TikTok devuelve estos parámetros (ninguno es sensible: son
-      // códigos/descripciones de error públicos, no credenciales) cuando el
-      // usuario deniega el permiso o hay un problema de configuración, en vez
-      // de "code". Se revisan AMBAS fuentes (query string Y fragmento) por el
-      // mismo motivo que callback.html.
+      // TikTok devuelve estos parámetros (públicos, no sensibles) cuando el
+      // usuario deniega el permiso o hay un problema de configuración.
       var errorCode = searchParams.get("error") || fragmentParams["error"] || null;
       var errorReason = searchParams.get("error_reason") || fragmentParams["error_reason"] || null;
       var errorDescription = searchParams.get("error_description") || fragmentParams["error_description"] || null;
       var errorCodeNumeric = searchParams.get("error_code") || fragmentParams["error_code"] || null;
 
-      // Limpieza INMEDIATA de fragmento Y query string de la URL/historial -
-      // antes de construir cualquier interfaz, para minimizar el tiempo que
-      // el token/code permanecen visibles en la barra de direcciones o en el
-      // historial del navegador.
+      // Limpieza INMEDIATA de fragmento Y query string — el `code` es de un
+      // solo uso y no debe quedar visible en la barra de direcciones ni en
+      // el historial más tiempo del necesario. NUNCA se guarda en
+      // localStorage/sessionStorage, NUNCA se imprime en consola.
       if (window.location.hash || window.location.search) {
         window.history.replaceState(null, "", window.location.pathname);
       }
 
       var section = document.getElementById("result-section");
+      var statusLine = document.getElementById("status-line");
+
+      function setStatus(text, cssClass) {
+        statusLine.className = cssClass;
+        statusLine.textContent = text;
+      }
 
       function el(tag, attrs, children) {
         var node = document.createElement(tag);
         if (attrs) {
           for (var k in attrs) {
             if (Object.prototype.hasOwnProperty.call(attrs, k)) {
-              if (k === "text") {
-                node.textContent = attrs[k];
-              } else {
-                node.setAttribute(k, attrs[k]);
-              }
+              if (k === "text") node.textContent = attrs[k];
+              else node.setAttribute(k, attrs[k]);
             }
           }
         }
-        if (children) {
-          for (var i = 0; i < children.length; i++) node.appendChild(children[i]);
-        }
+        if (children) for (var i = 0; i < children.length; i++) node.appendChild(children[i]);
         return node;
       }
 
-      section.innerHTML = "";
-
-      // Reutilizable para access_token (fragmento) y code (query string) -
-      // misma interfaz de advertencia + caja copiable + botón, sin duplicar
-      // lógica. NUNCA hace red, NUNCA guarda nada - solo muestra en pantalla.
-      function renderSensitiveValue(statusText, value, buttonLabel) {
-        section.appendChild(el("p", { class: "status-ok", text: statusText }));
-        section.appendChild(
-          el("p", {
-            class: "warning",
-            text: "Este valor es sensible. No lo compartas públicamente ni lo pegues en chats. Esta página no lo almacena ni lo envía a ningún servidor.",
-          })
-        );
-        section.appendChild(el("div", { class: "token-box", text: value }));
-
-        var copyRow = el("div", {});
-        var copyBtn = el("button", { type: "button", text: buttonLabel });
-        var feedback = el("span", { class: "copy-feedback" });
-        copyRow.appendChild(copyBtn);
-        copyRow.appendChild(feedback);
-        section.appendChild(copyRow);
-
-        copyBtn.addEventListener("click", function () {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(value).then(
-              function () {
-                feedback.textContent = "Copiado.";
-              },
-              function () {
-                feedback.textContent = "No se pudo copiar automáticamente - selecciona el texto manualmente.";
-              }
-            );
-          } else {
-            feedback.textContent = "Copia no disponible en este navegador - selecciona el texto manualmente.";
-          }
-        });
-
-        section.appendChild(el("p", { class: "hint", text: "Después de copiarlo, guárdalo localmente fuera del repositorio." }));
-      }
-
-      var somethingReceived = false;
-
-      // Rama de error, ANTES de code/access_token: si TikTok devolvió un
-      // error, se muestra claramente en vez de (o además de) cualquier otra
-      // cosa. Solo texto NO sensible - sin caja "copiable sensible", sin
-      // guardar nada en localStorage/sessionStorage/cookies/backend.
+      // Rama de error de TikTok — antes que nada más.
       if (errorCode) {
-        somethingReceived = true;
-        section.appendChild(el("p", { class: "status-error", text: "TikTok devolvió un error - no se recibió ningún code." }));
+        setStatus("TikTok devolvió un error — no se recibió ningún code.", "status-error");
         var errorLines = ["error: " + errorCode];
         if (errorReason) errorLines.push("error_reason: " + errorReason);
         if (errorCodeNumeric) errorLines.push("error_code: " + errorCodeNumeric);
         if (errorDescription) errorLines.push("error_description: " + errorDescription);
         section.appendChild(el("div", { class: "error-box", text: errorLines.join("\n") }));
         section.appendChild(
-          el("p", { class: "hint", text: "Esto no es un secreto - es la respuesta pública de TikTok explicando por qué no se emitió un code (ej. permiso denegado, configuración de la app)." })
+          el("p", { class: "hint", text: "Esto no es un secreto - es la respuesta pública de TikTok explicando por qué no se emitió un code." })
         );
+        return;
       }
 
-      if (authCode) {
-        somethingReceived = true;
-        renderSensitiveValue("Código de autorización recibido correctamente.", authCode, "Copiar code");
+      if (!authCode) {
+        setStatus("No se recibió ningún código de autorización.", "status-error");
+        return;
       }
 
-      if (accessToken) {
-        somethingReceived = true;
-        renderSensitiveValue("Token recibido correctamente.", accessToken, "Copiar token");
+      if (SUPABASE_FUNCTIONS_BASE_URL.indexOf("PLACEHOLDER") !== -1) {
+        setStatus("Falta configurar SUPABASE_FUNCTIONS_BASE_URL en este archivo — no se puede completar la conexión.", "status-error");
+        return;
       }
 
-      if (state) {
-        section.appendChild(el("p", { class: "hint", text: "state recibido: " + state }));
-      }
+      // El `code` NO se muestra en pantalla ni se loguea — se envía directo
+      // al backend (POST), que es el único lugar donde se intercambia por
+      // tokens reales.
+      setStatus("Conectando…", "status-pending");
 
-      if (!somethingReceived) {
-        section.appendChild(el("p", { class: "status-empty", text: "No se recibió ningún access_token ni código de autorización." }));
-      }
+      fetch(SUPABASE_FUNCTIONS_BASE_URL + "/tiktok-oauth-exchange", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: authCode, channel_name: CHANNEL_NAME }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { httpOk: res.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          if (result.httpOk && result.data && result.data.ok) {
+            setStatus("Conectado ✅", "status-ok");
+            if (result.data.open_id_masked) {
+              section.appendChild(el("p", { class: "hint", text: "Cuenta conectada: " + result.data.open_id_masked }));
+            }
+          } else {
+            var message = (result.data && result.data.message) || "Error desconocido.";
+            setStatus("No se pudo completar la conexión.", "status-error");
+            section.appendChild(el("div", { class: "error-box", text: message }));
+          }
+        })
+        .catch(function () {
+          setStatus("No se pudo contactar el servidor para completar la conexión.", "status-error");
+        });
+      // Nota de seguridad: esta función nunca imprime `authCode`, tokens, ni
+      // ningún valor sensible en consola, ni los guarda en
+      // localStorage/sessionStorage/cookies. La respuesta del backend tampoco
+      // trae tokens — solo `ok`/`platform`/`open_id_masked` o un mensaje de error seguro.
     })();
   </script>
 </body>
