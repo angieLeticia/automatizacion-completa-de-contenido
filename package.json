@@ -9,6 +9,7 @@
     "render:shorts": "node scripts/render-shorts.mjs",
     "social:publish": "tsx scripts/publish-due-social-posts.mts",
     "social:youtube-token": "tsx scripts/get-youtube-refresh-token.mts",
+    "social:tiktok-upload-draft": "tsx scripts/social/tiktok-upload-draft.mts",
     "pipeline:process": "tsx scripts/pipeline/processOne.mts",
     "pipeline:authorize": "tsx scripts/pipeline/authorization.mts authorize",
     "pipeline:revoke": "tsx scripts/pipeline/authorization.mts revoke",
