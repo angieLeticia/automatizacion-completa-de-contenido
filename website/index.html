@@ -66,14 +66,11 @@
             var CLIENT_KEY = "sbawezs7bd334bci0q"; // Client Key de SANDBOX de TikTok (no el de producción)
             var REDIRECT_URI = "https://angieleticia.github.io/automatizacion-completa-de-contenido/oauth/tiktok-callback.html";
 
-            // Scope actual (Opción A — Login Kit únicamente) para estabilizar
-            // el login antes de pedir nada más.
-            // TODO(Opción B, Content Posting + draft): cuando exista un
-            // publisher real de TikTok (ver docs/phase-5.12-tiktok-audit.md),
-            // cambiar a "user.info.basic,video.upload" — eso requiere además
-            // pedir el producto Content Posting API en TikTok Developer
-            // Portal (fuera de este archivo, no se toca acá).
-            var SCOPE = "user.info.basic";
+            // Opción B (Content Posting API + draft) — agrega "video.upload"
+            // al scope de Login Kit. Requiere que la app tenga el producto
+            // Content Posting API aprobado en TikTok Developer Portal (fuera
+            // de este archivo, no se toca acá); ver docs/phase-5.12-tiktok-audit.md.
+            var SCOPE = "user.info.basic,video.upload";
 
             // `state` generado en el momento, solo para esta autorización —
             // nunca se guarda (ni en localStorage ni en ningún backend).
