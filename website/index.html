@@ -122,6 +122,32 @@
                 link.href = buildAuthorizeUrl();
             }
         })();
-    </script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+  var AUTHORIZE_BASE_URL = "https://www.tiktok.com/v2/auth/authorize/";
+  var CLIENT_KEY = "awu6voy28hxhmd3v";
+  var REDIRECT_URI = "https://angieleticia.github.io/automatizacion-completa-de-contenido/oauth/tiktok-callback.html";
+
+  // Para depurar primero: solo login básico.
+  // Cuando funcione, volvemos a agregar video.upload.
+  var SCOPE = "user.info.basic";
+
+  var link = document.getElementById("connect-tiktok");
+  if (!link) return;
+
+  // state simple (para demo). Luego lo validamos en backend cuando exista OAuth server-side.
+  var state = Math.random().toString(16).slice(2) + Date.now().toString(16);
+
+  var url = new URL(AUTHORIZE_BASE_URL);
+  url.searchParams.set("client_key", CLIENT_KEY);
+  url.searchParams.set("redirect_uri", REDIRECT_URI);
+  url.searchParams.set("scope", SCOPE);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("state", state);
+
+  // Aquí está la clave: ya no es "#"
+  link.href = url.toString();
+});
+</script>
 </body>
 </html>
