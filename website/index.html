@@ -63,7 +63,7 @@
             // arreglo para el detalle). AUTHORIZE_BASE_URL/REDIRECT_URI
             // confirmados y ya en uso — se mantienen sin cambios.
             var AUTHORIZE_BASE_URL = "https://www.tiktok.com/v2/auth/authorize/";
-            var CLIENT_KEY = "awu6voy28hxhmd3v"; // reutilizado tal cual del archivo publicado anterior — no se cambió
+            var CLIENT_KEY = "sbawezs7bd334bci0q"; // Client Key de SANDBOX de TikTok (no el de producción)
             var REDIRECT_URI = "https://angieleticia.github.io/automatizacion-completa-de-contenido/oauth/tiktok-callback.html";
 
             // Scope actual (Opción A — Login Kit únicamente) para estabilizar
@@ -90,7 +90,7 @@
 
             function buildAuthorizeUrl() {
                 var url = new URL(AUTHORIZE_BASE_URL);
-                url.searchParams.set("client_key", CLIENT_KEY);
+                url.searchParams.set("client_key", CLIENT_KEY.trim());
                 url.searchParams.set("redirect_uri", REDIRECT_URI);
                 url.searchParams.set("scope", SCOPE);
                 url.searchParams.set("response_type", "code");
