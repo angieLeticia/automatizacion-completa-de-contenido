@@ -8,11 +8,16 @@
 //     --file "D:\MATERIAL VIDEOS\SIN EXPLICACIÓN\Clips\008 - Clip 1.mp4" \
 //     --caption "texto..."
 //
-// privacy_level queda FIJO en "SELF_ONLY" (igual que
-// supabase/functions/tiktok-upload/index.ts): una app de TikTok en
-// Sandbox/sin auditoría completa no puede publicar en público
-// (unaudited_client_can_only_post_to_private_accounts) — el resultado
-// esperado es que el video quede como borrador en la bandeja de TikTok del
+// Usa el endpoint de "Upload Video to TikTok as a draft"
+// (/v2/post/publish/inbox/video/init/, scope video.upload) — NO el de
+// Direct Post (/v2/post/publish/video/init/, scope video.publish, que
+// nuestro token nunca tuvo). Verificado contra la documentación oficial
+// vigente (developers.tiktok.com/doc/content-posting-api-get-started-upload-content/)
+// tras un 401 scope_not_authorized real causado por llamar por error al
+// endpoint de Direct Post. Ese endpoint de draft NO acepta post_info
+// (privacy_level/title) — su body es únicamente source_info; por eso no
+// hay forma de fijar privacy_level ni caption en el INIT de este flujo. El
+// resultado esperado sigue siendo un borrador en la bandeja de TikTok del
 // dueño de la cuenta (status SEND_TO_USER_INBOX), no publicado en público.
 //
 // SEGURIDAD — nunca se imprime ni se loguea: access_token, refresh_token,
@@ -170,12 +175,14 @@ interface InitResult {
   uploadUrl: string;
 }
 
-async function initUpload(accessToken: string, videoSize: number, caption: string | undefined): Promise<InitResult> {
-  const res = await fetch(`${TIKTOK_API_BASE}/post/publish/video/init/`, {
+async function initUpload(accessToken: string, videoSize: number): Promise<InitResult> {
+  // Body EXACTO documentado para /post/publish/inbox/video/init/: solo
+  // source_info. Ningún post_info/privacy_level/title acá - ver el
+  // comentario del encabezado del archivo para el porqué.
+  const res = await fetch(`${TIKTOK_API_BASE}/post/publish/inbox/video/init/`, {
     method: "POST",
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json; charset=UTF-8" },
     body: JSON.stringify({
-      post_info: { privacy_level: "SELF_ONLY", title: caption },
       source_info: { source: "FILE_UPLOAD", video_size: videoSize, chunk_size: videoSize, total_chunk_count: 1 },
     }),
   });
@@ -244,6 +251,13 @@ async function main(): Promise<void> {
   console.log(`Canal: ${args.channel}`);
   console.log(`Archivo: ${args.file} (${fileSize} bytes)`);
   console.log(`Caption: ${args.caption ? `"${args.caption}"` : "(sin caption)"}`);
+  if (args.caption) {
+    console.warn(
+      'ADVERTENCIA: --caption se acepta por compatibilidad pero NO se envía a TikTok en este flujo. ' +
+        '"Caption is completed by the creator inside TikTok when reviewing the uploaded draft." ' +
+        "(el endpoint de Upload-to-TikTok-draft, /post/publish/inbox/video/init/, no admite post_info/title en el INIT)."
+    );
+  }
 
   console.log("\nPaso 1/5 — resolviendo social_account de TikTok en Supabase...");
   let accountId: string;
@@ -283,7 +297,7 @@ async function main(): Promise<void> {
   try {
     let initResult: InitResult;
     try {
-      initResult = await initUpload(credentials.access_token, fileSize, args.caption);
+      initResult = await initUpload(credentials.access_token, fileSize);
     } catch (err) {
       // Reintento único: si TikTok respondió que el token es inválido a pesar
       // de que nuestro cálculo de expiración decía que seguía vigente
@@ -292,7 +306,7 @@ async function main(): Promise<void> {
       if ((err as { authFailure?: boolean }).authFailure) {
         console.log("  TikTok dice que el token no es válido pese a no estar vencido por fecha - refrescando y reintentando UNA vez...");
         credentials = await ensureFreshAccessToken(accountId, { ...credentials, obtained_at: new Date(0).toISOString() }); // fuerza el refresh
-        initResult = await initUpload(credentials.access_token, fileSize, args.caption);
+        initResult = await initUpload(credentials.access_token, fileSize);
       } else {
         throw err;
       }
