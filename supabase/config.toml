@@ -13,3 +13,13 @@
 # producción"): antes de un uso real hay que endurecerlo con verificación de
 # `state` del lado del servidor o autenticación propia.
 verify_jwt = false
+
+[functions.tiktok-upload]
+# Mismo motivo exacto que tiktok-oauth-exchange — GitHub Pages la llama sin
+# JWT de Supabase Auth. Mismo criterio de "endurecer antes de producción".
+# Secrets nuevos que esta función necesita además de los ya existentes
+# (SB_SERVICE_ROLE_KEY, TIKTOK_CLIENT_KEY_SANDBOX, TIKTOK_CLIENT_SECRET_SANDBOX):
+#   TIKTOK_UPLOAD_SESSION_KEY — 32 bytes aleatorios en base64, ej.:
+#     openssl rand -base64 32
+#   (ver docs/tiktok-web-upload-demo.md para el detalle completo)
+verify_jwt = false

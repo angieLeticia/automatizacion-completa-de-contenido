@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>TikTok Integration Demo — Automatizacion Contenido</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="tiktok-chunking.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Automatizacion Contenido</h1>
+        <p>TikTok Integration Demo — Login Kit + Content Posting API (Sandbox)</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Cuenta conectada</h2>
+            <div id="account-card" class="account-card">
+                <p class="hint">Cargando información de la cuenta conectada…</p>
+            </div>
+            <p class="scopes">
+                <span id="scope-basic" class="scope-pill scope-pending">user.info.basic</span>
+                <span id="scope-upload" class="scope-pill scope-pending">video.upload</span>
+            </p>
+            <p class="hint">
+                Si no aparece una cuenta conectada, andá primero a
+                <a href="index.html">la página de inicio</a> y usá "Connect TikTok".
+            </p>
+        </section>
+
+        <section>
+            <h2>Sandbox — qué esperar</h2>
+            <p class="hint">
+                Esta app de TikTok está en Sandbox, sin auditoría completa — el resultado
+                esperado NO es "publicado en público". El video se envía a TikTok para que
+                el creador lo revise, edite y publique manualmente desde la app de TikTok.
+            </p>
+        </section>
+
+        <section>
+            <h2>Subir video (.mp4)</h2>
+            <p><input type="file" id="video-file" accept="video/mp4,video/*" /></p>
+            <div id="file-info" class="file-info" hidden>
+                <p><strong>Archivo:</strong> <span id="file-name"></span></p>
+                <p><strong>Tamaño:</strong> <span id="file-size"></span></p>
+                <p><strong>Duración:</strong> <span id="file-duration">—</span></p>
+                <p><strong>Chunks a subir:</strong> <span id="file-chunks"></span></p>
+            </div>
+            <p id="file-error" class="status-error" hidden></p>
+
+            <p class="links">
+                <a href="#" id="upload-button" aria-disabled="true">Upload to TikTok (Draft)</a>
+            </p>
+
+            <div id="progress-wrap" class="progress-wrap" hidden>
+                <div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div>
+                <p id="progress-label" class="hint">Initializing TikTok upload…</p>
+            </div>
+
+            <div id="status-area">
+                <p id="status-line" class="hint">Elegí un archivo .mp4 para empezar.</p>
+            </div>
+        </section>
+
+        <section class="links">
+            <a href="index.html">← Volver al inicio</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>Automatizacion Contenido</p>
+    </footer>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // URL pública del proyecto de Supabase — no es un secreto, mismo
+            // valor ya usado en oauth/tiktok-callback.html.
+            var SUPABASE_FUNCTIONS_BASE_URL = "https://xbwbwzehnbofargskxyb.supabase.co/functions/v1";
+            var CHANNEL_NAME = "SIN EXPLICACIÓN"; // fijo en esta demo — sin selector de canal todavía
+
+            var fileInput = document.getElementById("video-file");
+            var button = document.getElementById("upload-button");
+            var statusLine = document.getElementById("status-line");
+            var fileError = document.getElementById("file-error");
+            var progressWrap = document.getElementById("progress-wrap");
+            var progressBar = document.getElementById("progress-bar");
+            var progressLabel = document.getElementById("progress-label");
+            var chunkCountEl = document.getElementById("file-chunks");
+
+            var selectedFile = null;
+            var isUploading = false;
+
+            function setStatus(text, cssClass) {
+                statusLine.className = cssClass || "hint";
+                statusLine.textContent = text;
+            }
+
+            function setProgress(fraction, label) {
+                progressWrap.hidden = false;
+                progressBar.style.width = Math.round(fraction * 100) + "%";
+                progressLabel.textContent = label;
+            }
+
+            // ---------------------- Edge Function helpers ----------------------
+            function callJson(action, extra) {
+                var body = Object.assign({ action: action, channel: CHANNEL_NAME }, extra || {});
+                return fetch(SUPABASE_FUNCTIONS_BASE_URL + "/tiktok-upload", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body),
+                }).then(function (res) {
+                    return res.json().then(function (data) {
+                        return { httpOk: res.ok, data: data };
+                    });
+                });
+            }
+
+            function uploadChunk(sessionId, chunkIndex, blob) {
+                var url = SUPABASE_FUNCTIONS_BASE_URL + "/tiktok-upload?action=upload_chunk&session_id=" +
+                    encodeURIComponent(sessionId) + "&chunk_index=" + chunkIndex;
+                // Content-Length lo calcula el browser automáticamente a partir
+                // del Blob — nunca se puede (ni hace falta) setearlo a mano.
+                return fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "video/mp4" },
+                    body: blob,
+                }).then(function (res) {
+                    return res.json().then(function (data) {
+                        return { httpOk: res.ok, data: data };
+                    });
+                });
+            }
+
+            // ------------------------- Cuenta conectada -------------------------
+            function loadAccountInfo() {
+                var card = document.getElementById("account-card");
+                callJson("user_info").then(function (result) {
+                    if (!result.httpOk || !result.data || !result.data.ok) {
+                        card.innerHTML = '<p class="status-error">No hay ninguna cuenta de TikTok conectada todavía para este canal.</p>';
+                        return;
+                    }
+                    var name = result.data.display_name || "(sin nombre)";
+                    var avatar = result.data.avatar_url;
+                    card.innerHTML =
+                        (avatar ? '<img class="avatar" src="' + avatar.replace(/"/g, "&quot;") + '" alt="Avatar de ' + name.replace(/"/g, "&quot;") + '" />' : "") +
+                        '<span class="display-name"></span>';
+                    card.querySelector(".display-name").textContent = name;
+                    document.getElementById("scope-basic").className = "scope-pill scope-ok";
+                    document.getElementById("scope-upload").className = "scope-pill scope-ok";
+                }).catch(function () {
+                    card.innerHTML = '<p class="status-error">No se pudo consultar la cuenta conectada (error de red).</p>';
+                });
+            }
+            loadAccountInfo();
+
+            // --------------------------- Selección de archivo ---------------------------
+            fileInput.addEventListener("change", function () {
+                fileError.hidden = true;
+                var file = fileInput.files && fileInput.files[0];
+                selectedFile = null;
+                document.getElementById("file-info").hidden = true;
+                button.setAttribute("aria-disabled", "true");
+                if (!file) return;
+
+                if (file.type && file.type.indexOf("video/") !== 0) {
+                    fileError.hidden = false;
+                    fileError.textContent = "El archivo elegido no parece ser un video (" + (file.type || "tipo desconocido") + ").";
+                    return;
+                }
+
+                var plan;
+                try {
+                    plan = window.TikTokChunking.planUploadChunks(file.size);
+                    var check = window.TikTokChunking.validateUploadPlan(plan);
+                    if (!check.ok) throw new Error(check.reason);
+                } catch (err) {
+                    fileError.hidden = false;
+                    fileError.textContent = "No se pudo planificar la subida: " + (err && err.message ? err.message : String(err));
+                    return;
+                }
+
+                selectedFile = file;
+                document.getElementById("file-name").textContent = file.name;
+                document.getElementById("file-size").textContent = (file.size / 1_000_000).toFixed(1) + " MB (" + file.size + " bytes)";
+                chunkCountEl.textContent = plan.totalChunkCount + " chunk(s) de hasta " + (plan.chunkSize / 1_000_000).toFixed(0) + " MB";
+                document.getElementById("file-info").hidden = false;
+                button.removeAttribute("aria-disabled");
+                setStatus('Listo — hacé click en "Upload to TikTok (Draft)".', "hint");
+
+                // Duración: best-effort, el browser no siempre puede leer
+                // metadata de un archivo sin decodificarlo primero.
+                var videoEl = document.createElement("video");
+                videoEl.preload = "metadata";
+                videoEl.onloadedmetadata = function () {
+                    URL.revokeObjectURL(videoEl.src);
+                    if (isFinite(videoEl.duration)) {
+                        document.getElementById("file-duration").textContent = videoEl.duration.toFixed(1) + "s";
+                    }
+                };
+                videoEl.src = URL.createObjectURL(file);
+            });
+
+            // ------------------------------ Upload ------------------------------
+            function pollStatus(sessionId, attempt) {
+                attempt = attempt || 1;
+                var MAX_ATTEMPTS = 10;
+                return callJson("status", { session_id: sessionId }).then(function (result) {
+                    if (!result.httpOk || !result.data || !result.data.ok) {
+                        setStatus("No se pudo consultar el estado: " + ((result.data && result.data.message) || "error desconocido"), "status-error");
+                        return;
+                    }
+                    var s = result.data.status;
+                    setProgress(1, "Processing on TikTok… (" + attempt + "/" + MAX_ATTEMPTS + ") status=" + s);
+                    if (s === "SEND_TO_USER_INBOX") {
+                        setProgress(1, "Sent to TikTok Inbox ✅");
+                        setStatus("The video was sent to TikTok for the creator to review, edit and publish in the TikTok app.", "status-ok");
+                        return;
+                    }
+                    if (s === "PUBLISH_COMPLETE") {
+                        setProgress(1, "Publish complete ✅");
+                        setStatus("TikTok reportó la publicación como completa.", "status-ok");
+                        return;
+                    }
+                    if (s === "FAILED") {
+                        setStatus("TikTok rechazó el video: " + (result.data.fail_reason || "sin motivo reportado"), "status-error");
+                        return;
+                    }
+                    if (attempt < MAX_ATTEMPTS) {
+                        setTimeout(function () { pollStatus(sessionId, attempt + 1); }, 3000);
+                    } else {
+                        setStatus("TikTok todavía lo está procesando (" + s + ") — podés volver a revisar más tarde en la app.", "hint");
+                    }
+                });
+            }
+
+            function uploadChunksSequential(sessionId, totalChunkCount, chunkSize, file) {
+                var index = 0;
+                function next() {
+                    if (index >= totalChunkCount) {
+                        setProgress(1, "Processing on TikTok…");
+                        return pollStatus(sessionId);
+                    }
+                    var start = index * chunkSize;
+                    var end = index === totalChunkCount - 1 ? file.size : start + chunkSize;
+                    var blob = file.slice(start, end);
+                    setProgress(index / totalChunkCount, "Uploading chunk " + (index + 1) + "/" + totalChunkCount);
+                    return uploadChunk(sessionId, index, blob).then(function (result) {
+                        if (!result.httpOk || !result.data || !result.data.ok) {
+                            throw new Error((result.data && result.data.message) || "Fallo subiendo el chunk " + (index + 1) + "/" + totalChunkCount + ".");
+                        }
+                        index++;
+                        return next();
+                    });
+                }
+                return next();
+            }
+
+            button.addEventListener("click", function (ev) {
+                ev.preventDefault();
+                if (isUploading || !selectedFile || button.getAttribute("aria-disabled") === "true") return;
+                isUploading = true;
+                button.setAttribute("aria-disabled", "true");
+                setProgress(0, "Initializing TikTok upload…");
+                setStatus("Iniciando…", "status-pending");
+
+                callJson("init", { video_size: selectedFile.size })
+                    .then(function (result) {
+                        if (!result.httpOk || !result.data || !result.data.ok) {
+                            throw new Error((result.data && result.data.message) || "No se pudo iniciar la subida.");
+                        }
+                        var sessionId = result.data.session_id;
+                        var totalChunkCount = result.data.total_chunk_count;
+                        var chunkSize = result.data.chunk_size;
+                        return uploadChunksSequential(sessionId, totalChunkCount, chunkSize, selectedFile);
+                    })
+                    .catch(function (err) {
+                        setStatus("Error: " + (err && err.message ? err.message : "desconocido"), "status-error");
+                    })
+                    .finally(function () {
+                        isUploading = false;
+                        button.removeAttribute("aria-disabled");
+                    });
+                // Nunca se guarda nada en localStorage/sessionStorage, nunca se
+                // imprime ningún token ni el session_id en consola.
+            });
+        })();
+    </script>
+    <style>
+        .account-card { display: flex; align-items: center; gap: 12px; min-height: 40px; }
+        .account-card .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .account-card .display-name { font-weight: bold; }
+        .scopes { margin-top: 4px; }
+        .scope-pill { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 13px; margin-right: 8px; }
+        .scope-pending { background: #eee; color: #666; }
+        .scope-ok { background: #e3f7e8; color: #146c2e; }
+        .scope-ok::before { content: "✓ "; }
+        .file-info p { margin: 4px 0; }
+        .progress-wrap { margin: 16px 0; }
+        .progress-track { background: #eee; border-radius: 999px; height: 10px; overflow: hidden; }
+        .progress-bar { background: #146c2e; height: 100%; width: 0%; transition: width 0.2s ease; }
+        .progress-label, #progress-label { margin-top: 6px; }
+        .status-ok { color: #146c2e; font-weight: bold; }
+        .status-pending { color: #444; font-weight: bold; }
+        .status-error { color: #a12622; font-weight: bold; }
+        [aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+    </style>
+</body>
+</html>
