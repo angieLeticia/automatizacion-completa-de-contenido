@@ -39,6 +39,7 @@
 // comentario completo en ese archivo.
 import "../pipeline/env.mts";
 import { statSync, createReadStream } from "node:fs";
+import { pathToFileURL } from "node:url";
 import { supabaseAdmin } from "../../lib/social/supabaseAdmin.ts";
 
 const DEFAULT_CREDENTIALS_FILE = "C:\\Users\\angie\\tiktok-oauth.local";
@@ -46,6 +47,142 @@ const TIKTOK_API_BASE = "https://open.tiktokapis.com/v2";
 const STATUS_POLL_ATTEMPTS = 10;
 const STATUS_POLL_INTERVAL_MS = 5000;
 const TOKEN_EXPIRY_SAFETY_MARGIN_SECONDS = 60; // refresca un poco ANTES de que TikTok lo rechace, no justo al límite
+
+// --- Chunking (Media Transfer Guide) ---------------------------------------
+// Límites EXACTOS citados de developers.tiktok.com/doc/content-posting-api-media-transfer-guide
+// (consultado en vivo, no estimado):
+//   "Each chunk must be at least 5 MB but no greater than 64 MB" (chunks
+//   estándar, es decir todos salvo el último).
+//   "except for the final chunk, which can be greater than chunk_size (up
+//   to 128 MB)".
+//   "The value of total_chunk_count should be equal to video_size divided
+//   by chunk_size, rounded down to the nearest integer."
+//   "There must be a minimum of 1 chunk and a maximum of 1000 chunks."
+//   "Videos with a total size less than 5 MB must be uploaded as a whole,
+//   with chunk_size equal to the entire video's byte size."
+//   El propio ejemplo oficial de la doc usa un chunk de 10,000,000 bytes
+//   (byte 9,999,999 = último byte de "a 10,000,000-byte chunk") - evidencia
+//   directa de que TikTok usa MB decimal (1,000,000), no MiB binario. Todas
+//   las constantes de abajo usan esa misma unidad.
+const MIN_CHUNK_SIZE = 5_000_000; // 5 MB
+const MAX_CHUNK_SIZE = 64_000_000; // 64 MB - techo de cualquier chunk que NO sea el último
+const MAX_FINAL_CHUNK_SIZE = 128_000_000; // 128 MB - techo del ÚLTIMO chunk cuando hay más de uno
+const MAX_CHUNK_COUNT = 1000;
+const DEFAULT_CHUNK_SIZE = 10_000_000; // mismo tamaño que el ejemplo oficial de TikTok - dentro de [MIN,MAX] con margen amplio
+
+export interface ChunkPlan {
+  index: number;
+  start: number;
+  end: number; // inclusivo, igual que Content-Range y que el 2do argumento de fs.createReadStream({end})
+  length: number;
+}
+
+export interface UploadPlan {
+  videoSize: number;
+  chunkSize: number; // el chunk_size que se declara en el INIT (source_info.chunk_size)
+  totalChunkCount: number;
+  chunks: ChunkPlan[];
+}
+
+// Determinista y pura (sin red, sin fs) — ver PARTE 3/5 de la auditoría.
+// Regla de "un solo chunk": si el video entero cabe dentro del techo
+// ESTÁNDAR de un chunk (<=64MB), se manda entero como chunk único
+// (cubre tanto el caso documentado "<5MB entero" como cualquier video
+// <=64MB - no depende de la excepción ambigua del último chunk de
+// hasta 128MB, que solo se usa acá cuando YA hay más de un chunk).
+export function planUploadChunks(videoSize: number, chunkSize: number = DEFAULT_CHUNK_SIZE): UploadPlan {
+  if (!Number.isInteger(videoSize) || videoSize <= 0) {
+    throw new Error(`videoSize inválido: ${videoSize} (debe ser un entero positivo).`);
+  }
+  if (!Number.isInteger(chunkSize) || chunkSize <= 0) {
+    throw new Error(`chunkSize inválido: ${chunkSize} (debe ser un entero positivo).`);
+  }
+
+  if (videoSize <= MAX_CHUNK_SIZE) {
+    return {
+      videoSize,
+      chunkSize: videoSize,
+      totalChunkCount: 1,
+      chunks: [{ index: 0, start: 0, end: videoSize - 1, length: videoSize }],
+    };
+  }
+
+  // Multi-chunk: total_chunk_count = floor(videoSize / chunkSize), regla
+  // oficial citada arriba. El ÚLTIMO chunk absorbe el resto (nunca queda un
+  // resto como chunk propio, que podría caer bajo el mínimo de 5MB si el
+  // resto fuera diminuto) - queda >= chunkSize siempre, muy por debajo del
+  // techo de 128MB del último chunk con nuestro DEFAULT_CHUNK_SIZE de 10MB.
+  const totalChunkCount = Math.floor(videoSize / chunkSize);
+  const chunks: ChunkPlan[] = [];
+  for (let i = 0; i < totalChunkCount; i++) {
+    const start = i * chunkSize;
+    const isLast = i === totalChunkCount - 1;
+    const end = isLast ? videoSize - 1 : start + chunkSize - 1;
+    chunks.push({ index: i, start, end, length: end - start + 1 });
+  }
+  return { videoSize, chunkSize, totalChunkCount, chunks };
+}
+
+// Validación FAIL-CLOSED independiente del cálculo de arriba - nunca confía
+// ciegamente en planUploadChunks(), reverifica cada invariante desde cero.
+// Se llama SIEMPRE antes del INIT; si falla, se aborta sin llamar a TikTok.
+export function validateUploadPlan(plan: UploadPlan): { ok: true } | { ok: false; reason: string } {
+  if (!Number.isInteger(plan.videoSize) || plan.videoSize <= 0) {
+    return { ok: false, reason: `videoSize inválido: ${plan.videoSize}.` };
+  }
+  if (plan.totalChunkCount < 1 || plan.totalChunkCount > MAX_CHUNK_COUNT) {
+    return { ok: false, reason: `totalChunkCount=${plan.totalChunkCount} fuera de rango [1, ${MAX_CHUNK_COUNT}].` };
+  }
+  if (plan.chunks.length !== plan.totalChunkCount) {
+    return { ok: false, reason: `plan.chunks.length=${plan.chunks.length} no coincide con totalChunkCount=${plan.totalChunkCount}.` };
+  }
+
+  if (plan.totalChunkCount === 1) {
+    const only = plan.chunks[0];
+    if (plan.chunkSize !== plan.videoSize || only.length !== plan.videoSize) {
+      return { ok: false, reason: "con totalChunkCount=1, chunkSize y el length del único chunk deben ser exactamente videoSize." };
+    }
+  } else {
+    if (plan.chunkSize < MIN_CHUNK_SIZE || plan.chunkSize > MAX_CHUNK_SIZE) {
+      return { ok: false, reason: `chunkSize=${plan.chunkSize} fuera de [${MIN_CHUNK_SIZE}, ${MAX_CHUNK_SIZE}] bytes.` };
+    }
+    for (let i = 0; i < plan.chunks.length - 1; i++) {
+      if (plan.chunks[i].length !== plan.chunkSize) {
+        return { ok: false, reason: `chunk[${i}].length=${plan.chunks[i].length} debe ser exactamente chunkSize=${plan.chunkSize} (no es el último chunk).` };
+      }
+    }
+    const last = plan.chunks[plan.chunks.length - 1];
+    if (last.length <= 0 || last.length > MAX_FINAL_CHUNK_SIZE) {
+      return { ok: false, reason: `el último chunk (length=${last.length}) debe ser >0 y <= ${MAX_FINAL_CHUNK_SIZE} bytes.` };
+    }
+    if (last.length < MIN_CHUNK_SIZE) {
+      return { ok: false, reason: `el último chunk (length=${last.length}) quedó por debajo del mínimo de ${MIN_CHUNK_SIZE} bytes.` };
+    }
+  }
+
+  // Suma exacta, sin huecos ni overlaps, primer start=0, último end=videoSize-1.
+  let expectedStart = 0;
+  let sum = 0;
+  for (const c of plan.chunks) {
+    if (c.start !== expectedStart) {
+      return { ok: false, reason: `chunk[${c.index}].start=${c.start} esperado=${expectedStart} (hueco u overlap).` };
+    }
+    if (c.end !== c.start + c.length - 1) {
+      return { ok: false, reason: `chunk[${c.index}] inconsistente: end=${c.end}, start=${c.start}, length=${c.length}.` };
+    }
+    sum += c.length;
+    expectedStart = c.end + 1;
+  }
+  if (sum !== plan.videoSize) {
+    return { ok: false, reason: `la suma de los length de todos los chunks (${sum}) no coincide con videoSize (${plan.videoSize}).` };
+  }
+  const lastChunk = plan.chunks[plan.chunks.length - 1];
+  if (lastChunk.end !== plan.videoSize - 1) {
+    return { ok: false, reason: `el último chunk termina en end=${lastChunk.end}, esperado videoSize-1=${plan.videoSize - 1}.` };
+  }
+
+  return { ok: true };
+}
 
 interface ParsedArgs {
   channel?: string;
@@ -175,15 +312,20 @@ interface InitResult {
   uploadUrl: string;
 }
 
-async function initUpload(accessToken: string, videoSize: number): Promise<InitResult> {
+async function initUpload(accessToken: string, plan: UploadPlan): Promise<InitResult> {
   // Body EXACTO documentado para /post/publish/inbox/video/init/: solo
   // source_info. Ningún post_info/privacy_level/title acá - ver el
-  // comentario del encabezado del archivo para el porqué.
+  // comentario del encabezado del archivo para el porqué. chunk_size/
+  // total_chunk_count salen del plan YA validado por validateUploadPlan()
+  // antes de llegar acá (ver main()) - nunca se recalculan ni se confía en
+  // un valor fijo como antes (bug real: siempre chunk_size=video_size,
+  // total_chunk_count=1, rechazado por TikTok con "The chunk size is invalid"
+  // para archivos >64MB).
   const res = await fetch(`${TIKTOK_API_BASE}/post/publish/inbox/video/init/`, {
     method: "POST",
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json; charset=UTF-8" },
     body: JSON.stringify({
-      source_info: { source: "FILE_UPLOAD", video_size: videoSize, chunk_size: videoSize, total_chunk_count: 1 },
+      source_info: { source: "FILE_UPLOAD", video_size: plan.videoSize, chunk_size: plan.chunkSize, total_chunk_count: plan.totalChunkCount },
     }),
   });
   const data = (await res.json()) as { data?: { publish_id?: string; upload_url?: string }; error?: { code?: string; message?: string } };
@@ -198,19 +340,31 @@ async function initUpload(accessToken: string, videoSize: number): Promise<InitR
   return { publishId, uploadUrl };
 }
 
-async function uploadFile(uploadUrl: string, filePath: string, fileSize: number): Promise<void> {
-  const stream = createReadStream(filePath);
-  const res = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "video/mp4",
-      "Content-Length": String(fileSize),
-      "Content-Range": `bytes 0-${fileSize - 1}/${fileSize}`,
-    },
-    body: stream as unknown as BodyInit,
-    duplex: "half",
-  } as RequestInit);
-  if (!res.ok) throw new Error(`El PUT del video a TikTok falló (HTTP ${res.status}): ${await res.text()}`);
+// upload_url es la MISMA para todos los chunks ("will be shared across all
+// chunks", Media Transfer Guide) - se hace un PUT por chunk, en orden,
+// secuencial (nunca en paralelo: mantiene el comportamiento determinista y
+// evita cualquier ambigüedad sobre el orden en que TikTok ensambla los
+// bytes). Cada PUT usa un slice de lectura acotado por {start,end} - nunca
+// carga el archivo completo en memoria.
+async function uploadChunks(uploadUrl: string, filePath: string, plan: UploadPlan): Promise<void> {
+  for (const chunk of plan.chunks) {
+    const stream = createReadStream(filePath, { start: chunk.start, end: chunk.end });
+    const res = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "video/mp4",
+        "Content-Length": String(chunk.length),
+        "Content-Range": `bytes ${chunk.start}-${chunk.end}/${plan.videoSize}`,
+      },
+      body: stream as unknown as BodyInit,
+      duplex: "half",
+    } as RequestInit);
+    if (!res.ok) {
+      throw new Error(
+        `El PUT del chunk ${chunk.index + 1}/${plan.totalChunkCount} (bytes ${chunk.start}-${chunk.end}) a TikTok falló (HTTP ${res.status}): ${await res.text()}`
+      );
+    }
+  }
 }
 
 type StatusResult = { status: string; failReason: string | null };
@@ -259,7 +413,22 @@ async function main(): Promise<void> {
     );
   }
 
-  console.log("\nPaso 1/5 — resolviendo social_account de TikTok en Supabase...");
+  console.log("\nPaso 1/6 — planificando chunks (sin red, cálculo local)...");
+  const plan = planUploadChunks(fileSize);
+  const planCheck = validateUploadPlan(plan);
+  if (!planCheck.ok) {
+    console.error(`DETENIDO — plan de chunks inválido, no se llama a TikTok: ${planCheck.reason}`);
+    process.exitCode = 1;
+    return;
+  }
+  console.log(`  chunk_size=${plan.chunkSize} total_chunk_count=${plan.totalChunkCount}`);
+  const chunksToShow = plan.chunks.length <= 20 ? plan.chunks : [...plan.chunks.slice(0, 3), ...plan.chunks.slice(-2)];
+  for (const c of chunksToShow) {
+    console.log(`    chunk ${c.index}: start=${c.start} end=${c.end} length=${c.length}`);
+  }
+  if (plan.chunks.length > 20) console.log(`    ... (${plan.chunks.length - 5} chunks intermedios omitidos del log, no del plan real)`);
+
+  console.log("\nPaso 2/6 — resolviendo social_account de TikTok en Supabase...");
   let accountId: string;
   let credentials: TikTokCredentials;
   try {
@@ -271,7 +440,7 @@ async function main(): Promise<void> {
   }
   console.log(`  OK — social_accounts.id=${accountId}, scope="${credentials.scope}", open_id=${maskLength(credentials.open_id)}`);
 
-  console.log("\nPaso 2/5 — verificando que el scope incluya 'video.upload'...");
+  console.log("\nPaso 3/6 — verificando que el scope incluya 'video.upload'...");
   const scopes = credentials.scope.split(",").map((s) => s.trim());
   if (!scopes.includes("video.upload")) {
     console.error(
@@ -283,7 +452,7 @@ async function main(): Promise<void> {
   }
   console.log("  OK — 'video.upload' presente en el scope.");
 
-  console.log("\nPaso 3/5 — verificando vigencia del access_token...");
+  console.log("\nPaso 4/6 — verificando vigencia del access_token...");
   try {
     credentials = await ensureFreshAccessToken(accountId, credentials);
   } catch (err) {
@@ -292,12 +461,12 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log("\nPaso 4/5 — iniciando el borrador en TikTok (init -> upload)...");
+  console.log("\nPaso 5/6 — iniciando el borrador en TikTok (init -> upload)...");
   let publishId: string;
   try {
     let initResult: InitResult;
     try {
-      initResult = await initUpload(credentials.access_token, fileSize);
+      initResult = await initUpload(credentials.access_token, plan);
     } catch (err) {
       // Reintento único: si TikTok respondió que el token es inválido a pesar
       // de que nuestro cálculo de expiración decía que seguía vigente
@@ -306,15 +475,15 @@ async function main(): Promise<void> {
       if ((err as { authFailure?: boolean }).authFailure) {
         console.log("  TikTok dice que el token no es válido pese a no estar vencido por fecha - refrescando y reintentando UNA vez...");
         credentials = await ensureFreshAccessToken(accountId, { ...credentials, obtained_at: new Date(0).toISOString() }); // fuerza el refresh
-        initResult = await initUpload(credentials.access_token, fileSize);
+        initResult = await initUpload(credentials.access_token, plan);
       } else {
         throw err;
       }
     }
     publishId = initResult.publishId;
     console.log(`  OK — publish_id=${publishId}`);
-    console.log("  Subiendo bytes del video (PUT directo a TikTok)...");
-    await uploadFile(initResult.uploadUrl, args.file, fileSize);
+    console.log(`  Subiendo bytes del video (${plan.totalChunkCount} PUT(s) directo(s) a TikTok, secuencial)...`);
+    await uploadChunks(initResult.uploadUrl, args.file, plan);
     console.log("  OK — video subido.");
   } catch (err) {
     console.error(`DETENIDO — ${err instanceof Error ? err.message : String(err)}`);
@@ -322,7 +491,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  console.log("\nPaso 5/5 — consultando estado (polling)...");
+  console.log("\nPaso 6/6 — consultando estado (polling)...");
   let finalStatus: StatusResult = { status: "UNKNOWN", failReason: null };
   for (let attempt = 1; attempt <= STATUS_POLL_ATTEMPTS; attempt++) {
     try {
@@ -356,7 +525,14 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((err) => {
-  console.error("Error inesperado:", err instanceof Error ? err.message : String(err));
-  process.exitCode = 1;
-});
+// Guard de ejecución directa (mismo patrón ya usado en
+// scripts/pipeline/authorization.mts) - permite importar este archivo desde
+// un test (para probar planUploadChunks()/validateUploadPlan(), exportadas
+// arriba) sin disparar main() ni tocar Supabase/red.
+const isDirectRun = Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isDirectRun) {
+  main().catch((err) => {
+    console.error("Error inesperado:", err instanceof Error ? err.message : String(err));
+    process.exitCode = 1;
+  });
+}
