@@ -94,6 +94,7 @@
                 url.searchParams.set("client_key", CLIENT_KEY.trim());
                 url.searchParams.set("redirect_uri", REDIRECT_URI);
                 url.searchParams.set("scope", SCOPE);
+                url.searchParams.set("disable_auto_auth", "1");
                 url.searchParams.set("response_type", "code");
                 url.searchParams.set("state", randomState());
                 // NUNCA client_secret aquí — un client_secret no debe existir en el frontend.
