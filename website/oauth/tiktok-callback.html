@@ -66,16 +66,17 @@
       "use strict";
 
       // Base de las Edge Functions de Supabase. URL pública del proyecto
-      // (no es un secreto) — se deja como constante configurable, sin
-      // project ref inventado: reemplazar por
-      // "https://<tu-project-ref>.supabase.co/functions/v1" una vez conocido.
+      // (no es un secreto).
       var SUPABASE_FUNCTIONS_BASE_URL = "https://xbwbwzehnbofargskxyb.supabase.co/functions/v1";
 
-      // Sandbox/demo: el canal está fijo a "SIN EXPLICACIÓN" por ahora — no
-      // hay todavía un selector de canal en la web (website/index.html no se
-      // tocó en esta fase). Antes de soportar múltiples canales desde la web,
-      // este valor debe volverse dinámico (ver docs/tiktok-oauth-edge-function.md).
-      var CHANNEL_NAME = "SIN EXPLICACIÓN";
+      // Flujo OAuth multi-cuenta (TIKTOK_MULTI_ACCOUNT_OAUTH_DESIGN): esta
+      // página YA NO conoce ni decide ninguna marca — la identidad de marca
+      // viaja exclusivamente dentro de `state`, firmado server-side por
+      // tiktok-oauth-init (HMAC-SHA256, TIKTOK_STATE_SIGNING_KEY). Esta
+      // página se limita a leer `code`/`state` de la URL de retorno y
+      // reenviarlos TAL CUAL a tiktok-oauth-exchange, que es quien verifica
+      // la firma y extrae el channel_id real — nunca se acepta ni se envía
+      // ningún channel_name/channel_id por separado desde acá.
 
       function parseFragmentParams(hash) {
         var result = {};
@@ -166,6 +167,13 @@
         return;
       }
 
+      if (!state) {
+        // Sin `state` no hay forma de saber a qué marca pertenece esta
+        // conexión — nunca se adivina ni se usa un valor por defecto.
+        setStatus("No se recibió 'state' — no se puede determinar la marca de forma segura.", "status-error");
+        return;
+      }
+
       if (SUPABASE_FUNCTIONS_BASE_URL.indexOf("PLACEHOLDER") !== -1) {
         setStatus("Falta configurar SUPABASE_FUNCTIONS_BASE_URL en este archivo — no se puede completar la conexión.", "status-error");
         return;
@@ -173,13 +181,14 @@
 
       // El `code` NO se muestra en pantalla ni se loguea — se envía directo
       // al backend (POST), que es el único lugar donde se intercambia por
-      // tokens reales.
+      // tokens reales. `state` tampoco se muestra ni se loguea (es opaco,
+      // pero por higiene se trata igual que un dato sensible).
       setStatus("Conectando…", "status-pending");
 
       fetch(SUPABASE_FUNCTIONS_BASE_URL + "/tiktok-oauth-exchange", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: authCode, channel_name: CHANNEL_NAME }),
+        body: JSON.stringify({ code: authCode, state: state }),
       })
         .then(function (res) {
           return res.json().then(function (data) {

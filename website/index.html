@@ -31,14 +31,20 @@
         <section>
             <h2>Conectar una cuenta</h2>
             <p>
-                Autoriza tu cuenta de TikTok para que Automatizacion Contenido
-                pueda identificarla. Este primer paso solo lee tu información
-                básica de perfil (nombre de usuario/avatar) para confirmar qué
-                cuenta quedó conectada — no publica ni modifica nada todavía.
+                Autoriza la cuenta de TikTok de una marca para que
+                Automatizacion Contenido pueda identificarla. Elegí primero a
+                qué marca corresponde la cuenta de TikTok que vas a conectar
+                — este primer paso solo lee la información básica de perfil
+                (nombre de usuario/avatar) para confirmar qué cuenta quedó
+                conectada, no publica ni modifica nada todavía.
             </p>
-            <p class="links">
-                <a id="connect-tiktok" href="#">Connect TikTok</a>
-            </p>
+            <p id="tiktok-connect-status" class="hint" hidden></p>
+            <ul class="links" id="tiktok-connect-buttons">
+                <li><button type="button" class="tiktok-connect-btn" data-channel-id="d989e221-cea4-42c2-ae05-4aa758429b20">Conectar TikTok — SIN EXPLICACIÓN</button></li>
+                <li><button type="button" class="tiktok-connect-btn" data-channel-id="1f3206fe-ea7f-4066-ac8e-0f13247660f8">Conectar TikTok — ENCIENDE EL CAOS</button></li>
+                <li><button type="button" class="tiktok-connect-btn" data-channel-id="5a167161-4949-42f2-baf3-9eac4612bb45">Conectar TikTok — LUNA VERDE</button></li>
+                <li><button type="button" class="tiktok-connect-btn" data-channel-id="0126279e-fb54-4d93-9aa8-371ed35bd857">Conectar TikTok — OBJETOS MALDITOS</button></li>
+            </ul>
             <p class="hint">
                 Ya conectaste una cuenta y querés ver la demo de subida (App Review, Sandbox):
                 <a href="demo-upload.html">TikTok Integration Demo</a>.
@@ -61,67 +67,72 @@
         (function () {
             "use strict";
 
-            // Un único bloque de script (fix 2026 — el anterior quedó
-            // duplicado/mal cerrado con un error de sintaxis que dejaba
-            // "Connect TikTok" apuntando siempre a "#"; ver el commit de este
-            // arreglo para el detalle). AUTHORIZE_BASE_URL/REDIRECT_URI
-            // confirmados y ya en uso — se mantienen sin cambios.
-            var AUTHORIZE_BASE_URL = "https://www.tiktok.com/v2/auth/authorize/";
-            var CLIENT_KEY = "sbawezs7bd334bci0q"; // Client Key de SANDBOX de TikTok (no el de producción)
-            var REDIRECT_URI = "https://angieleticia.github.io/automatizacion-completa-de-contenido/oauth/tiktok-callback.html";
-
-            // Opción B (Content Posting API + draft) — agrega "video.upload"
-            // al scope de Login Kit. Requiere que la app tenga el producto
-            // Content Posting API aprobado en TikTok Developer Portal (fuera
-            // de este archivo, no se toca acá); ver docs/phase-5.12-tiktok-audit.md.
-            var SCOPE = "user.info.basic,video.upload,video.publish";
-
-            // `state` generado en el momento, solo para esta autorización —
-            // nunca se guarda (ni en localStorage ni en ningún backend).
-            function randomState() {
-                if (window.crypto && window.crypto.getRandomValues) {
-                    var bytes = new Uint8Array(16);
-                    window.crypto.getRandomValues(bytes);
-                    return Array.prototype.map.call(bytes, function (b) {
-                        return b.toString(16).padStart(2, "0");
-                    }).join("");
-                }
-                return Math.random().toString(36).slice(2) + Date.now().toString(36);
-            }
-
-            function buildAuthorizeUrl() {
-                var url = new URL(AUTHORIZE_BASE_URL);
-                url.searchParams.set("client_key", CLIENT_KEY.trim());
-                url.searchParams.set("redirect_uri", REDIRECT_URI);
-                url.searchParams.set("scope", SCOPE);
-                url.searchParams.set("disable_auto_auth", "1");
-                url.searchParams.set("response_type", "code");
-                url.searchParams.set("state", randomState());
-                // NUNCA client_secret aquí — un client_secret no debe existir en el frontend.
-                return url.toString();
-            }
-
-            var link = document.getElementById("connect-tiktok");
-            if (!link) return;
-
-            var missingConfig = AUTHORIZE_BASE_URL.indexOf("PLACEHOLDER") !== -1 || CLIENT_KEY.indexOf("PLACEHOLDER") !== -1;
-            if (missingConfig) {
-                link.setAttribute("aria-disabled", "true");
-                link.addEventListener("click", function (ev) {
-                    ev.preventDefault();
-                    window.alert("Falta configurar AUTHORIZE_BASE_URL y/o CLIENT_KEY en website/index.html antes de poder conectar TikTok de verdad.");
-                });
-                return;
-            }
-
-            // Se precalcula al cargar la página -> "copiar enlace" ya no da
-            // "#". También se recalcula (state nuevo) en cada click, antes de
-            // que el navegador siga el link — sigue siendo una navegación
+            // Flujo OAuth multi-cuenta (TIKTOK_MULTI_ACCOUNT_OAUTH_DESIGN):
+            // esta página YA NO construye la URL de autorización de TikTok
+            // ni genera `state` — eso ahora lo hace exclusivamente la Edge
+            // Function tiktok-oauth-init, server-side, porque el `state`
+            // debe llevar una firma HMAC (TIKTOK_STATE_SIGNING_KEY) que
+            // nunca puede existir en el navegador. Esta página solo pide, al
+            // hacer click, la URL ya armada y firmada para el channel_id de
+            // la marca elegida, y navega ahí — sigue siendo una navegación
             // normal iniciada por el usuario, nunca automática.
-            link.href = buildAuthorizeUrl();
-            link.addEventListener("click", function () {
-                link.href = buildAuthorizeUrl();
-            });
+            //
+            // NOTA (patch quirúrgico sobre main): la versión anterior de esta
+            // página pasaba disable_auto_auth=1 en la URL de authorize
+            // (agregado en un commit previo para forzar el prompt de consentimiento
+            // de TikTok en vez de un auto-login silencioso). tiktok-oauth-init
+            // (la Edge Function ya desplegada) todavía NO agrega ese parámetro —
+            // queda pendiente como mejora futura, fuera del alcance de este fix
+            // puntual (que no despliega ninguna Edge Function).
+            var SUPABASE_FUNCTIONS_BASE_URL = "https://xbwbwzehnbofargskxyb.supabase.co/functions/v1";
+
+            var statusEl = document.getElementById("tiktok-connect-status");
+            function setStatus(text) {
+                if (!statusEl) return;
+                statusEl.hidden = !text;
+                statusEl.textContent = text || "";
+            }
+
+            var buttons = document.querySelectorAll(".tiktok-connect-btn");
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener("click", function (ev) {
+                    var btn = ev.currentTarget;
+                    // channel_id es un identificador interno (UUID), NUNCA
+                    // un nombre editable — el servidor lo vuelve a validar
+                    // contra social_channels antes de firmar nada.
+                    var channelId = btn.getAttribute("data-channel-id");
+                    if (!channelId) return;
+
+                    for (var j = 0; j < buttons.length; j++) buttons[j].disabled = true;
+                    setStatus("Conectando…");
+
+                    fetch(SUPABASE_FUNCTIONS_BASE_URL + "/tiktok-oauth-init", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ channel_id: channelId }),
+                    })
+                        .then(function (res) {
+                            return res.json().then(function (data) {
+                                return { httpOk: res.ok, data: data };
+                            });
+                        })
+                        .then(function (result) {
+                            if (result.httpOk && result.data && result.data.ok && result.data.authorize_url) {
+                                // Navegación real a TikTok — el `state` ya viene
+                                // firmado en la URL devuelta por el servidor.
+                                window.location.href = result.data.authorize_url;
+                                return;
+                            }
+                            var message = (result.data && result.data.message) || "Error desconocido.";
+                            setStatus("No se pudo iniciar la conexión: " + message);
+                            for (var j = 0; j < buttons.length; j++) buttons[j].disabled = false;
+                        })
+                        .catch(function () {
+                            setStatus("No se pudo contactar el servidor para iniciar la conexión.");
+                            for (var j = 0; j < buttons.length; j++) buttons[j].disabled = false;
+                        });
+                });
+            }
         })();
     </script>
 </body>
